@@ -1,10 +1,10 @@
-package rs.ac.uns.ftn.informatika.jpa.aut;
+package rs.ac.uns.ftn.informatika.jpa.authentification;
 
-public class Aut {
+public class Authentification {
 
     private String accessToken;
 
-    public Aut(String accessToken){
+    public Authentification(String accessToken){
         this.accessToken = accessToken;
     }
 

@@ -25,3 +25,22 @@ insert into exam (student_id, course_id, date, grade) values (1, 1, '2016-02-01'
 insert into exam (student_id, course_id, date, grade) values (1, 2, '2016-04-19', 8);
 insert into exam (student_id, course_id, date, grade) values (2, 1, '2016-02-01', 10);
 insert into exam (student_id, course_id, date, grade) values (2, 2, '2016-04-19', 10);
+
+
+
+
+
+
+
+
+
+
+
+INSERT INTO USERS (username, password, first_name, last_name, email, enabled, last_password_reset_date)
+VALUES ('novi_korisnik', 'sifra123', 'Ime', 'Prezime', 'novi_korisnik@example.com', true, CURRENT_TIMESTAMP);
+
+INSERT INTO ROLE (name) VALUES ('ROLE_USER');
+
+
+
+
