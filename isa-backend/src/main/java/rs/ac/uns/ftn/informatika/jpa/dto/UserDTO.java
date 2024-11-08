@@ -1,5 +1,6 @@
 package rs.ac.uns.ftn.informatika.jpa.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import rs.ac.uns.ftn.informatika.jpa.model.Role;
 
 import javax.validation.constraints.Email;
@@ -24,8 +25,10 @@ public class UserDTO {
     @Size(min = 8, message = "Password should be at least 8 characters")
     private String password;
 
+    @JsonProperty("firstname")
     private String firstName;
 
+    @JsonProperty("lastname")
     private String lastName;
 
     private boolean enabled;

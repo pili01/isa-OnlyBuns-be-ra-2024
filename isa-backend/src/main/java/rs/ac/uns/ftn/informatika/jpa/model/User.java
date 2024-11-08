@@ -22,7 +22,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name="USERS")
+@Table(name="users")
 public class User implements UserDetails {
 
     private static final long serialVersionUID = 1L;

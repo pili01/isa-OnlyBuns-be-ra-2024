@@ -21,6 +21,8 @@ public class UserDTOMapper {
 
     public User fromDTOtoUser(UserDTO dto) {
         User user = modelMapper.map(dto, User.class);
+        System.out.println("First Name: " + dto.getFirstName());
+        System.out.println("Last Name: " + dto.getLastName());
         user.setRoles(roleNamesToRoles(dto.getRoles()));
         return user;
     }

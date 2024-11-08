@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import rs.ac.uns.ftn.informatika.jpa.service.CustomUserDetailsService;
@@ -29,17 +30,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+                .cors().and()
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/api/users/register", "/api/users/verify", "/login", "/register",
-                        "/v2/api-docs", "/swagger-resources/**", "/swagger-ui.html", "/webjars/**", "/swagger-ui/**")
+                .antMatchers("/api/users/register", "/api/users/verify", "/api/users/login", "/register",
+                        "/v2/api-docs", "/swagger-resources/**", "/swagger-ui.html", "/webjars/**", "/swagger-ui/**", "/api/posts", "/api/users/profile/**")
                 .permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .formLogin().permitAll()
-                .and()
-                .logout().permitAll();
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS); // postavlja stateless sesije
     }
+
+
+
 
 
     @Bean

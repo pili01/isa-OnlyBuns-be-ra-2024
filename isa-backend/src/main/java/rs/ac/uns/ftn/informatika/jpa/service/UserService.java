@@ -26,6 +26,9 @@ public class UserService {
     @Autowired
     private EmailService emailService;
 
+
+
+
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -62,6 +65,8 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
+
+
     @Transactional
     public User registerUser(UserDTO userDTO) throws MessagingException {
         if (existsByEmail(userDTO.getEmail()) || existsByUsername(userDTO.getUsername())) {
@@ -83,12 +88,17 @@ public class UserService {
 
         user = userRepository.save(user);
 
+
         // Slanje verifikacionog email-a
         String verificationLink = "http://localhost:8080/api/users/verify?email=" + user.getEmail();
         emailService.sendVerificationEmail(userDTO, verificationLink);
 
         return user;
     }
+
+
+
+
 
     @Transactional
     public boolean verifyUser(String email) {
@@ -99,6 +109,11 @@ public class UserService {
             return true;
         }
         return false;
+    }
+
+
+    public Optional<User> findByUsername(String username) {
+        return userRepository.findByUsername(username);
     }
 
 }

@@ -22,6 +22,9 @@ public class EmailService {
     @Autowired
     private Environment env;
 
+
+
+
     @Async
     public void sendVerificationEmail(UserDTO userDTO, String link) {
         try {
@@ -38,6 +41,7 @@ public class EmailService {
                     + "<p>Hvala!</p>";
 
             helper.setText(htmlMsg, true);
+            System.out.println("Slanje emaila na: " + userDTO.getEmail());
             javaMailSender.send(mail);
         } catch (MessagingException e) {
 

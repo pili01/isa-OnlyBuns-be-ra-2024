@@ -9,6 +9,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import rs.ac.uns.ftn.informatika.jpa.authentification.Authentification;
 import rs.ac.uns.ftn.informatika.jpa.dto.LoginRequest;
 import rs.ac.uns.ftn.informatika.jpa.dto.UserDTO;
 import rs.ac.uns.ftn.informatika.jpa.model.Role;
@@ -16,6 +17,7 @@ import rs.ac.uns.ftn.informatika.jpa.model.User;
 import rs.ac.uns.ftn.informatika.jpa.repository.RoleRepository;
 import rs.ac.uns.ftn.informatika.jpa.service.UserService;
 import rs.ac.uns.ftn.informatika.jpa.mapper.UserDTOMapper;
+import rs.ac.uns.ftn.informatika.jpa.token.Token;
 
 import javax.mail.MessagingException;
 import javax.validation.Valid;
@@ -40,14 +42,29 @@ public class UserController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private Token jwtToken;
 
+
+    @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         try {
+
+            User user = userService.findByEmail(loginRequest.getEmail()).orElse(null);
+
+            // Proverite da li je nalog verifikovan
+            if (!user.isEnabled()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Account not verified. Please verify your email.");
+            }
+
+
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            return ResponseEntity.ok("Login successful");
+
+            String jwt = jwtToken.generateToken(loginRequest.getEmail());
+            return ResponseEntity.ok(new Authentification(jwt));
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }
@@ -122,6 +139,16 @@ public class UserController {
         }
     }
 
+
+    @GetMapping("/getUserByName/{username}")
+    public ResponseEntity<UserDTO> getUserByUsername(@PathVariable String username) {
+        return userService.findByUsername(username)
+                .map(userDTOMapper::fromUsertoDTO)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+
     // Get user by email
     @GetMapping("/findByEmail")
     public ResponseEntity<UserDTO> getUserByEmail(@RequestParam String email) {
@@ -147,6 +174,9 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@Valid @RequestBody UserDTO userDTO) {
         try {
+            System.out.println("First Name: " + userDTO.getFirstName());
+            System.out.println("Last Name: " + userDTO.getLastName());
+
             userService.registerUser(userDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully! Please verify your email.");
         } catch (IllegalArgumentException e) {
