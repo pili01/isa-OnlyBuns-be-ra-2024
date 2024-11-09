@@ -83,24 +83,6 @@ public class UserController {
     }
 
 
-    @PostMapping("/logout")
-    public ResponseEntity<String> logout(@RequestBody Map<String, String> payload) {
-        String userName = payload.get("userName"); 
-        User user = userService.findByUsername(userName).orElse(null);;
-
-        if (user != null) {
-
-            Role unauthenticatedRole = userService.findRoleByName("UNAUTHENTICATED")
-                    .orElseThrow(() -> new RuntimeException("Role not found"));
-            user.setRole(unauthenticatedRole);
-            userService.updateUser(user);
-            return ResponseEntity.ok("User role updated to unauthenticated.");
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found.");
-        }
-    }
-
-
 
 
 
