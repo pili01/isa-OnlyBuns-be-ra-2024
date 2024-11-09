@@ -26,8 +26,9 @@ insert into exam (student_id, course_id, date, grade) values (1, 2, '2016-04-19'
 insert into exam (student_id, course_id, date, grade) values (2, 1, '2016-02-01', 10);
 insert into exam (student_id, course_id, date, grade) values (2, 2, '2016-04-19', 10);
 
-INSERT INTO role (id, name) VALUES (1, 'ROLE_USER');
-INSERT INTO role (id, name) VALUES (2, 'ROLE_ADMIN');
+INSERT INTO role (id, name) VALUES (1, 'NOT_AUTHENTICATED');
+INSERT INTO role (id, name) VALUES (2, 'AUTHENTICATED');
+INSERT INTO role (id, name) VALUES (3, 'ADMIN');
 
 
 

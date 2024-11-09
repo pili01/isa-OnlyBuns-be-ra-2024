@@ -76,15 +76,16 @@ public class UserService {
         User user = new User();
         user.setUsername(userDTO.getUsername());
         user.setEmail(userDTO.getEmail());
-        user.setPassword(passwordEncoder.encode(userDTO.getPassword())); // Heširamo lozinku
+        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         user.setFirstName(userDTO.getFirstName());
         user.setLastName(userDTO.getLastName());
-        user.setEnabled(false); // Korisnik mora da potvrdi email
+        user.setAddress((userDTO.getAddress()));
+        user.setEnabled(false);
 
-        Role defaultRole = roleRepository.findByName("ROLE_USER")
-                .orElseThrow(() -> new IllegalArgumentException("Role 'ROLE_USER' not found"));
+        Role defaultRole = roleRepository.findByName("NOT_AUTHENTICATED")
+                .orElseThrow(() -> new IllegalArgumentException("Role 'NOT_AUTHENTICATED' not found"));
 
-        user.setRoles(Collections.singletonList(defaultRole));
+        user.setRole(defaultRole);
 
         user = userRepository.save(user);
 
@@ -114,6 +115,19 @@ public class UserService {
 
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
+    }
+
+    public User updateUser(User user) {
+        if (userRepository.existsById(user.getId())) {
+            return userRepository.save(user);
+        } else {
+            throw new IllegalArgumentException("User with ID " + user.getId() + " does not exist.");
+        }
+    }
+
+
+    public Optional<Role> findRoleByName(String roleName) {
+        return roleRepository.findByName(roleName);
     }
 
 }

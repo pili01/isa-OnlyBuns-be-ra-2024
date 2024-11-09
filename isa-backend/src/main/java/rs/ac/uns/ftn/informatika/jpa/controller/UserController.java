@@ -9,7 +9,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import rs.ac.uns.ftn.informatika.jpa.authentification.Authentification;
+import rs.ac.uns.ftn.informatika.jpa.authentification.JwtResponse;
+import rs.ac.uns.ftn.informatika.jpa.authentification.TokenBasedAuthentication;
 import rs.ac.uns.ftn.informatika.jpa.dto.LoginRequest;
 import rs.ac.uns.ftn.informatika.jpa.dto.UserDTO;
 import rs.ac.uns.ftn.informatika.jpa.model.Role;
@@ -21,7 +22,9 @@ import rs.ac.uns.ftn.informatika.jpa.token.Token;
 
 import javax.mail.MessagingException;
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -50,25 +53,57 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         try {
-
             User user = userService.findByEmail(loginRequest.getEmail()).orElse(null);
 
-            // Proverite da li je nalog verifikovan
-            if (!user.isEnabled()) {
+            // Provera da li je nalog verifikovan
+            if (user == null || !user.isEnabled()) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Account not verified. Please verify your email.");
             }
-
 
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            String jwt = jwtToken.generateToken(loginRequest.getEmail());
-            return ResponseEntity.ok(new Authentification(jwt));
+            String jwt = jwtToken.generateToken(user.getUsername());
+
+            Role authenticatedRole = userService.findRoleByName("AUTHENTICATED")
+                    .orElseThrow(() -> new RuntimeException("Role not found"));
+            user.setRole(authenticatedRole);
+            userService.updateUser(user);
+
+
+            // Vraćamo JSON objekat sa `access_token` poljem
+            Map<String, String> response = new HashMap<>();
+            response.put("access_token", jwt);
+
+            return ResponseEntity.ok(response);
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }
     }
+
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(@RequestBody Map<String, String> payload) {
+        String userName = payload.get("userName"); 
+        User user = userService.findByUsername(userName).orElse(null);;
+
+        if (user != null) {
+
+            Role unauthenticatedRole = userService.findRoleByName("UNAUTHENTICATED")
+                    .orElseThrow(() -> new RuntimeException("Role not found"));
+            user.setRole(unauthenticatedRole);
+            userService.updateUser(user);
+            return ResponseEntity.ok("User role updated to unauthenticated.");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found.");
+        }
+    }
+
+
+
+
+
 
     // Fetch all users
     @GetMapping("/all")
@@ -96,6 +131,8 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(userDTOMapper.fromUsertoDTO(user));
     }
 
+
+    /*
     // Update an existing user
     @PutMapping
     public ResponseEntity<UserDTO> updateUser(@Valid @RequestBody UserDTO userDTO) {
@@ -123,7 +160,7 @@ public class UserController {
         } else {
             return ResponseEntity.badRequest().build();
         }
-    }
+    }*/
 
 
 
@@ -172,17 +209,26 @@ public class UserController {
 
     // Register a new user
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@Valid @RequestBody UserDTO userDTO) {
+    public ResponseEntity<Map<String, String>> registerUser(@Valid @RequestBody UserDTO userDTO) {
         try {
             System.out.println("First Name: " + userDTO.getFirstName());
             System.out.println("Last Name: " + userDTO.getLastName());
 
             userService.registerUser(userDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully! Please verify your email.");
+
+            // Koristimo HashMap za kreiranje JSON odgovora
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "User registered successfully! Please verify your email.");
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
         } catch (MessagingException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send verification email");
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("message", "Failed to send verification email");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
 

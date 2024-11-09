@@ -1,13 +1,10 @@
 package rs.ac.uns.ftn.informatika.jpa.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import rs.ac.uns.ftn.informatika.jpa.model.Role;
-
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.sql.Timestamp;
-import java.util.List;
 
 public class UserDTO {
 
@@ -21,37 +18,44 @@ public class UserDTO {
     @NotBlank(message = "Email is required")
     private String email;
 
-    @NotBlank(message = "Password is required")
-    @Size(min = 8, message = "Password should be at least 8 characters")
-    private String password;
-
     @JsonProperty("firstname")
     private String firstName;
 
     @JsonProperty("lastname")
     private String lastName;
 
+    @JsonProperty("address")
+    private String address;
+
     private boolean enabled;
 
-    private Timestamp lastPasswordResetDate;
+    @NotBlank(message = "Password is required")
+    @Size(min = 8, message = "Password should be at least 8 characters")
+    private String password;
 
-    private List<String> roles;
+
+    private String role;
 
     public UserDTO() {
     }
 
-    public UserDTO(int id, String username, String email, String password, String firstName, String lastName,
-                   boolean enabled, Timestamp lastPasswordResetDate, List<String> roles) {
+    public UserDTO(int id, String username, String email, String firstName, String lastName,
+                   String address, boolean enabled, String role,String password) {
         this.id = id;
         this.username = username;
         this.email = email;
-        this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.address = address;
         this.enabled = enabled;
-        this.lastPasswordResetDate = lastPasswordResetDate;
-        this.roles = roles;
+        this.role = role;
+        this.password = password;
     }
+
+    public String getPassword(){return password;}
+
+    public void setPassword(String password){this.password = password;}
+
 
     public int getId() {
         return id;
@@ -77,14 +81,6 @@ public class UserDTO {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public String getFirstName() {
         return firstName;
     }
@@ -101,6 +97,14 @@ public class UserDTO {
         this.lastName = lastName;
     }
 
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
     public boolean isEnabled() {
         return enabled;
     }
@@ -109,20 +113,14 @@ public class UserDTO {
         this.enabled = enabled;
     }
 
-    public Timestamp getLastPasswordResetDate() {
-        return lastPasswordResetDate;
+
+
+    public String getRole() {
+        return role;
     }
 
-    public void setLastPasswordResetDate(Timestamp lastPasswordResetDate) {
-        this.lastPasswordResetDate = lastPasswordResetDate;
-    }
-
-    public List<String> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<String> roles) {
-        this.roles = roles;
+    public void setRole(String role) {
+        this.role = role;
     }
 
     @Override
@@ -133,10 +131,9 @@ public class UserDTO {
                 ", email='" + email + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
+                ", address='" + address + '\'' +
                 ", enabled=" + enabled +
-                ", roles=" + roles +
+                ", role='" + role + '\'' +
                 '}';
     }
-
-
 }

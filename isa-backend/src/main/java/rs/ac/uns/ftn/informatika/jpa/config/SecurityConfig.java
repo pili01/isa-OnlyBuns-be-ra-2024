@@ -1,5 +1,6 @@
 package rs.ac.uns.ftn.informatika.jpa.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -10,7 +11,12 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import rs.ac.uns.ftn.informatika.jpa.authentification.JwtAuthentificationFilter;
 import rs.ac.uns.ftn.informatika.jpa.service.CustomUserDetailsService;
+import rs.ac.uns.ftn.informatika.jpa.token.Token;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
 
 @Configuration
 @EnableWebSecurity
@@ -18,8 +24,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final CustomUserDetailsService customUserDetailsService;
 
-    public SecurityConfig(CustomUserDetailsService customUserDetailsService) {
+    public CustomUserDetailsService customUserDetailsService() {return new CustomUserDetailsService();}
+
+    @Autowired
+    private final Token token;
+
+    public SecurityConfig(CustomUserDetailsService customUserDetailsService, Token token) {
         this.customUserDetailsService = customUserDetailsService;
+        this.token = token;
     }
 
     @Override
@@ -27,18 +39,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder());
     }
 
+
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .cors().and()
-                .csrf().disable()
+                .csrf().disable() // Isključuje CSRF zaštitu
                 .authorizeRequests()
                 .antMatchers("/api/users/register", "/api/users/verify", "/api/users/login", "/register",
-                        "/v2/api-docs", "/swagger-resources/**", "/swagger-ui.html", "/webjars/**", "/swagger-ui/**", "/api/posts", "/api/users/profile/**")
+                        "/v2/api-docs", "/swagger-resources/**", "/swagger-ui.html",
+                        "/webjars/**", "/swagger-ui/**", "/api/posts", "/api/users/profile/**")
                 .permitAll()
+                .antMatchers("/api/users/logout").authenticated()
                 .anyRequest().authenticated()
                 .and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS); // postavlja stateless sesije
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .addFilterBefore(new JwtAuthentificationFilter(token, customUserDetailsService()),
+                        BasicAuthenticationFilter.class);
     }
 
 

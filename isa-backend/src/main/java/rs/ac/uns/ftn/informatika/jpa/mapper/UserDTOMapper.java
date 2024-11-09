@@ -6,8 +6,6 @@ import org.springframework.stereotype.Component;
 import rs.ac.uns.ftn.informatika.jpa.dto.UserDTO;
 import rs.ac.uns.ftn.informatika.jpa.model.Role;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class UserDTOMapper {
@@ -23,27 +21,20 @@ public class UserDTOMapper {
         User user = modelMapper.map(dto, User.class);
         System.out.println("First Name: " + dto.getFirstName());
         System.out.println("Last Name: " + dto.getLastName());
-        user.setRoles(roleNamesToRoles(dto.getRoles()));
+        Role role = new Role();
+        role.setName(dto.getRole());
+        user.setRole(role);
+
         return user;
     }
 
     public UserDTO fromUsertoDTO(User user) {
         UserDTO dto = modelMapper.map(user, UserDTO.class);
-        dto.setRoles(rolesToRoleNames(user.getRoles()));
+
+        if (user.getRole() != null) {
+            dto.setRole(user.getRole().getName());
+        }
+
         return dto;
-    }
-
-    private List<String> rolesToRoleNames(List<Role> roles) {
-        return roles.stream().map(Role::getName).collect(Collectors.toList());
-    }
-
-    private List<Role> roleNamesToRoles(List<String> roleNames) {
-        return roleNames.stream()
-                .map(name -> {
-                    Role role = new Role();
-                    role.setName(name);
-                    return role;
-                })
-                .collect(Collectors.toList());
     }
 }
