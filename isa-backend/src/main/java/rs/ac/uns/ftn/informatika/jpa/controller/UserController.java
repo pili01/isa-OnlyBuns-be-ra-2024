@@ -3,6 +3,7 @@ package rs.ac.uns.ftn.informatika.jpa.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -64,12 +65,12 @@ public class UserController {
                     new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            String jwt = jwtToken.generateToken(user.getUsername());
+            String jwt = jwtToken.generateToken(user.getEmail());
 
-            Role authenticatedRole = userService.findRoleByName("AUTHENTICATED")
+            /*Role authenticatedRole = userService.findRoleByName("AUTHENTICATED")
                     .orElseThrow(() -> new RuntimeException("Role not found"));
             user.setRole(authenticatedRole);
-            userService.updateUser(user);
+            userService.updateUser(user);*/
 
 
             // Vraćamo JSON objekat sa `access_token` poljem
@@ -88,6 +89,8 @@ public class UserController {
 
 
     // Fetch all users
+
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/all")
     public ResponseEntity<List<UserDTO>> getAllUsers() {
         List<UserDTO> usersDTO = userService.findAll().stream()

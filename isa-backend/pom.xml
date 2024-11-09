@@ -41,11 +41,7 @@
 			<scope>test</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>org.springdoc</groupId>
-			<artifactId>springdoc-openapi-ui</artifactId>
-			<version>1.5.9</version> <!-- ili najnovija verzija -->
-		</dependency>
+		
 
 		<dependency>
 			<groupId>org.springdoc</groupId>

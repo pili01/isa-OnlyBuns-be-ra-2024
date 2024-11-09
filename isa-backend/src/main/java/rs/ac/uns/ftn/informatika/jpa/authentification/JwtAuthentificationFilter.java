@@ -3,7 +3,9 @@ package rs.ac.uns.ftn.informatika.jpa.authentification;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -17,6 +19,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 
 @Component
 public class JwtAuthentificationFilter extends OncePerRequestFilter {
@@ -42,7 +45,10 @@ public class JwtAuthentificationFilter extends OncePerRequestFilter {
                 String username = jwtToken.getUsernameFromJwtToken(jwt);
 
                 if (username != null) {
-                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                   // UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+                    UserDetails userDetails = new User(username, "88888888", Arrays.asList(new SimpleGrantedAuthority("ROLE_AUTHENTICATED")));
+
 
                     if (jwtToken.validateJwtToken(jwt)) {
                         // Kreiranje instance TokenBasedAuthentication sa korisničkim podacima
