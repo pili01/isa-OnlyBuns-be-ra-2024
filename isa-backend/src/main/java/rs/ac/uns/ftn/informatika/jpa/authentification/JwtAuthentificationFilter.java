@@ -1,13 +1,15 @@
 package rs.ac.uns.ftn.informatika.jpa.authentification;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import rs.ac.uns.ftn.informatika.jpa.service.CustomUserDetailsService;
 import rs.ac.uns.ftn.informatika.jpa.token.Token;
+import rs.ac.uns.ftn.informatika.jpa.service.CustomUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.servlet.FilterChain;
@@ -19,27 +21,43 @@ import java.io.IOException;
 @Component
 public class JwtAuthentificationFilter extends OncePerRequestFilter {
 
-
     @Autowired
     private Token jwtToken;
 
     @Autowired
-    private CustomUserDetailsService customUserDetailsService;
+    private UserDetailsService userDetailsService;
+
+    public JwtAuthentificationFilter(Token token, UserDetailsService userDetailsService) {
+        this.jwtToken = token;
+        this.userDetailsService = userDetailsService;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
         String jwt = getJwtFromRequest(request);
 
-        if (jwt != null && jwtToken.validateJwtToken(jwt)) {
-            String username = jwtToken.getUsernameFromJwtToken(jwt);
+        try {
+            if (jwt != null && jwtToken.validateJwtToken(jwt)) {
+                String username = jwtToken.getUsernameFromJwtToken(jwt);
 
-            UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                    userDetails, null, userDetails.getAuthorities());
-            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+                if (username != null) {
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+                    if (jwtToken.validateJwtToken(jwt)) {
+                        // Kreiranje instance TokenBasedAuthentication sa korisničkim podacima
+                        TokenBasedAuthentication authentication = new TokenBasedAuthentication(userDetails);
+                        authentication.setToken(jwt); // Postavljanje JWT tokena
+                        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                    }
+                }
+            }
+        } catch (ExpiredJwtException ex) {
+            System.out.println("Token expired!");
         }
+
+        // Prosleđivanje zahteva dalje u sledeći filter
         chain.doFilter(request, response);
     }
 

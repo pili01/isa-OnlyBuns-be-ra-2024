@@ -2,6 +2,10 @@ package rs.ac.uns.ftn.informatika.jpa.model;
 
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 import javax.persistence.*;
 
@@ -41,6 +45,11 @@ public class User implements UserDetails {
     @Column(name = "last_name")
     private String lastName;
 
+
+    @Column(name = "address")
+    private String address;
+
+
     @Column(name = "email")
     private String email;
 
@@ -53,11 +62,11 @@ public class User implements UserDetails {
     @Column(name = "last_password_reset_date")
     private Timestamp lastPasswordResetDate;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_role",
-            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
-    private List<Role> roles;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id", referencedColumnName = "id")
+    private Role role;
+
 
     @OneToMany(mappedBy = "author", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Post> posts = new HashSet<Post>();
@@ -83,8 +92,6 @@ public class User implements UserDetails {
     }
 
     public void setPassword(String password) {
-        Timestamp now = new Timestamp(new Date().getTime());
-        this.setLastPasswordResetDate(now);
         this.password = password;
     }
 
@@ -104,19 +111,22 @@ public class User implements UserDetails {
         this.lastName = lastName;
     }
 
-    public void setRoles(List<Role> roles) {
-        this.roles = roles;
-    }
+    public String getAddress() { return address;}
 
-    public List<Role> getRoles() {
-        return roles;
-    }
+    public void setAddress(String address) {this.address = address;}
+
+    public Role getRole(){return this.role;}
+
+    public void setRole(Role role){this.role = role;}
+
 
     @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.roles;
+        return Arrays.asList(this.role);
     }
+
+
 
     public String getEmail() {
         return email;
@@ -135,9 +145,6 @@ public class User implements UserDetails {
         this.enabled = enabled;
     }
 
-    public Timestamp getLastPasswordResetDate() {
-        return lastPasswordResetDate;
-    }
 
     public void setLastPasswordResetDate(Timestamp lastPasswordResetDate) {
         this.lastPasswordResetDate = lastPasswordResetDate;
