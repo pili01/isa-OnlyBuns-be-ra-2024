@@ -55,28 +55,19 @@ INSERT INTO role (id, name) VALUES (3, 'ADMIN');
 
 /*DIO ZA DODAVANJE USERA, POSTOVA I KOMENTARA U BAZU*/
 INSERT INTO public.users(email, enabled, first_name, deleted, last_name, last_password_reset_date, password,
-                         username)
+                         username, role_id)
 VALUES ('user@gmail.com', true, 'User', 'false', 'Useric', '2016-04-19',
-        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'user');
-
-INSERT INTO public.user_role(user_id, role_id)
-VALUES (1, 1);
+        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'user',2);
 
 INSERT INTO public.users(email, enabled, first_name, deleted, last_name, last_password_reset_date, password,
-                         username)
+                         username, role_id)
 VALUES ('admin@gmail.com', true, 'Admin', 'false', 'Adminic', '2016-04-19',
-        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'admin');
-
-INSERT INTO public.user_role(user_id, role_id)
-VALUES (2, 2);
+        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'admin',3);
 
 INSERT INTO public.users(email, enabled, first_name, deleted, last_name, last_password_reset_date, password,
-                         username)
+                         username, role_id)
 VALUES ('user1@gmail.com', true, 'User1', 'false', 'Useric', '2016-04-19',
-        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'user1');
-
-INSERT INTO public.user_role(user_id, role_id)
-VALUES (3, 1);
+        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'user1',2);
 
 INSERT INTO public.location(latitude, longitude)
 VALUES (25, 16);
@@ -99,12 +90,6 @@ VALUES ('2024-05-06', 'OPis komentara broj 2', 'putanja_slike2.jpg', false, 3, 2
 
 INSERT INTO public.comments(comment, creation_time, deleted, user_id, post_id)
 VALUES ('Komentar vezan za sliku 2', '2024-05-05', false, 1, 2);
-
-
-
-
-
-
 
 
 
