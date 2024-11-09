@@ -26,8 +26,8 @@ public class Post {
     @Column(name = "description", nullable = false)
     private String description;
 
-    @Column(name = "path", nullable = false)
-    private String path;
+    @Column(name = "image_path", nullable = false)
+    private String imagePath;
 
     @Column(name = "createdAt", nullable = false)
     private LocalDateTime createdAt;
@@ -73,12 +73,12 @@ public class Post {
         this.description = description;
     }
 
-    public String getPath() {
-        return path;
+    public String getImagePath() {
+        return imagePath;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setImagePath(String path) {
+        this.imagePath = path;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -134,12 +134,12 @@ public class Post {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Post post = (Post) o;
-        return isDeleted == post.isDeleted && Objects.equals(id, post.id) && Objects.equals(description, post.description) && Objects.equals(path, post.path) && Objects.equals(createdAt, post.createdAt) && Objects.equals(location, post.location) && Objects.equals(comments, post.comments) && Objects.equals(author, post.author) && Objects.equals(likers, post.likers);
+        return isDeleted == post.isDeleted && Objects.equals(id, post.id) && Objects.equals(description, post.description) && Objects.equals(imagePath, post.imagePath) && Objects.equals(createdAt, post.createdAt) && Objects.equals(location, post.location) && Objects.equals(comments, post.comments) && Objects.equals(author, post.author) && Objects.equals(likers, post.likers);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, description, path, createdAt, isDeleted, location, comments, author, likers);
+        return Objects.hash(id, description, imagePath, createdAt, isDeleted, location, comments, author, likers);
     }
 
     @Override
@@ -147,7 +147,7 @@ public class Post {
         return "Post{" +
                 "id=" + id +
                 ", description='" + description + '\'' +
-                ", path='" + path + '\'' +
+                ", path='" + imagePath + '\'' +
                 ", createdAt=" + createdAt +
                 ", isDeleted=" + isDeleted +
                 ", location=" + location +

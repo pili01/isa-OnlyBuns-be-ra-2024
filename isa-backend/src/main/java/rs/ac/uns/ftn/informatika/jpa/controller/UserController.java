@@ -54,6 +54,9 @@ public class UserController {
             User user = userService.findByEmail(loginRequest.getEmail()).orElse(null);
 
             // Proverite da li je nalog verifikovan
+            if(user == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Account not exists.");
+            }
             if (!user.isEnabled()) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Account not verified. Please verify your email.");
             }
