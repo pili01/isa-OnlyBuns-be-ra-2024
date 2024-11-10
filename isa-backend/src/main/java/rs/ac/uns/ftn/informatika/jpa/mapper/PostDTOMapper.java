@@ -47,6 +47,7 @@ public class PostDTOMapper {
     public PostDTO toDTO(Post post) {
         return modelMapper.map(post, PostDTO.class);
     }
+
 //
 //    public Set<PostDTO> toDTOs(Set<Post> posts) {
 //        Set<PostDTO> postDTOSet = new HashSet<>();

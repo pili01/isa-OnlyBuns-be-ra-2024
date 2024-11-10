@@ -12,4 +12,7 @@ public interface PostRepository extends JpaRepository<Post,Integer> {
 
     @Query("select p from Post p join fetch p.comments c where p.id =?1")
     public Post findOneWithComments(Integer studentId);
+
+    @Query("select p from Post p join fetch p.likers l where p.id =?1")
+    public Post findOneWithLikers(Integer postId); //nije radilo
 }

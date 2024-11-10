@@ -20,6 +20,7 @@ import rs.ac.uns.ftn.informatika.jpa.service.UserService;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -68,6 +69,7 @@ public class PostController {
         return new ResponseEntity<>(postsDTO, HttpStatus.OK);
     }
 
+
     @PostMapping(consumes = "application/json", value = "/{userId}")
     public ResponseEntity<PostDTO> addPost(@RequestBody PostDTO postDTO, @PathVariable int userId){
         Optional<User> author = userService.findOne(userId);
@@ -82,5 +84,23 @@ public class PostController {
         post = postService.save(post);
         postDTO.setId(post.getId());
         return new ResponseEntity<>(postDTO, HttpStatus.CREATED);
+    }
+
+    @PatchMapping(value = "/{postId}/{userId}")
+    public ResponseEntity<PostDTO> addLike(@PathVariable int postId, @PathVariable int userId){
+        Optional<User> author = userService.findOne(userId);
+        if(!author.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        Post post = postService.addLike(postId, author.get());
+//        Post post = postService.findOneWithLikers(postId);
+        if(post == null){
+            return  new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+//        post.addLike(author.get());
+//        post = postService.save(post);
+        post.setComments(new HashSet<>());
+        PostDTO postDTO = postDTOMapper.toDTO(post);
+        return new ResponseEntity<>(postDTO, HttpStatus.OK);
     }
 }
