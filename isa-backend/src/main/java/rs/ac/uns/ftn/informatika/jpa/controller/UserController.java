@@ -223,6 +223,8 @@ public class UserController {
         }
     }
 
+
+
     // Verify user's email
     @GetMapping("/verify")
     public ResponseEntity<String> verifyUser(@RequestParam("email") String email) {

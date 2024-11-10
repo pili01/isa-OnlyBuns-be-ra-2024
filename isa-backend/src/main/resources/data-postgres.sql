@@ -68,19 +68,18 @@ INSERT INTO public.users(email, enabled, first_name, deleted, last_name, passwor
                          username, role_id)
 VALUES ('user1@gmail.com', true, 'User1', false, 'Useric',
         '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'user1', 2);
-INSERT INTO public.users(address,email, enabled, first_name, deleted, last_name, last_password_reset_date, password,
-                         username, role_id)
-VALUES ('Petra Petrovica','user@gmail.com', true, 'User', 'false', 'Useric', '2016-04-19',
-        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'user',2);
 
-INSERT INTO public.users(address,email, enabled, first_name, deleted, last_name, last_password_reset_date, password,
+
+
+
+INSERT INTO public.users(address,email, enabled, first_name, deleted, last_name, password,
                          username, role_id)
-VALUES ('Petra Petrovica','admin@gmail.com', true, 'Admin', 'false', 'Adminic', '2016-04-19',
+VALUES ('Petra Petrovica','admin@gmail.com', true, 'Admin', 'false', 'Adminic',
         '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'admin',3);
 
-INSERT INTO public.users(address,email, enabled, first_name, deleted, last_name, last_password_reset_date, password,
+INSERT INTO public.users(address,email, enabled, first_name, deleted, last_name, password,
                          username, role_id)
-VALUES ('Petra Petrovica','user1@gmail.com', true, 'User1', 'false', 'Useric', '2016-04-19',
+VALUES ('Petra Petrovica','user1@gmail.com', true, 'User1', 'false', 'Useric',
         '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'user1',2);
 
 INSERT INTO public.location(latitude, longitude)
