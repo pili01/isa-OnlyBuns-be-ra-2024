@@ -1,6 +1,8 @@
 package rs.ac.uns.ftn.informatika.jpa.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -10,6 +12,7 @@ import rs.ac.uns.ftn.informatika.jpa.model.Role;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
 import rs.ac.uns.ftn.informatika.jpa.repository.RoleRepository;
 import rs.ac.uns.ftn.informatika.jpa.repository.UserRepository;
+
 import javax.mail.MessagingException;
 import java.util.Collections;
 import java.util.List;
@@ -28,8 +31,6 @@ public class UserService {
     private EmailService emailService;
 
 
-
-
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -40,6 +41,8 @@ public class UserService {
     public List<User> findAll() {
         return userRepository.findAll();
     }
+
+    public Page<User> findAll(Pageable page) { return userRepository.findAll(page); }
 
     public Optional<User> findByEmail(String email) {
         return Optional.ofNullable(userRepository.findByEmail(email));
@@ -65,7 +68,6 @@ public class UserService {
     public void remove(int id) {
         userRepository.deleteById(id);
     }
-
 
 
     @Transactional
@@ -97,9 +99,6 @@ public class UserService {
 
         return user;
     }
-
-
-
 
 
     @Transactional
