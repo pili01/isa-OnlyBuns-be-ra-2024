@@ -7,9 +7,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import rs.ac.uns.ftn.informatika.jpa.dto.CommentDTO;
 import rs.ac.uns.ftn.informatika.jpa.dto.PostDTO;
 import rs.ac.uns.ftn.informatika.jpa.dto.StudentDTO;
+import rs.ac.uns.ftn.informatika.jpa.model.Comment;
 import rs.ac.uns.ftn.informatika.jpa.model.Post;
 import rs.ac.uns.ftn.informatika.jpa.model.Student;
 import rs.ac.uns.ftn.informatika.jpa.service.PostService;
@@ -36,6 +39,16 @@ public class PostController {
         }
 
         return new ResponseEntity<>(postsDTO, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/allPostComments")
+    public ResponseEntity<PostDTO> getPostWithComments(@RequestParam Integer id) {
+
+        PostDTO post = postService.findOneWithComments(id);
+        if(post == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(post, HttpStatus.OK);
     }
 
     // GET /api/posts?page=0&size=5&sort=firstName,DESC
