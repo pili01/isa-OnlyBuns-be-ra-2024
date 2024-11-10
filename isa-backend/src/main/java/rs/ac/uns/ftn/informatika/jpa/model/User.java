@@ -121,6 +121,7 @@ public class User implements UserDetails {
     public void setRole(Role role){this.role = role;}
 
 
+
     @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -185,9 +186,10 @@ public class User implements UserDetails {
         this.posts = posts;
     }
 
-    public void addPost(Post post) {
+    public Post addPost(Post post) {
         posts.add(post);
         post.setAuthor(this);
+        return post;
     }
 
     public void removePost(Post post) {
