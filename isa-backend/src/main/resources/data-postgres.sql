@@ -54,20 +54,20 @@ INSERT INTO role (id, name) VALUES (2, 'AUTHENTICATED');
 INSERT INTO role (id, name) VALUES (3, 'ADMIN');
 
 /*DIO ZA DODAVANJE USERA, POSTOVA I KOMENTARA U BAZU*/
-INSERT INTO public.users(email, enabled, first_name, deleted, last_name, last_password_reset_date, password,
+INSERT INTO public.users(email, enabled, first_name, deleted, last_name, password,
                          username, role_id)
-VALUES ('user@gmail.com', true, 'User', 'false', 'Useric', '2016-04-19',
-        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'user',2);
+VALUES ('user@gmail.com', true, 'User', false, 'Useric',
+        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'user', 2);
 
-INSERT INTO public.users(email, enabled, first_name, deleted, last_name, last_password_reset_date, password,
+INSERT INTO public.users(email, enabled, first_name, deleted, last_name, password,
                          username, role_id)
-VALUES ('admin@gmail.com', true, 'Admin', 'false', 'Adminic', '2016-04-19',
-        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'admin',3);
+VALUES ('admin@gmail.com', true, 'Admin', false, 'Adminic',
+        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'admin', 3);
 
-INSERT INTO public.users(email, enabled, first_name, deleted, last_name, last_password_reset_date, password,
+INSERT INTO public.users(email, enabled, first_name, deleted, last_name, password,
                          username, role_id)
-VALUES ('user1@gmail.com', true, 'User1', 'false', 'Useric', '2016-04-19',
-        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'user1',2);
+VALUES ('user1@gmail.com', true, 'User1', false, 'Useric',
+        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'user1', 2);
 
 INSERT INTO public.location(latitude, longitude)
 VALUES (25, 16);

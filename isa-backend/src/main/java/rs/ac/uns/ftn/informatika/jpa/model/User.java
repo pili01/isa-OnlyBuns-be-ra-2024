@@ -60,8 +60,7 @@ public class User implements UserDetails {
     @Column(name = "deleted", nullable = false)
     private boolean isDeleted;
 
-    @Column(name = "last_password_reset_date")
-    private Timestamp lastPasswordResetDate;
+
 
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -147,9 +146,7 @@ public class User implements UserDetails {
     }
 
 
-    public void setLastPasswordResetDate(Timestamp lastPasswordResetDate) {
-        this.lastPasswordResetDate = lastPasswordResetDate;
-    }
+
 
     public boolean isDeleted() {
         return isDeleted;

@@ -71,7 +71,13 @@ public class UserController {
             String jwt = jwtToken.generateToken(user.getEmail());
 
             // Preuzimanje korisničke uloge
-            String role = user.getRole().getName(); // Pretpostavljamo da `getRole` vraća objekat sa nazivom uloge
+            String role = user.getRole().getName();
+            if (role.equals("NOT_AUTHENTICATED")) {
+                role = "AUTHENTICATED";
+                user.setRole(roleRepository.findByName(role).orElse(null));
+                userService.updateUser(user);
+            }
+
 
             // Vraćamo JSON objekat sa `access_token` i `role` poljem
             Map<String, String> response = new HashMap<>();
