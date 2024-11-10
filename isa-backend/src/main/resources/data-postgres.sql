@@ -68,12 +68,26 @@ INSERT INTO public.users(email, enabled, first_name, deleted, last_name, passwor
                          username, role_id)
 VALUES ('user1@gmail.com', true, 'User1', false, 'Useric',
         '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'user1', 2);
+INSERT INTO public.users(address,email, enabled, first_name, deleted, last_name, last_password_reset_date, password,
+                         username, role_id)
+VALUES ('Petra Petrovica','user@gmail.com', true, 'User', 'false', 'Useric', '2016-04-19',
+        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'user',2);
+
+INSERT INTO public.users(address,email, enabled, first_name, deleted, last_name, last_password_reset_date, password,
+                         username, role_id)
+VALUES ('Petra Petrovica','admin@gmail.com', true, 'Admin', 'false', 'Adminic', '2016-04-19',
+        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'admin',3);
+
+INSERT INTO public.users(address,email, enabled, first_name, deleted, last_name, last_password_reset_date, password,
+                         username, role_id)
+VALUES ('Petra Petrovica','user1@gmail.com', true, 'User1', 'false', 'Useric', '2016-04-19',
+        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'user1',2);
 
 INSERT INTO public.location(latitude, longitude)
 VALUES (25, 16);
 
 INSERT INTO public.posts(created_at, description, image_path, deleted, user_id, location_id)
-VALUES ('2020-05-06', 'OPis komentara broj 1', 'putanja_slike.jpg', false, 1, 1);
+VALUES ('2020-05-06', 'OPis komentara broj za sliku broj 1 koji predstavlja malo duzi opis od standardnog 1', 'assets/slika2.jpg', false, 1, 1);
 
 INSERT INTO public.comments(comment, creation_time, deleted, user_id, post_id)
 VALUES ('Komentar vezan za sliku', '2023-02-02', false, 1, 1);
@@ -86,13 +100,40 @@ INSERT INTO public.location(latitude, longitude)
 VALUES (44.21, 25.64);
 
 INSERT INTO public.posts(created_at, description, image_path, deleted, user_id, location_id)
-VALUES ('2024-05-06', 'OPis komentara broj 2', 'putanja_slike2.jpg', false, 3, 2);
+VALUES ('2024-05-06', 'OPis komentara broj 2', 'assets/logo1.png', false, 3, 2);
 
 INSERT INTO public.comments(comment, creation_time, deleted, user_id, post_id)
 VALUES ('Komentar vezan za sliku 2', '2024-05-05', false, 1, 2);
 
 
+INSERT INTO public.location(latitude, longitude)
+VALUES (44, 21);
 
+INSERT INTO public.posts(created_at, description, image_path, deleted, user_id, location_id)
+VALUES ('2015-09-04', 'OPis posta broj 3', 'assets/logo1.png', false, 1, 3);
+
+INSERT INTO public.location(latitude, longitude)
+VALUES (14, 56);
+
+INSERT INTO public.posts(created_at, description, image_path, deleted, user_id, location_id)
+VALUES ('2010-08-06', 'OPis posta broj 4', 'assets/logo1.png', false, 3, 4);
+
+INSERT INTO public.location(latitude, longitude)
+VALUES (44, 21);
+
+INSERT INTO public.posts(created_at, description, image_path, deleted, user_id, location_id)
+VALUES ('2015-09-04', 'OPis posta broj 5', 'assets/slika2.jpg', false, 1, 5);
+
+INSERT INTO public.location(latitude, longitude)
+VALUES (14, 56);
+
+INSERT INTO public.posts(created_at, description, image_path, deleted, user_id, location_id)
+VALUES ('2010-08-06', 'OPis posta broj 6', 'assets/logo1.png', false, 3, 5);
+
+
+
+INSERT INTO public.posts(created_at, description, image_path, deleted, user_id, location_id)
+VALUES ('2010-08-06', 'OPis posta broj 7', 'assets/slika.jpg', false, 3, 5);
 
 
 

@@ -39,7 +39,7 @@ public class PostController {
     }
 
     // GET /api/posts?page=0&size=5&sort=firstName,DESC
-    @GetMapping
+    @GetMapping(value = "/allPaged")
     public ResponseEntity<List<PostDTO>> getPostsPage(Pageable page) {
 
         // page object holds data about pagination and sorting
