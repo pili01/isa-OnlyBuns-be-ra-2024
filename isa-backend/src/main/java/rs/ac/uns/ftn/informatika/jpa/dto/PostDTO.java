@@ -1,7 +1,10 @@
 package rs.ac.uns.ftn.informatika.jpa.dto;
+import rs.ac.uns.ftn.informatika.jpa.model.Comment;
 import rs.ac.uns.ftn.informatika.jpa.model.Post;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 public class PostDTO {
     private Integer id;
@@ -11,6 +14,7 @@ public class PostDTO {
     private LocationDTO location;
     private String authorUsername;
     private int likes;
+    private Set<CommentDTO> comments=new HashSet<>();
 
     public PostDTO() {
     }
@@ -33,6 +37,14 @@ public class PostDTO {
         this.location = location;
         this.authorUsername = authorUsername;
         this.likes = likes;
+    }
+
+    public Set<CommentDTO> getComments() {
+        return comments;
+    }
+
+    public void setComments(Set<CommentDTO> comments) {
+        this.comments = comments;
     }
 
     public Integer getId() {

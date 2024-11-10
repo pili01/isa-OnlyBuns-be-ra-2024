@@ -49,7 +49,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .cors().and()
                 .csrf().disable() // Isključuje CSRF zaštitu
                 .authorizeRequests()
-                .antMatchers("/api/users/register","/api/posts/all","/api/posts/allPaged", "/api/users/verify", "/api/users/login", "/register",
+                .antMatchers("/api/users/register","/api/posts/allPostComments","/api/posts/allPaged", "/api/users/verify", "/api/users/login", "/register",
                         "/v2/api-docs", "/swagger-resources/**", "/swagger-ui.html",
                         "/webjars/**", "/swagger-ui/**", "/api/posts", "/api/users/profile/**")
                 .permitAll()
