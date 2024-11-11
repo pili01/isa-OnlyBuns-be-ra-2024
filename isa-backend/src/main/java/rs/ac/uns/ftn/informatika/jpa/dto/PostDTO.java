@@ -39,6 +39,18 @@ public class PostDTO {
         return likeNumber;
     }
 
+    public String getAuthorUsername() {
+        return authorUsername;
+    }
+
+    public void setAuthorUsername(String authorUsername) {
+        this.authorUsername = authorUsername;
+    }
+
+    public void setLikes(int likes) {
+        this.likes = likes;
+    }
+
     public void setLikeNumber(int likeNumber) {
         this.likeNumber = likeNumber;
     }
