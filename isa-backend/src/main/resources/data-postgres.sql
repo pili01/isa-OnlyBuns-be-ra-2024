@@ -117,10 +117,22 @@ VALUES (14, 56);
 INSERT INTO public.posts(created_at, description, image_path, deleted, user_id, location_id)
 VALUES ('2010-08-06', 'OPis posta broj 6', 'assets/logo1.png', false, 3, 5);
 
+INSERT INTO public.post_likers(
+    post_id, user_id)
+VALUES (1, 1);
 
+INSERT INTO public.post_likers(
+    post_id, user_id)
+VALUES (2, 3);
+
+INSERT INTO public.post_likers(
+    post_id, user_id)
+VALUES (1, 3);
 
 INSERT INTO public.posts(created_at, description, image_path, deleted, user_id, location_id)
 VALUES ('2010-08-06', 'OPis posta broj 7', 'assets/slika.jpg', false, 3, 5);
 
-
+INSERT INTO public.post_likers(
+    post_id, user_id)
+VALUES (7, 1);
 

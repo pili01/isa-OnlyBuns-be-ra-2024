@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import rs.ac.uns.ftn.informatika.jpa.dto.PostDTO;
@@ -101,6 +102,7 @@ public class PostController {
         return new ResponseEntity<>(postDTO, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('AUTHENTICATED')")
     @PatchMapping(value = "/like/{postId}")
     public ResponseEntity<PostDTO> addLike(@PathVariable Integer postId){
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -120,6 +122,7 @@ public class PostController {
         return new ResponseEntity<>(postDTO, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('AUTHENTICATED')")
     @PatchMapping(value = "/unlike/{postId}")
     public ResponseEntity<PostDTO> removeLike(@PathVariable int postId){
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
