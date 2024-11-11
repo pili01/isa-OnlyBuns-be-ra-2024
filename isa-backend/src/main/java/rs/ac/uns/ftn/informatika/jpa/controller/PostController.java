@@ -54,7 +54,6 @@ public class PostController {
     }
 
     // GET /api/posts?page=0&size=5&sort=firstName,DESC
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/allPaged")
     public ResponseEntity<List<PostDTO>> getPostsPage(Pageable page) {
 
