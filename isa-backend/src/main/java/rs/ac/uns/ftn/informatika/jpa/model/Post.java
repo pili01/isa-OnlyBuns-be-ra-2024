@@ -45,13 +45,13 @@ public class Post {
     @JoinColumn(name = "user_id")
     private User author;
 
-    @ManyToMany
+    @ManyToMany()
     @JoinTable(
             name = "post_likers",
             joinColumns = @JoinColumn(name = "post_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    private Set<User> likers;
+    private Set<User> likers = new HashSet<>();
 
     public Post() {
         super();
@@ -129,12 +129,32 @@ public class Post {
         this.likers = likers;
     }
 
+    public void addComment(Comment comment) {
+        this.comments.add(comment);
+    }
+
+    public void removeComment(Comment comment) { this.comments.remove(comment); }
+
+    public void addLike(User user) {
+        this.likers.add(user);
+    }
+
+    public void removeLike(User user) { this.likers.remove(user); }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Post post = (Post) o;
-        return isDeleted == post.isDeleted && Objects.equals(id, post.id) && Objects.equals(description, post.description) && Objects.equals(imagePath, post.imagePath) && Objects.equals(createdAt, post.createdAt) && Objects.equals(location, post.location) && Objects.equals(comments, post.comments) && Objects.equals(author, post.author) && Objects.equals(likers, post.likers);
+        return isDeleted == post.isDeleted &&
+                Objects.equals(id, post.id) &&
+                Objects.equals(description, post.description) &&
+                Objects.equals(imagePath, post.imagePath) &&
+                Objects.equals(createdAt, post.createdAt) &&
+                Objects.equals(location, post.location) &&
+                Objects.equals(comments, post.comments) &&
+                Objects.equals(author, post.author) &&
+                Objects.equals(likers, post.likers);
     }
 
     @Override
@@ -151,9 +171,7 @@ public class Post {
                 ", createdAt=" + createdAt +
                 ", isDeleted=" + isDeleted +
                 ", location=" + location +
-                ", comments=" + comments +
                 ", author=" + author +
-                ", likers=" + likers +
                 '}';
     }
 }

@@ -12,6 +12,9 @@ import java.util.Optional;
 public interface PostRepository extends JpaRepository<Post,Integer> {
     public Page<Post> findAll(Pageable pageable);
 
+    @Query("select p from Post p join fetch p.likers l where p.id =?1")
+    public Post findOneWithLikers(Integer postId); //nije radilo
+    
     @Query("select p from Post p left join fetch p.comments where p.id =?1")
     public Optional<Post> findOneWithComments(Integer postId);
 }

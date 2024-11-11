@@ -12,15 +12,18 @@ public class PostDTO {
     private String imagePath;
     private LocalDateTime createdAt;
     private LocationDTO location;
+    private Set<CommentDTO> comments = new HashSet<>();
+    private UserDTO author = new UserDTO();
+    private Set<UserDTO> likers = new HashSet<>();
     private String authorUsername;
     private int likes;
-    private Set<CommentDTO> comments=new HashSet<>();
     private int likeNumber=0;
     private boolean isLikedByMe=false;
 
     public PostDTO() {
     }
 
+    //za dodavanje
     public PostDTO(Post post) {
         this.id = post.getId();
         this.description = post.getDescription();
@@ -48,14 +51,24 @@ public class PostDTO {
         isLikedByMe = likedByMe;
     }
 
-    public PostDTO(Integer id, String description, String imagePath, LocalDateTime createdAt, LocationDTO location, String authorUsername, int likes) {
+    public PostDTO(Integer id, String description, String imagePath, LocalDateTime createdAt, LocationDTO location) {
         this.id = id;
         this.description = description;
         this.imagePath = imagePath;
         this.createdAt = createdAt;
         this.location = location;
-        this.authorUsername = authorUsername;
-        this.likes = likes;
+    }
+
+    // za prikaz
+    public PostDTO(Integer id, String description, String imagePath, LocalDateTime createdAt, LocationDTO location, Set<CommentDTO> comments, UserDTO author, Set<UserDTO> likers) {
+        this.id = id;
+        this.description = description;
+        this.imagePath = imagePath;
+        this.createdAt = createdAt;
+        this.location = location;
+        this.comments = comments;
+        this.author = author;
+        this.likers = likers;
     }
 
     public Set<CommentDTO> getComments() {
@@ -106,19 +119,23 @@ public class PostDTO {
         this.location = location;
     }
 
-    public String getAuthorUsername() {
-        return authorUsername;
-    }
-
-    public void setAuthorUsername(String authorUsername) {
-        this.authorUsername = authorUsername;
-    }
-
     public int getLikes() {
-        return likes;
+        return likers.size();
     }
 
-    public void setLikes(int likes) {
-        this.likes = likes;
+    public UserDTO getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(UserDTO author) {
+        this.author = author;
+    }
+
+    public Set<UserDTO> getLikers() {
+        return likers;
+    }
+
+    public void setLikers(Set<UserDTO> likers) {
+        this.likers = likers;
     }
 }

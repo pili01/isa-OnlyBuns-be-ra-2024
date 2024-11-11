@@ -5,23 +5,25 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import rs.ac.uns.ftn.informatika.jpa.dto.CommentDTO;
+import org.springframework.web.bind.annotation.*;
 import rs.ac.uns.ftn.informatika.jpa.dto.PostDTO;
 import rs.ac.uns.ftn.informatika.jpa.dto.StudentDTO;
-import rs.ac.uns.ftn.informatika.jpa.model.Comment;
+import rs.ac.uns.ftn.informatika.jpa.dto.UserDTO;
+import rs.ac.uns.ftn.informatika.jpa.mapper.PostDTOMapper;
+import rs.ac.uns.ftn.informatika.jpa.mapper.UserDTOMapper;
 import rs.ac.uns.ftn.informatika.jpa.model.Post;
 import rs.ac.uns.ftn.informatika.jpa.model.Student;
+import rs.ac.uns.ftn.informatika.jpa.model.User;
 import rs.ac.uns.ftn.informatika.jpa.service.PostService;
 import rs.ac.uns.ftn.informatika.jpa.service.StudentService;
+import rs.ac.uns.ftn.informatika.jpa.service.UserService;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "api/posts")
@@ -29,6 +31,12 @@ public class PostController {
 
     @Autowired
     private PostService postService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private PostDTOMapper postDTOMapper;
+    @Autowired
+    private UserDTOMapper userDTOMapper;
 
     @GetMapping(value = "/all")
     public ResponseEntity<List<PostDTO>> getAllPosts() {
@@ -37,7 +45,9 @@ public class PostController {
 
         List<PostDTO> postsDTO = new ArrayList<>();
         for (Post p : posts) {
-            postsDTO.add(new PostDTO(p));
+            PostDTO pDTO = new PostDTO(p);
+            pDTO.setAuthor(userDTOMapper.fromUsertoDTO(p.getAuthor()));
+            postsDTO.add(pDTO);
         }
 
         return new ResponseEntity<>(postsDTO, HttpStatus.OK);
@@ -72,5 +82,58 @@ public class PostController {
         }
 
         return new ResponseEntity<>(postsDTO, HttpStatus.OK);
+    }
+
+
+    @PostMapping(consumes = "application/json", value = "/{userId}")
+    public ResponseEntity<PostDTO> addPost(@RequestBody PostDTO postDTO, @PathVariable int userId){
+        Optional<User> author = userService.findOne(userId);
+        if(!author.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        UserDTO authorDTO = userDTOMapper.fromUsertoDTO(author.get());
+        postDTO.setAuthor(authorDTO);
+        Post post = postDTOMapper.fromDTOtoPost(postDTO);
+//        post = author.get().addPost(post);
+//        post.setAuthor(author.get());
+        post = postService.save(post);
+        postDTO.setId(post.getId());
+        return new ResponseEntity<>(postDTO, HttpStatus.CREATED);
+    }
+
+    @PatchMapping(value = "/like/{postId}/{userId}")
+    public ResponseEntity<PostDTO> addLike(@PathVariable int postId, @PathVariable int userId){
+        Optional<User> author = userService.findOne(userId);
+        if(!author.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        Post post = postService.addLike(postId, author.get());
+//        Post post = postService.findOneWithLikers(postId);
+        if(post == null){
+            return  new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+//        post.addLike(author.get());
+//        post = postService.save(post);
+        post.setComments(new HashSet<>());
+        PostDTO postDTO = postDTOMapper.toDTO(post);
+        return new ResponseEntity<>(postDTO, HttpStatus.OK);
+    }
+
+    @PatchMapping(value = "/unlike/{postId}/{userId}")
+    public ResponseEntity<PostDTO> removeLike(@PathVariable int postId, @PathVariable int userId){
+        Optional<User> author = userService.findOne(userId);
+        if(!author.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        Post post = postService.removeLike(postId, author.get());
+//        Post post = postService.findOneWithLikers(postId);
+        if(post == null){
+            return  new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+//        post.addLike(author.get());
+//        post = postService.save(post);
+        post.setComments(new HashSet<>());
+        PostDTO postDTO = postDTOMapper.toDTO(post);
+        return new ResponseEntity<>(postDTO, HttpStatus.OK);
     }
 }

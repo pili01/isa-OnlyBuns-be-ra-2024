@@ -6,11 +6,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import rs.ac.uns.ftn.informatika.jpa.model.Comment;
 import rs.ac.uns.ftn.informatika.jpa.ResourceNotFoundException;
 import rs.ac.uns.ftn.informatika.jpa.dto.PostDTO;
 import rs.ac.uns.ftn.informatika.jpa.mapper.PostDTOMapper;
 import rs.ac.uns.ftn.informatika.jpa.model.Post;
+import rs.ac.uns.ftn.informatika.jpa.model.User;
 import rs.ac.uns.ftn.informatika.jpa.repository.PostRepository;
+import rs.ac.uns.ftn.informatika.jpa.repository.UserRepository;
 
 import java.util.List;
 
@@ -21,7 +24,12 @@ public class PostService {
     private PostRepository postRepository;
     @Autowired
     private PostDTOMapper postDTOMapper;
+    @Autowired
+    private UserRepository userRepository;
 
+    public Post findOne(Integer id) {
+        return postRepository.findById(id).orElseGet(null);
+    }
     public Post save(Post post) {
         return postRepository.save(post);
     }
@@ -46,6 +54,31 @@ public class PostService {
         Post post = postRepository.findOneWithComments(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
         return postDTOMapper.fromPosttoDTO(post); // mapiranje na DTO
+    }
+    
+    public Post findOneWithLikers(Integer id){return postRepository.findOneWithLikers(id);} //nije radilo
+    
+    @Transactional
+    public Post addLike(Integer id, User user) {
+        Post post = findOne(id);
+        if(post == null){
+            return null;
+        }
+        post.addLike(user);
+        return postRepository.save(post);
+    }
+    @Transactional
+    public Post removeLike(Integer id, User user) {
+        Post post = findOne(id);
+        if(post == null){
+            return null;
+        }
+        User author = userRepository.findById(user.getId()).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        if(!author.equals(user)){
+            return null;
+        }
+        post.removeLike(author);
+        return postRepository.save(post);
     }
 }
 
