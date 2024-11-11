@@ -5,6 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -52,19 +54,21 @@ public class PostController {
     }
 
     // GET /api/posts?page=0&size=5&sort=firstName,DESC
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/allPaged")
     public ResponseEntity<List<PostDTO>> getPostsPage(Pageable page) {
 
         // page object holds data about pagination and sorting
         // the object is created based on the url parameters "page", "size" and "sort"
-        String MyUsername="user";
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
         Page<Post> posts = postService.findAll(page);
 
         // convert posts to DTOs
         List<PostDTO> postsDTO = new ArrayList<>();
         for (Post p : posts) {
             PostDTO postDTO=new PostDTO(p);
-            postDTO.setLikedByMe(p.getLikers().stream().anyMatch(t->t.getUsername().equalsIgnoreCase(MyUsername)));
+            postDTO.setLikedByMe(p.getLikers().stream().anyMatch(t->t.getUsername().equalsIgnoreCase(username)));
             postsDTO.add(postDTO);
         }
 
