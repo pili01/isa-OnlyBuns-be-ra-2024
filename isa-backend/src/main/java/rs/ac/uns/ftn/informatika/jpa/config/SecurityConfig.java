@@ -53,7 +53,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/webjars/**", "/swagger-ui/**", "/api/posts", "/api/users/profile/**",
                         "/api/posts/allPaged", "/api/posts/{{userId}}", "/api/posts/all", "/api/posts/1",
                         "/api/users/all", "/api/post/comment/1/1", "/api/posts/like/1/3", "/api/posts/unlike/1/3",
-                        "/api/post/comment/2")
+                        "/api/post/comment/2", "/api/posts/upload-image", "/api/posts/upload/string",
+                        "/api/posts/images/1731356446387-zeka1.jpg")
                 .permitAll()
                 .anyRequest().authenticated()
                 .and()

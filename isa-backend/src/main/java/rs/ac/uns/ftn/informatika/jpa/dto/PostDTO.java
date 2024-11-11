@@ -7,10 +7,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class PostDTO {
-    private Integer id;
+    private Integer id = 0;
     private String description;
     private String imagePath;
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
     private LocationDTO location;
     private Set<CommentDTO> comments = new HashSet<>();
     private UserDTO author = new UserDTO();
@@ -30,7 +30,7 @@ public class PostDTO {
         this.imagePath = post.getImagePath();
         this.createdAt = post.getCreatedAt();
         this.location = new LocationDTO(post.getLocation());
-        this.authorUsername = post.getAuthor().getUsername();
+        this.authorUsername = "nesto";
         this.likes = 0;
         this.likeNumber= post.getLikers().size();
     }

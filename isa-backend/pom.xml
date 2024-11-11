@@ -98,7 +98,25 @@
 			<version>0.9.1</version>
 		</dependency>
 
+		<!-- Commons FileUpload for handling multipart file uploads -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-fileupload</artifactId>
+			<version>1.4</version>
+		</dependency>
 
+		<!-- Commons IO for utility classes (file handling) -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.11.0</version>
+		</dependency>
+
+		<!-- Spring Boot Starter for Thymeleaf (Optional, if you need frontend integration) -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
 
 	</dependencies>
 
