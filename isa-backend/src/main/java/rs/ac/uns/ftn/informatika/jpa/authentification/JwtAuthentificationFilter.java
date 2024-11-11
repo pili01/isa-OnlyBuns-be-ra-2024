@@ -45,10 +45,7 @@ public class JwtAuthentificationFilter extends OncePerRequestFilter {
                 String username = jwtToken.getUsernameFromJwtToken(jwt);
 
                 if (username != null) {
-                   // UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
-                    UserDetails userDetails = new User(username, "88888888", Arrays.asList(new SimpleGrantedAuthority("ROLE_AUTHENTICATED")));
-
+                   UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
                     if (jwtToken.validateJwtToken(jwt)) {
                         // Kreiranje instance TokenBasedAuthentication sa korisničkim podacima

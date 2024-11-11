@@ -1,4 +1,5 @@
 package rs.ac.uns.ftn.informatika.jpa.dto;
+import rs.ac.uns.ftn.informatika.jpa.model.Comment;
 import rs.ac.uns.ftn.informatika.jpa.model.Post;
 
 import java.time.LocalDateTime;
@@ -13,8 +14,11 @@ public class PostDTO {
     private LocationDTO location;
     private Set<CommentDTO> comments = new HashSet<>();
     private UserDTO author = new UserDTO();
-//    private String authorUsername;
     private Set<UserDTO> likers = new HashSet<>();
+    private String authorUsername;
+    private int likes;
+    private int likeNumber=0;
+    private boolean isLikedByMe=false;
 
     public PostDTO() {
     }
@@ -26,6 +30,25 @@ public class PostDTO {
         this.imagePath = post.getImagePath();
         this.createdAt = post.getCreatedAt();
         this.location = new LocationDTO(post.getLocation());
+        this.authorUsername = post.getAuthor().getUsername();
+        this.likes = 0;
+        this.likeNumber= post.getLikers().size();
+    }
+
+    public int getLikeNumber() {
+        return likeNumber;
+    }
+
+    public void setLikeNumber(int likeNumber) {
+        this.likeNumber = likeNumber;
+    }
+
+    public boolean isLikedByMe() {
+        return isLikedByMe;
+    }
+
+    public void setLikedByMe(boolean likedByMe) {
+        isLikedByMe = likedByMe;
     }
 
     public PostDTO(Integer id, String description, String imagePath, LocalDateTime createdAt, LocationDTO location) {
@@ -46,6 +69,14 @@ public class PostDTO {
         this.comments = comments;
         this.author = author;
         this.likers = likers;
+    }
+
+    public Set<CommentDTO> getComments() {
+        return comments;
+    }
+
+    public void setComments(Set<CommentDTO> comments) {
+        this.comments = comments;
     }
 
     public Integer getId() {

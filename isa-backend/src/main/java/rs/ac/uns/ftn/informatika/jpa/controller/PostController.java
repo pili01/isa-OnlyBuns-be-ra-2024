@@ -52,18 +52,32 @@ public class PostController {
         return new ResponseEntity<>(postsDTO, HttpStatus.OK);
     }
 
+    @GetMapping(value = "/allPostComments")
+    public ResponseEntity<PostDTO> getPostWithComments(@RequestParam Integer id) {
+
+        PostDTO post = postService.findOneWithComments(id);
+        if(post == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(post, HttpStatus.OK);
+    }
+
     // GET /api/posts?page=0&size=5&sort=firstName,DESC
-    @GetMapping
+    @GetMapping(value = "/allPaged")
     public ResponseEntity<List<PostDTO>> getPostsPage(Pageable page) {
 
         // page object holds data about pagination and sorting
         // the object is created based on the url parameters "page", "size" and "sort"
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
         Page<Post> posts = postService.findAll(page);
 
         // convert posts to DTOs
         List<PostDTO> postsDTO = new ArrayList<>();
         for (Post p : posts) {
-            postsDTO.add(new PostDTO(p));
+            PostDTO postDTO=new PostDTO(p);
+            postDTO.setLikedByMe(p.getLikers().stream().anyMatch(t->t.getUsername().equalsIgnoreCase(username)));
+            postsDTO.add(postDTO);
         }
 
         return new ResponseEntity<>(postsDTO, HttpStatus.OK);

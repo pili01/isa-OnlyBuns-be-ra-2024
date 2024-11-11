@@ -159,7 +159,7 @@ public class Post {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, description, imagePath, createdAt, isDeleted, location, comments, author, likers);
+        return Objects.hash(id);
     }
 
     @Override

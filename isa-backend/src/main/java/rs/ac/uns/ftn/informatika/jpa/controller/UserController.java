@@ -61,28 +61,34 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Account not verified. Please verify your email.");
             }
 
+            // Autentifikacija korisnika
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+                    new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
+            );
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
+            // Generisanje JWT tokena
             String jwt = jwtToken.generateToken(user.getEmail());
 
-            /*Role authenticatedRole = userService.findRoleByName("AUTHENTICATED")
-                    .orElseThrow(() -> new RuntimeException("Role not found"));
-            user.setRole(authenticatedRole);
-            userService.updateUser(user);*/
+            // Preuzimanje korisničke uloge
+            String role = user.getRole().getName();
+            if (role.equals("NOT_AUTHENTICATED")) {
+                role = "AUTHENTICATED";
+                user.setRole(roleRepository.findByName(role).orElse(null));
+                userService.updateUser(user);
+            }
 
 
-            // Vraćamo JSON objekat sa `access_token` poljem
+            // Vraćamo JSON objekat sa `access_token` i `role` poljem
             Map<String, String> response = new HashMap<>();
             response.put("access_token", jwt);
+            response.put("role", role);
 
             return ResponseEntity.ok(response);
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }
     }
-
 
 
 
@@ -216,6 +222,8 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
+
+
 
     // Verify user's email
     @GetMapping("/verify")

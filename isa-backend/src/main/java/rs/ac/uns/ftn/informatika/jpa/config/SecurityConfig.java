@@ -24,9 +24,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final CustomUserDetailsService customUserDetailsService;
-
-    public CustomUserDetailsService customUserDetailsService() {return new CustomUserDetailsService();}
+    @Autowired
+    public CustomUserDetailsService customUserDetailsService;
 
     @Autowired
     private final Token token;
@@ -57,9 +56,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .rememberMe()
+                .key("papi") // Postavite jedinstveni ključ za vašu aplikaciju
+                .tokenValiditySeconds(1209600) // 14 dana u sekundama
                 .and()
-                .addFilterBefore(new JwtAuthentificationFilter(token, customUserDetailsService()),
+                .addFilterBefore(new JwtAuthentificationFilter(token, customUserDetailsService),
                         BasicAuthenticationFilter.class);
     }
 
