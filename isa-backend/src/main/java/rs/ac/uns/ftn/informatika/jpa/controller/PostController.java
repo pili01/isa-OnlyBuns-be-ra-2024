@@ -57,12 +57,15 @@ public class PostController {
 
         // page object holds data about pagination and sorting
         // the object is created based on the url parameters "page", "size" and "sort"
+        String MyUsername="user";
         Page<Post> posts = postService.findAll(page);
 
         // convert posts to DTOs
         List<PostDTO> postsDTO = new ArrayList<>();
         for (Post p : posts) {
-            postsDTO.add(new PostDTO(p));
+            PostDTO postDTO=new PostDTO(p);
+            postDTO.setLikedByMe(p.getLikers().stream().anyMatch(t->t.getUsername().equalsIgnoreCase(MyUsername)));
+            postsDTO.add(postDTO);
         }
 
         return new ResponseEntity<>(postsDTO, HttpStatus.OK);

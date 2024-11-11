@@ -1,5 +1,6 @@
 package rs.ac.uns.ftn.informatika.jpa.service;
 
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,8 +34,11 @@ public class PostService {
         return postRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     public Page<Post> findAll(Pageable pageable) {
-        return postRepository.findAll(pageable);
+        Page<Post> posts=postRepository.findAll(pageable);
+        posts.getContent().forEach(post -> Hibernate.initialize(post.getLikers()));
+        return posts;
     }
 
     @Transactional

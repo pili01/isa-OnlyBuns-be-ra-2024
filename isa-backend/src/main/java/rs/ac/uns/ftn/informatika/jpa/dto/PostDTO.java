@@ -15,6 +15,8 @@ public class PostDTO {
     private String authorUsername;
     private int likes;
     private Set<CommentDTO> comments=new HashSet<>();
+    private int likeNumber=0;
+    private boolean isLikedByMe=false;
 
     public PostDTO() {
     }
@@ -27,6 +29,23 @@ public class PostDTO {
         this.location = new LocationDTO(post.getLocation());
         this.authorUsername = post.getAuthor().getUsername();
         this.likes = 0;
+        this.likeNumber= post.getLikers().size();
+    }
+
+    public int getLikeNumber() {
+        return likeNumber;
+    }
+
+    public void setLikeNumber(int likeNumber) {
+        this.likeNumber = likeNumber;
+    }
+
+    public boolean isLikedByMe() {
+        return isLikedByMe;
+    }
+
+    public void setLikedByMe(boolean likedByMe) {
+        isLikedByMe = likedByMe;
     }
 
     public PostDTO(Integer id, String description, String imagePath, LocalDateTime createdAt, LocationDTO location, String authorUsername, int likes) {
