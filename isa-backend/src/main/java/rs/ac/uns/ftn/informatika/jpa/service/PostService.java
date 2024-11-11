@@ -13,6 +13,7 @@ import rs.ac.uns.ftn.informatika.jpa.mapper.PostDTOMapper;
 import rs.ac.uns.ftn.informatika.jpa.model.Post;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
 import rs.ac.uns.ftn.informatika.jpa.repository.PostRepository;
+import rs.ac.uns.ftn.informatika.jpa.repository.UserRepository;
 
 import java.util.List;
 
@@ -23,6 +24,8 @@ public class PostService {
     private PostRepository postRepository;
     @Autowired
     private PostDTOMapper postDTOMapper;
+    @Autowired
+    private UserRepository userRepository;
 
     public Post findOne(Integer id) {
         return postRepository.findById(id).orElseGet(null);
@@ -62,6 +65,19 @@ public class PostService {
             return null;
         }
         post.addLike(user);
+        return postRepository.save(post);
+    }
+    @Transactional
+    public Post removeLike(Integer id, User user) {
+        Post post = findOne(id);
+        if(post == null){
+            return null;
+        }
+        User author = userRepository.findById(user.getId()).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        if(!author.equals(user)){
+            return null;
+        }
+        post.removeLike(author);
         return postRepository.save(post);
     }
 }

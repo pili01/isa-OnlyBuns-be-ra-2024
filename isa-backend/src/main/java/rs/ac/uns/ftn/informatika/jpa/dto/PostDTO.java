@@ -123,14 +123,6 @@ public class PostDTO {
         return likers.size();
     }
 
-    public Set<CommentDTO> getComments() {
-        return comments;
-    }
-
-    public void setComments(Set<CommentDTO> comments) {
-        this.comments = comments;
-    }
-
     public UserDTO getAuthor() {
         return author;
     }

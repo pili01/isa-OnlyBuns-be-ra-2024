@@ -48,7 +48,7 @@ public class PostDTOMapper {
         return modelMapper.map(post, PostDTO.class);
     }
 
-    public static PostDTO fromPosttoDTO(Post dto) {
+    public PostDTO fromPosttoDTO(Post dto) {
         return modelMapper.map(dto, PostDTO.class);
     }
 

@@ -45,7 +45,7 @@ public class Post {
     @JoinColumn(name = "user_id")
     private User author;
 
-    @ManyToMany
+    @ManyToMany()
     @JoinTable(
             name = "post_likers",
             joinColumns = @JoinColumn(name = "post_id"),

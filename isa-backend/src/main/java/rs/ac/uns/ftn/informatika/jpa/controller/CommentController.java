@@ -10,6 +10,7 @@ import rs.ac.uns.ftn.informatika.jpa.model.Comment;
 import rs.ac.uns.ftn.informatika.jpa.model.Post;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
 import rs.ac.uns.ftn.informatika.jpa.repository.CommentRepository;
+import rs.ac.uns.ftn.informatika.jpa.service.CommentService;
 import rs.ac.uns.ftn.informatika.jpa.service.PostService;
 import rs.ac.uns.ftn.informatika.jpa.service.UserService;
 
@@ -27,6 +28,8 @@ public class CommentController {
     private PostService postService;
     @Autowired
     private CommentRepository commentRepository;
+    @Autowired
+    private CommentService commentService;
 
     public CommentController(ModelMapper modelMapper) {
         this.modelMapper = modelMapper;
@@ -46,5 +49,12 @@ public class CommentController {
         commentDTO.setId(comment.getId());
         return new ResponseEntity<>(commentDTO, HttpStatus.CREATED);
     }
-
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<CommentDTO> deleteComment(@PathVariable int id) {
+        Comment comment = commentService.remove(id);
+        if(comment == null)
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        CommentDTO commentDTO = modelMapper.map(comment, CommentDTO.class);
+        return new ResponseEntity<>(commentDTO, HttpStatus.OK);
+    }
 }

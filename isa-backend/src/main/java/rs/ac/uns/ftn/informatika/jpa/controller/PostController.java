@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import rs.ac.uns.ftn.informatika.jpa.dto.PostDTO;
 import rs.ac.uns.ftn.informatika.jpa.dto.StudentDTO;
@@ -100,13 +101,31 @@ public class PostController {
         return new ResponseEntity<>(postDTO, HttpStatus.CREATED);
     }
 
-    @PatchMapping(value = "/{postId}/{userId}")
+    @PatchMapping(value = "/like/{postId}/{userId}")
     public ResponseEntity<PostDTO> addLike(@PathVariable int postId, @PathVariable int userId){
         Optional<User> author = userService.findOne(userId);
         if(!author.isPresent()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         Post post = postService.addLike(postId, author.get());
+//        Post post = postService.findOneWithLikers(postId);
+        if(post == null){
+            return  new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+//        post.addLike(author.get());
+//        post = postService.save(post);
+        post.setComments(new HashSet<>());
+        PostDTO postDTO = postDTOMapper.toDTO(post);
+        return new ResponseEntity<>(postDTO, HttpStatus.OK);
+    }
+
+    @PatchMapping(value = "/unlike/{postId}/{userId}")
+    public ResponseEntity<PostDTO> removeLike(@PathVariable int postId, @PathVariable int userId){
+        Optional<User> author = userService.findOne(userId);
+        if(!author.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        Post post = postService.removeLike(postId, author.get());
 //        Post post = postService.findOneWithLikers(postId);
         if(post == null){
             return  new ResponseEntity<>(HttpStatus.NOT_FOUND);

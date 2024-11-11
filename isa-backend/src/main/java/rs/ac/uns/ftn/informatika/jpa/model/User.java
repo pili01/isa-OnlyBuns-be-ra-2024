@@ -202,6 +202,21 @@ public class User implements UserDetails {
         }
     }
 
-
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return isDeleted == user.isDeleted &&
+                Objects.equals(id, user.id) &&
+                Objects.equals(username, user.username) &&
+                Objects.equals(password, user.password) &&
+                Objects.equals(firstName, user.firstName) &&
+                Objects.equals(lastName, user.lastName) &&
+                Objects.equals(address, user.address) &&
+                Objects.equals(email, user.email) &&
+                Objects.equals(enabled, user.enabled) &&
+                Objects.equals(role, user.role);
+    }
 
 }
