@@ -101,37 +101,39 @@ public class PostController {
         return new ResponseEntity<>(postDTO, HttpStatus.CREATED);
     }
 
-    @PatchMapping(value = "/like/{postId}/{userId}")
-    public ResponseEntity<PostDTO> addLike(@PathVariable int postId, @PathVariable int userId){
-        Optional<User> author = userService.findOne(userId);
+    @PatchMapping(value = "/like/{postId}")
+    public ResponseEntity<PostDTO> addLike(@PathVariable Integer postId){
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Optional<User> author = userService.findByUsername(username);
         if(!author.isPresent()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         Post post = postService.addLike(postId, author.get());
-//        Post post = postService.findOneWithLikers(postId);
+
         if(post == null){
             return  new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-//        post.addLike(author.get());
-//        post = postService.save(post);
+
         post.setComments(new HashSet<>());
         PostDTO postDTO = postDTOMapper.toDTO(post);
         return new ResponseEntity<>(postDTO, HttpStatus.OK);
     }
 
-    @PatchMapping(value = "/unlike/{postId}/{userId}")
-    public ResponseEntity<PostDTO> removeLike(@PathVariable int postId, @PathVariable int userId){
-        Optional<User> author = userService.findOne(userId);
+    @PatchMapping(value = "/unlike/{postId}")
+    public ResponseEntity<PostDTO> removeLike(@PathVariable int postId){
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Optional<User> author = userService.findByUsername(username);
         if(!author.isPresent()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         Post post = postService.removeLike(postId, author.get());
-//        Post post = postService.findOneWithLikers(postId);
+
         if(post == null){
             return  new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-//        post.addLike(author.get());
-//        post = postService.save(post);
+
         post.setComments(new HashSet<>());
         PostDTO postDTO = postDTOMapper.toDTO(post);
         return new ResponseEntity<>(postDTO, HttpStatus.OK);

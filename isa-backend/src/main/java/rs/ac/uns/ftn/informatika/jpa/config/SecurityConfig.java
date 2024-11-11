@@ -3,6 +3,7 @@ package rs.ac.uns.ftn.informatika.jpa.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -55,7 +56,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/api/users/all", "/api/post/comment/1/1", "/api/posts/like/1/3", "/api/posts/unlike/1/3",
                         "/api/post/comment/2")
                 .permitAll()
-                .anyRequest().authenticated()
+                .antMatchers("/api/posts/like/**","/api/posts/unlike/**").authenticated()
                 .and()
                 .rememberMe()
                 .key("papi") // Postavite jedinstveni ključ za vašu aplikaciju

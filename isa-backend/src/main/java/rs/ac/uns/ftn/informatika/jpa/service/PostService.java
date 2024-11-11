@@ -16,6 +16,7 @@ import rs.ac.uns.ftn.informatika.jpa.repository.PostRepository;
 import rs.ac.uns.ftn.informatika.jpa.repository.UserRepository;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class PostService {
@@ -64,6 +65,10 @@ public class PostService {
         if(post == null){
             return null;
         }
+
+        if(post.getLikers().stream().anyMatch(t->t.getUsername().equalsIgnoreCase(user.getUsername()))){
+            return null;
+        }
         post.addLike(user);
         return postRepository.save(post);
     }
@@ -71,6 +76,9 @@ public class PostService {
     public Post removeLike(Integer id, User user) {
         Post post = findOne(id);
         if(post == null){
+            return null;
+        }
+        if(!post.getLikers().stream().anyMatch(t->t.getUsername().equalsIgnoreCase(user.getUsername()))){
             return null;
         }
         User author = userRepository.findById(user.getId()).orElseThrow(() -> new ResourceNotFoundException("User not found"));
