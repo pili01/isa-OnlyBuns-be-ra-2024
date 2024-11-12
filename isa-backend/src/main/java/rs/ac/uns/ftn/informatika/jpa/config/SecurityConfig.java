@@ -3,6 +3,7 @@ package rs.ac.uns.ftn.informatika.jpa.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -56,7 +57,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/api/post/comment/2", "/api/posts/upload-image", "/api/posts/upload/string",
                         "/api/posts/images/1731356446387-zeka1.jpg")
                 .permitAll()
-                .anyRequest().authenticated()
+                .antMatchers("/api/posts/like/**","/api/posts/unlike/**").authenticated()
                 .and()
                 .rememberMe()
                 .key("papi") // Postavite jedinstveni ključ za vašu aplikaciju
@@ -65,11 +66,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(new JwtAuthentificationFilter(token, customUserDetailsService),
                         BasicAuthenticationFilter.class);
     }
-
-
-
-
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

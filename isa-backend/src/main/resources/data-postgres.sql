@@ -49,9 +49,9 @@ values (2, 1, '2016-02-01', 10);
 insert into exam (student_id, course_id, date, grade)
 values (2, 2, '2016-04-19', 10);
 
-INSERT INTO role (id, name) VALUES (1, 'ROLE_NOT_AUTHENTICATED');
-INSERT INTO role (id, name) VALUES (2, 'ROLE_AUTHENTICATED');
-INSERT INTO role (id, name) VALUES (3, 'ROLE_ADMIN');
+INSERT INTO role (id, name) VALUES (1, 'NOT_AUTHENTICATED');
+INSERT INTO role (id, name) VALUES (2, 'AUTHENTICATED');
+INSERT INTO role (id, name) VALUES (3, 'ADMIN');
 
 /*DIO ZA DODAVANJE USERA, POSTOVA I KOMENTARA U BAZU*/
 INSERT INTO public.users(address,email, enabled, first_name, deleted, last_name, password,
@@ -117,10 +117,22 @@ VALUES (14, 56);
 INSERT INTO public.posts(created_at, description, image_path, deleted, user_id, location_id)
 VALUES ('2010-08-06', 'OPis posta broj 6', 'assets/logo1.png', false, 3, 5);
 
+INSERT INTO public.post_likers(
+    post_id, user_id)
+VALUES (1, 1);
 
+INSERT INTO public.post_likers(
+    post_id, user_id)
+VALUES (2, 3);
+
+INSERT INTO public.post_likers(
+    post_id, user_id)
+VALUES (1, 3);
 
 INSERT INTO public.posts(created_at, description, image_path, deleted, user_id, location_id)
 VALUES ('2010-08-06', 'OPis posta broj 7', 'assets/slika.jpg', false, 3, 5);
 
-
+INSERT INTO public.post_likers(
+    post_id, user_id)
+VALUES (7, 1);
 

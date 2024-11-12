@@ -96,7 +96,7 @@ public class UserController {
 
     // Fetch all users
 
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/all")
     public ResponseEntity<List<UserDTO>> getAllUsers() {
         List<UserDTO> usersDTO = userService.findAll().stream()
