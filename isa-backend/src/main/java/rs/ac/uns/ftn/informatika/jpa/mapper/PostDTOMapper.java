@@ -4,6 +4,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import rs.ac.uns.ftn.informatika.jpa.dto.CommentDTO;
+import rs.ac.uns.ftn.informatika.jpa.dto.PostCreationDTO;
 import rs.ac.uns.ftn.informatika.jpa.dto.PostDTO;
 import rs.ac.uns.ftn.informatika.jpa.dto.UserDTO;
 import rs.ac.uns.ftn.informatika.jpa.model.Comment;
@@ -24,19 +25,19 @@ public class PostDTOMapper {
     @Autowired
     public PostDTOMapper(ModelMapper modelMapper) { this.modelMapper = modelMapper; }
 
-    public Post fromDTOtoPost(PostDTO postDTO) {
-        Location location = modelMapper.map(postDTO.getLocation(), Location.class);
-//        Set<Comment> comments = Collections.singleton(modelMapper.map(postDTO.getComments(), Comment.class));
-        Set<Comment> comments = new HashSet<Comment>();
-        for(CommentDTO commentDTO : postDTO.getComments()) {
-            comments.add(modelMapper.map(commentDTO, Comment.class));
-        }
-        Set<User> likers = new HashSet<User>();
-        for(UserDTO userDTO : postDTO.getLikers()) {
-            likers.add(modelMapper.map(userDTO, User.class));
-        }
+    public Post fromDTOtoPost(PostCreationDTO postCreationDTO) {
+//        Location location = modelMapper.map(postDTO.getLocation(), Location.class);
+////        Set<Comment> comments = Collections.singleton(modelMapper.map(postDTO.getComments(), Comment.class));
+//        Set<Comment> comments = new HashSet<Comment>();
+//        for(CommentDTO commentDTO : postDTO.getComments()) {
+//            comments.add(modelMapper.map(commentDTO, Comment.class));
+//        }
+//        Set<User> likers = new HashSet<User>();
+//        for(UserDTO userDTO : postDTO.getLikers()) {
+//            likers.add(modelMapper.map(userDTO, User.class));
+//        }
 
-        Post post = modelMapper.map(postDTO, Post.class);
+        Post post = modelMapper.map(postCreationDTO, Post.class);
 //        post.setLocation(location);
 //        post.setComments(comments);
 //        post.setLikers(likers);
