@@ -1,11 +1,20 @@
 package rs.ac.uns.ftn.informatika.jpa.additionalSerices;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import rs.ac.uns.ftn.informatika.jpa.repository.PostRepository;
+
 import java.io.File;
 import java.io.IOException;
 
+@Service
 public class ImageCompressor {
 
     // Define the threshold for file age (1 month)
-    private static final long ONE_MONTH_IN_MS = 30L * 24 * 60 * 60 * 1000; // 30 days in milliseconds
+    private static final long ONE_MONTH_IN_MS =   30L * 24 * 60 * 60 * 1000; // 30 days in milliseconds
+    private static final long ONE_MONTH_AND_DAY_IN_MS =   31L * 24 * 60 * 60 * 1000;
+
+    @Autowired
+    private PostRepository postRepository;
 
     // Method to compress images in the storage folder
     public void compressImagesInStorage() {
@@ -29,20 +38,25 @@ public class ImageCompressor {
                 long timeDifference = currentTime - lastModified;
 
                 // If the file is older than one month, proceed with compression
-                if (timeDifference > ONE_MONTH_IN_MS ) {
+                if (ONE_MONTH_AND_DAY_IN_MS > timeDifference && timeDifference > ONE_MONTH_IN_MS ) {
                     try {
                         // Build the command to compress the image
-                        String inputImage = file.getAbsolutePath();
-                        String outputImage = file.getAbsolutePath().replace(".", "_compressed.");
+                        String inputImage = file.getName();
+                        String outputImage;
+                        if(file.getAbsolutePath().endsWith(".jpg")){
+                            outputImage = file.getName().replace(".jpg", "_compressed.jpg");
+                        }else{
+                            outputImage = file.getName().replace(".png", "_compressed.png");
+                        }
                         String command = "magick " + inputImage + " -quality 80 " + outputImage;
 
                         // Run the command using ProcessBuilder
                         ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
+                        processBuilder.directory(new File(folder.getAbsolutePath()));
                         processBuilder.inheritIO(); // Optionally inherit the output
                         processBuilder.start().waitFor(); // Start the process and wait for it to complete
 
-                        // Log the compression
-                        System.out.println("Compressed: " + inputImage + " -> " + outputImage);
+                        postRepository.updateImagePath(inputImage, outputImage);
 
                     } catch (IOException | InterruptedException e) {
                         // Handle exceptions
@@ -54,10 +68,10 @@ public class ImageCompressor {
             System.out.println("No files found in the directory.");
         }
     }
-
-    public static void main(String[] args) {
-        // Create an instance of ImageCompressor and compress images
-        ImageCompressor compressor = new ImageCompressor();
-        compressor.compressImagesInStorage();
-    }
+//
+//    public static void main(String[] args) {
+//        // Create an instance of ImageCompressor and compress images
+//        ImageCompressor compressor = new ImageCompressor();
+//        compressor.compressImagesInStorage();
+//    }
 }
