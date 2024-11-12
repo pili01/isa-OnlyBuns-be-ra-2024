@@ -1,12 +1,18 @@
 package rs.ac.uns.ftn.informatika.jpa.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
+
+import javax.persistence.*;
 import java.util.Objects;
 
+@SQLDelete(sql
+        = "UPDATE locations "
+        + "SET deleted = true "
+        + "WHERE id = ?")
+@Where(clause = "deleted = false")
 @Entity
+@Table(name="locations")
 public class Location {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,6 +20,8 @@ public class Location {
 
     private float latitude;
     private float longitude;
+    @Column(name = "deleted", nullable = false)
+    private boolean isDeleted;
 
     public Location() {
         super();
@@ -23,6 +31,15 @@ public class Location {
         super();
         this.id = id;
         this.latitude = latitude;
+        this.isDeleted = false;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
     }
 
     public Integer getId() {

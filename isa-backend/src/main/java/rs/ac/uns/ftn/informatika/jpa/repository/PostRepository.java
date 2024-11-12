@@ -26,4 +26,7 @@ public interface PostRepository extends JpaRepository<Post,Integer> {
     @Transactional
     @Query("UPDATE Post p SET p.imagePath = :newImagePath WHERE p.imagePath = :oldImagePath")
     public int updateImagePath(@Param("oldImagePath") String oldImagePath, @Param("newImagePath") String newImagePath);
+    
+    @Query("select p from Post p where p.author.id = ?1")
+    Page<Post> findAllMy(Pageable pageable, int userId);
 }

@@ -30,7 +30,7 @@ public class PostDTO {
         this.imagePath = post.getImagePath();
         this.createdAt = post.getCreatedAt();
         this.location = new LocationDTO(post.getLocation());
-        this.authorUsername = "nesto";
+        this.authorUsername = post.getAuthor().getUsername();
         this.likes = 0;
         this.likeNumber= post.getLikers().size();
     }
