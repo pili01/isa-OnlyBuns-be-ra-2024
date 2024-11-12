@@ -153,7 +153,7 @@ public class PostController {
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('AUTHENTICATED')")
+    @PreAuthorize("hasAuthority('AUTHENTICATED')")
     @PatchMapping(value = "/like/{postId}")
     public ResponseEntity<PostDTO> addLike(@PathVariable Integer postId){
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -173,7 +173,7 @@ public class PostController {
         return new ResponseEntity<>(postDTO, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('AUTHENTICATED')")
+    @PreAuthorize("hasAuthority('AUTHENTICATED')")
     @PatchMapping(value = "/unlike/{postId}")
     public ResponseEntity<PostDTO> removeLike(@PathVariable int postId){
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
