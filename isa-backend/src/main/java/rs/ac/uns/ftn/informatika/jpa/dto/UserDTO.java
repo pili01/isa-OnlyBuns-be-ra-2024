@@ -39,6 +39,10 @@ public class UserDTO {
 
     private String role;
 
+    private int numberOfPosts;
+
+    private int numberOfFollowedAccounts;
+
     public UserDTO() {
     }
 
@@ -53,6 +57,24 @@ public class UserDTO {
         this.enabled = enabled;
         this.role = role;
         this.password = password;
+        this.numberOfPosts = 0;
+        this.numberOfFollowedAccounts = 0;
+    }
+
+    public int getNumberOfFollowedAccounts() {
+        return numberOfFollowedAccounts;
+    }
+
+    public void setNumberOfFollowedAccounts(int numberOfFollowedAccounts) {
+        this.numberOfFollowedAccounts = numberOfFollowedAccounts;
+    }
+
+    public int getNumberOfPosts() {
+        return numberOfPosts;
+    }
+
+    public void setNumberOfPosts(int numberOfPosts) {
+        this.numberOfPosts = numberOfPosts;
     }
 
     public String getPassword(){return password;}

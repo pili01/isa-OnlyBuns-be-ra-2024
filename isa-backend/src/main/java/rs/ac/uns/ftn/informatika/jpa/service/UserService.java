@@ -135,5 +135,4 @@ public class UserService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
         return user.getRole().toString();
     }
-
 }

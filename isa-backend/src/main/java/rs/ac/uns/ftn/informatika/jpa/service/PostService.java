@@ -115,5 +115,9 @@ public class PostService {
         posts.getContent().forEach(post -> Hibernate.initialize(post.getLikers()));
         return posts;
     }
+
+    public int getNumberOfUserPosts(int id) {
+        return postRepository.getPostByAuthorId(id);
+    }
 }
 

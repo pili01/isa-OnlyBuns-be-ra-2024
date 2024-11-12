@@ -1,6 +1,10 @@
 package rs.ac.uns.ftn.informatika.jpa.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,16 +21,14 @@ import rs.ac.uns.ftn.informatika.jpa.dto.UserDTO;
 import rs.ac.uns.ftn.informatika.jpa.model.Role;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
 import rs.ac.uns.ftn.informatika.jpa.repository.RoleRepository;
+import rs.ac.uns.ftn.informatika.jpa.service.PostService;
 import rs.ac.uns.ftn.informatika.jpa.service.UserService;
 import rs.ac.uns.ftn.informatika.jpa.mapper.UserDTOMapper;
 import rs.ac.uns.ftn.informatika.jpa.token.Token;
 
 import javax.mail.MessagingException;
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -39,6 +41,8 @@ public class UserController {
     @Autowired
     private RoleRepository roleRepository;
 
+    @Autowired
+    private PostService postService;
 
     @Autowired
     private UserDTOMapper userDTOMapper;
@@ -91,9 +95,6 @@ public class UserController {
     }
 
 
-
-
-
     // Fetch all users
 
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -103,6 +104,67 @@ public class UserController {
                 .map(userDTOMapper::fromUsertoDTO)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(usersDTO);
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("/allPaged")
+    public List<UserDTO> getAllUsersPaged(
+            @RequestParam int page,
+            @RequestParam int size,
+            @RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String lastName,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) Integer minPosts,
+            @RequestParam(required = false) Integer maxPosts,
+            @RequestParam(required = false) String sort) {
+        List<UserDTO> usersDTO = userService.findAll().stream().filter(t -> t.getRole().getName().equalsIgnoreCase("AUTHENTICATED"))
+                .map(userDTOMapper::fromUsertoDTO)
+                .collect(Collectors.toList());
+        if (firstName != null && !Objects.equals(firstName, "")) {
+            usersDTO = usersDTO.stream().filter(t -> t.getFirstName().equalsIgnoreCase(firstName)).collect(Collectors.toList());
+        }
+        if (lastName != null && !Objects.equals(lastName, "")) {
+            usersDTO = usersDTO.stream().filter(t -> t.getLastName().equalsIgnoreCase(lastName)).collect(Collectors.toList());
+        }
+        if (email != null && !Objects.equals(email, "")) {
+            usersDTO = usersDTO.stream().filter(t -> t.getEmail().equalsIgnoreCase(email)).collect(Collectors.toList());
+        }
+
+        for (UserDTO userDTO : usersDTO) {
+            userDTO.setNumberOfPosts(postService.getNumberOfUserPosts(userDTO.getId()));
+        }
+
+        if (minPosts != null) {
+            usersDTO = usersDTO.stream().filter(t -> t.getNumberOfPosts() >= minPosts).collect(Collectors.toList());
+        }
+
+        if (maxPosts != null) {
+            usersDTO = usersDTO.stream().filter(t -> t.getNumberOfPosts() <= maxPosts).collect(Collectors.toList());
+        }
+
+        if ("emaildesc".equalsIgnoreCase(sort)) {
+            usersDTO.sort((u1, u2) -> u2.getEmail().compareToIgnoreCase(u1.getEmail()));
+        } else if ("emailasc".equalsIgnoreCase(sort)) {
+            usersDTO.sort((u1, u2) -> u1.getEmail().compareToIgnoreCase(u2.getEmail()));
+        } else if ("numprdesc".equalsIgnoreCase(sort)) {
+            usersDTO.sort((u1, u2) -> Integer.compare(u2.getNumberOfFollowedAccounts(), u1.getNumberOfFollowedAccounts()));
+        } else if ("numprasc".equalsIgnoreCase(sort)) {
+            usersDTO.sort((u1, u2) -> Integer.compare(u1.getNumberOfFollowedAccounts(), u2.getNumberOfFollowedAccounts()));
+        }
+
+        Pageable pageable = PageRequest.of(page, size);
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), usersDTO.size());
+
+        // Proverite da li su indeksi ispravni pre kreiranja podliste
+        if (start > end) {
+            start = end;
+        }
+
+        List<UserDTO> pagedUsers = usersDTO.subList(start, end);
+
+
+        return pagedUsers;
     }
 
     // Get user by ID
@@ -152,8 +214,6 @@ public class UserController {
             return ResponseEntity.badRequest().build();
         }
     }*/
-
-
 
 
     // Delete a user by ID
@@ -222,7 +282,6 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
-
 
 
     // Verify user's email

@@ -20,4 +20,7 @@ public interface PostRepository extends JpaRepository<Post,Integer> {
 
     @Query("select p from Post p where p.author.id = ?1")
     Page<Post> findAllMy(Pageable pageable, int userId);
+
+    @Query("select count(p) from Post p where p.author.id = ?1")
+    public int getPostByAuthorId(int id);
 }
