@@ -71,7 +71,7 @@ public class PostController {
     public ResponseEntity<PostDTO> getPostWithComments(@RequestParam Integer id) {
 
         PostDTO post = postService.findOneWithComments(id);
-        if(post == null) {
+        if (post == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(post, HttpStatus.OK);
@@ -90,8 +90,31 @@ public class PostController {
         // convert posts to DTOs
         List<PostDTO> postsDTO = new ArrayList<>();
         for (Post p : posts) {
-            PostDTO postDTO=new PostDTO(p);
-            postDTO.setLikedByMe(p.getLikers().stream().anyMatch(t->t.getUsername().equalsIgnoreCase(username)));
+            PostDTO postDTO = new PostDTO(p);
+            postDTO.setLikedByMe(p.getLikers().stream().anyMatch(t -> t.getUsername().equalsIgnoreCase(username)));
+            postsDTO.add(postDTO);
+        }
+
+        return new ResponseEntity<>(postsDTO, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/allUserPostsPaged/{username}")
+    public ResponseEntity<List<PostDTO>> getUserPostsPage(Pageable page,@PathVariable String username) {
+
+        // page object holds data about pagination and sorting
+        // the object is created based on the url parameters "page", "size" and "sort"
+        //String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<User> user=userService.findByUsername(username);
+        if (!user.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        Page<Post> posts = postService.findAllMy(page,user.get().getId());
+
+        // convert posts to DTOs
+        List<PostDTO> postsDTO = new ArrayList<>();
+        for (Post p : posts) {
+            PostDTO postDTO = new PostDTO(p);
+            postDTO.setLikedByMe(p.getLikers().stream().anyMatch(t -> t.getUsername().equalsIgnoreCase(username)));
             postsDTO.add(postDTO);
         }
 
@@ -100,12 +123,12 @@ public class PostController {
 
     @PreAuthorize("hasAuthority('AUTHENTICATED')")
     @PostMapping(consumes = "application/json", value = "/add")
-    public ResponseEntity<PostDTO> addPost(@RequestBody PostCreationDTO postCreationDTO){
+    public ResponseEntity<PostDTO> addPost(@RequestBody PostCreationDTO postCreationDTO) {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
 //        Optional<User> author = userService.findOne(userId);
         Optional<User> author = userService.findByUsername(userName);
 
-        if(!author.isPresent()) {
+        if (!author.isPresent()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         UserDTO authorDTO = userDTOMapper.fromUsertoDTO(author.get());
@@ -120,7 +143,7 @@ public class PostController {
     }
 
     @PreAuthorize("hasAuthority('AUTHENTICATED')")
-    @PostMapping(value= "/images")
+    @PostMapping(value = "/images")
     public ResponseEntity<String> uploadImage(@RequestParam("image") MultipartFile file) {
         if (file.isEmpty()) {
             return ResponseEntity.badRequest().body("No file uploaded");
@@ -146,6 +169,7 @@ public class PostController {
             return ResponseEntity.status(500).body("Error uploading the file");
         }
     }
+
     @PostMapping("/upload/string")
     public ResponseEntity<String> greet(@RequestBody String name) {
         String message = "Hello, " + name + "!";
@@ -154,18 +178,36 @@ public class PostController {
     }
 
     @PreAuthorize("hasAuthority('AUTHENTICATED')")
-    @PatchMapping(value = "/like/{postId}")
-    public ResponseEntity<PostDTO> addLike(@PathVariable Integer postId){
+    @DeleteMapping(value = "/delete/{postId}")
+    public ResponseEntity<PostDTO> deletePost(@PathVariable Integer postId) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
         Optional<User> author = userService.findByUsername(username);
-        if(!author.isPresent()) {
+        if (!author.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        Post post = postService.remove(postId,author.get().getId() );
+
+        if (post == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(new PostDTO(), HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasAuthority('AUTHENTICATED')")
+    @PatchMapping(value = "/like/{postId}")
+    public ResponseEntity<PostDTO> addLike(@PathVariable Integer postId) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Optional<User> author = userService.findByUsername(username);
+        if (!author.isPresent()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         Post post = postService.addLike(postId, author.get());
 
-        if(post == null){
-            return  new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if (post == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         post.setComments(new HashSet<>());
@@ -175,17 +217,17 @@ public class PostController {
 
     @PreAuthorize("hasAuthority('AUTHENTICATED')")
     @PatchMapping(value = "/unlike/{postId}")
-    public ResponseEntity<PostDTO> removeLike(@PathVariable int postId){
+    public ResponseEntity<PostDTO> removeLike(@PathVariable int postId) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
         Optional<User> author = userService.findByUsername(username);
-        if(!author.isPresent()) {
+        if (!author.isPresent()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         Post post = postService.removeLike(postId, author.get());
 
-        if(post == null){
-            return  new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if (post == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         post.setComments(new HashSet<>());

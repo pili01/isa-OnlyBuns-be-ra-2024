@@ -28,6 +28,7 @@ public class PostService {
     @Autowired
     private UserRepository userRepository;
 
+    @Transactional
     public Post findOne(Integer id) {
         return postRepository.findById(id).orElseGet(null);
     }
@@ -35,8 +36,16 @@ public class PostService {
         return postRepository.save(post);
     }
 
-    public void remove(Integer id) {
-        postRepository.deleteById(id);
+    @Transactional
+    public Post remove(Integer id,int authorId) {
+        Post post = findOne(id);
+        if (post != null) {
+            if(post.getAuthor().getId()==authorId){
+                postRepository.deleteById(post.getId());
+                return post;
+            }
+        }
+        return null;
     }
 
     public List<Post> findAll() {
@@ -72,6 +81,7 @@ public class PostService {
         post.addLike(user);
         return postRepository.save(post);
     }
+
     @Transactional
     public Post removeLike(Integer id, User user) {
         Post post = findOne(id);
@@ -87,6 +97,13 @@ public class PostService {
         }
         post.removeLike(author);
         return postRepository.save(post);
+    }
+
+    @Transactional
+    public Page<Post> findAllMy(Pageable page,int userId) {
+        Page<Post> posts=postRepository.findAllMy(page,userId);
+        posts.getContent().forEach(post -> Hibernate.initialize(post.getLikers()));
+        return posts;
     }
 }
 

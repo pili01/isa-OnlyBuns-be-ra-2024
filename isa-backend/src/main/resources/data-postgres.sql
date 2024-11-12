@@ -70,8 +70,8 @@ VALUES ('Petra Petrovica','user1@gmail.com', true, 'User1', false, 'Useric',
         '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'user1', 2);
 
 
-INSERT INTO public.location(latitude, longitude)
-VALUES (25, 16);
+INSERT INTO public.locations(latitude, longitude,deleted)
+VALUES (25, 16,false);
 
 INSERT INTO public.posts(created_at, description, image_path, deleted, user_id, location_id)
 VALUES ('2024-09-06', 'OPis komentara broj za sliku broj 1 koji predstavlja malo duzi opis od standardnog 1', '1731399224385-381782.png', false, 1, 1);
@@ -83,8 +83,8 @@ INSERT INTO public.comments(comment, creation_time, deleted, user_id, post_id)
 VALUES ('Komentar vezan za sliku 1', '2024-08-05', false, 3, 1);
 
 
-INSERT INTO public.location(latitude, longitude)
-VALUES (44.21, 25.64);
+INSERT INTO public.locations(latitude, longitude,deleted)
+VALUES (44.21, 25.64,false);
 
 INSERT INTO public.posts(created_at, description, image_path, deleted, user_id, location_id)
 VALUES ('2023-05-06', 'OPis komentara broj 2', '1731398041004-logo1.png', false, 3, 2);
@@ -93,29 +93,29 @@ INSERT INTO public.comments(comment, creation_time, deleted, user_id, post_id)
 VALUES ('Komentar vezan za sliku 2', '2024-05-05', false, 1, 2);
 
 
-INSERT INTO public.location(latitude, longitude)
-VALUES (44, 21);
+INSERT INTO public.locations(latitude, longitude,deleted)
+VALUES (44, 21,false);
 
 INSERT INTO public.posts(created_at, description, image_path, deleted, user_id, location_id)
 VALUES ('2015-09-04', 'OPis posta broj 3', '1731399240263-europski-zec-1_3673.jpg', false, 1, 3);
 
-INSERT INTO public.location(latitude, longitude)
-VALUES (14, 56);
+INSERT INTO public.locations(latitude, longitude,deleted)
+VALUES (14, 56,false);
 
 INSERT INTO public.posts(created_at, description, image_path, deleted, user_id, location_id)
 VALUES ('2010-08-06', 'OPis posta broj 4', '1731399251410-zec-slika-profil.jpg', false, 3, 4);
 
-INSERT INTO public.location(latitude, longitude)
-VALUES (44, 21);
+INSERT INTO public.locations(latitude, longitude,deleted)
+VALUES (44, 21,false);
 
 INSERT INTO public.posts(created_at, description, image_path, deleted, user_id, location_id)
 VALUES ('2015-09-04', 'OPis posta broj 5', '1731399263270-zenka-divljeg-zeca.jpg', false, 1, 5);
 
-INSERT INTO public.location(latitude, longitude)
-VALUES (14, 56);
+INSERT INTO public.locations(latitude, longitude,deleted)
+VALUES (14, 56,false);
 
 INSERT INTO public.posts(created_at, description, image_path, deleted, user_id, location_id)
-VALUES ('2010-08-06', 'OPis posta broj 6', '1731399276728-Znakovi-da-je-vas-zec-bolestan.jpg', false, 3, 5);
+VALUES ('2010-08-06', 'OPis posta broj 6', '1731399276728-Znakovi-da-je-vas-zec-bolestan.jpg', false, 3, 6);
 
 INSERT INTO public.post_likers(
     post_id, user_id)
@@ -129,8 +129,10 @@ INSERT INTO public.post_likers(
     post_id, user_id)
 VALUES (1, 3);
 
+INSERT INTO public.locations(latitude, longitude,deleted)
+VALUES (14, 56,false);
 INSERT INTO public.posts(created_at, description, image_path, deleted, user_id, location_id)
-VALUES ('2022-08-06', 'OPis posta broj 7', '1731399381518-1000_F_581886343_5UMhXzWzBdeecZz28z3ok5kiaHiCwt5v.jpg', false, 3, 5);
+VALUES ('2022-08-06', 'OPis posta broj 7', '1731399381518-1000_F_581886343_5UMhXzWzBdeecZz28z3ok5kiaHiCwt5v.jpg', false, 3, 7);
 
 INSERT INTO public.post_likers(
     post_id, user_id)

@@ -17,4 +17,7 @@ public interface PostRepository extends JpaRepository<Post,Integer> {
     
     @Query("select p from Post p left join fetch p.comments where p.id =?1")
     public Optional<Post> findOneWithComments(Integer postId);
+
+    @Query("select p from Post p where p.author.id = ?1")
+    Page<Post> findAllMy(Pageable pageable, int userId);
 }
