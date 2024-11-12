@@ -48,6 +48,16 @@ public class PostService {
         return null;
     }
 
+    @Transactional
+    public Post modifyPost(int postId, Post modifiedPost) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found with id " + postId));
+        post.setDescription(modifiedPost.getDescription());
+        post.setImagePath(modifiedPost.getImagePath());
+        post.setLocation(modifiedPost.getLocation());
+        return postRepository.save(post);
+    }
+
     public List<Post> findAll() {
         return postRepository.findAll();
     }

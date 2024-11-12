@@ -143,6 +143,27 @@ public class PostController {
     }
 
     @PreAuthorize("hasAuthority('AUTHENTICATED')")
+    @PutMapping(consumes = "application/json", value = "/modify/{postId}")
+    public ResponseEntity<PostDTO> updatePost(@RequestBody PostCreationDTO postCreationDTO, @PathVariable Integer postId) {
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+//        Optional<User> author = userService.findOne(userId);
+        Optional<User> author = userService.findByUsername(userName);
+
+        if (!author.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        UserDTO authorDTO = userDTOMapper.fromUsertoDTO(author.get());
+        postCreationDTO.setAuthor(authorDTO);
+        Post post = postDTOMapper.fromDTOtoPost(postCreationDTO);
+//        post = author.get().addPost(post);
+//        post.setAuthor(author.get());
+        post = postService.modifyPost(postId,post);
+//        PostDTO postDTO = postDTOMapper.toDTO(post);
+//        postDTO.setId(post.getId());
+        return new ResponseEntity<>(new PostDTO(), HttpStatus.CREATED);
+    }
+
+    @PreAuthorize("hasAuthority('AUTHENTICATED')")
     @PostMapping(value = "/images")
     public ResponseEntity<String> uploadImage(@RequestParam("image") MultipartFile file) {
         if (file.isEmpty()) {
