@@ -54,7 +54,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/webjars/**", "/swagger-ui/**", "/api/posts", "/api/users/profile/**",
                         "/api/posts/allPaged", "/api/posts/all", "/api/posts/images")
                 .permitAll()
-                .antMatchers("/api/posts/like/**","/api/posts/unlike/**").authenticated()
                 .and()
                 .rememberMe()
                 .key("papi") // Postavite jedinstveni ključ za vašu aplikaciju
