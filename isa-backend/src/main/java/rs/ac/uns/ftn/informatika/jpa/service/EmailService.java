@@ -1,6 +1,4 @@
-/*
 package rs.ac.uns.ftn.informatika.jpa.service;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,7 +8,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import rs.ac.uns.ftn.informatika.rest.dto.UserDTO;
+import rs.ac.uns.ftn.informatika.jpa.dto.UserDTO;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -24,25 +22,31 @@ public class EmailService {
     @Autowired
     private Environment env;
 
+
+
+
     @Async
-    public void sendVerificationEmail(UserDTO userDTO,String link) throws MailException, InterruptedException, MessagingException {
+    public void sendVerificationEmail(UserDTO userDTO, String link) {
+        try {
+            MimeMessage mail = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mail, true);
 
-        MimeMessage mail = javaMailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(mail, true);
+            helper.setTo(userDTO.getEmail());
+            helper.setFrom(env.getProperty("spring.mail.username"));
+            helper.setSubject("Verification email");
 
-        helper.setTo(userDTO.email);
-        helper.setFrom(env.getProperty("spring.mail.username"));
-        helper.setSubject("Verification email");
+            String htmlMsg = "<p>Pozdrav " + userDTO.getFirstName() + ",</p>"
+                    + "<p>Klikni na link ispod kako bi izvršio verifikaciju:</p>"
+                    + "<a href='" + link + "'>Verifikuj svoj nalog</a>"
+                    + "<p>Hvala!</p>";
 
-        String verificationUrl = link;
-        String htmlMsg = "<p>Pozdrav " + userDTO.name + ",</p>"
-                + "<p>Klikni na link ispod kako bi izvršio verifikaciju:</p>"
-                + "<a href='" + verificationUrl + "'>Verifikuj svoj nalog</a>"
-                + "<p>Hvala!</p>";
+            helper.setText(htmlMsg, true);
+            System.out.println("Slanje emaila na: " + userDTO.getEmail());
+            javaMailSender.send(mail);
+        } catch (MessagingException e) {
 
-        // Postavite HTML sadržaj mejla
-        helper.setText(htmlMsg, true);
-
-        javaMailSender.send(mail);
+            Thread.currentThread().interrupt();
+        }
     }
-}*/
+
+}
