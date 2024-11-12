@@ -9,10 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import rs.ac.uns.ftn.informatika.jpa.dto.PostCreationDTO;
-import rs.ac.uns.ftn.informatika.jpa.dto.PostDTO;
-import rs.ac.uns.ftn.informatika.jpa.dto.StudentDTO;
-import rs.ac.uns.ftn.informatika.jpa.dto.UserDTO;
+import rs.ac.uns.ftn.informatika.jpa.dto.*;
 import rs.ac.uns.ftn.informatika.jpa.mapper.PostDTOMapper;
 import rs.ac.uns.ftn.informatika.jpa.mapper.UserDTOMapper;
 import rs.ac.uns.ftn.informatika.jpa.model.Post;
@@ -73,6 +70,9 @@ public class PostController {
         PostDTO post = postService.findOneWithComments(id);
         if (post == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        for (CommentDTO comment : post.getComments()) {
+            comment.setEmail(userService.findByUsername(comment.getAuthorUsername()).get().getEmail());
         }
         return new ResponseEntity<>(post, HttpStatus.OK);
     }
