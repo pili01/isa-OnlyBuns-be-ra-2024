@@ -98,10 +98,13 @@ public class PostController {
         return new ResponseEntity<>(postsDTO, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority('AUTHENTICATED')")
+    @PostMapping(consumes = "application/json", value = "/add")
+    public ResponseEntity<PostDTO> addPost(@RequestBody PostCreationDTO postCreationDTO){
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+//        Optional<User> author = userService.findOne(userId);
+        Optional<User> author = userService.findByUsername(userName);
 
-    @PostMapping(consumes = "application/json", value = "/{userId}")
-    public ResponseEntity<PostDTO> addPost(@RequestBody PostCreationDTO postCreationDTO, @PathVariable int userId){
-        Optional<User> author = userService.findOne(userId);
         if(!author.isPresent()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -116,6 +119,7 @@ public class PostController {
         return new ResponseEntity<>(postDTO, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasAuthority('AUTHENTICATED')")
     @PostMapping(value= "/images")
     public ResponseEntity<String> uploadImage(@RequestParam("image") MultipartFile file) {
         if (file.isEmpty()) {

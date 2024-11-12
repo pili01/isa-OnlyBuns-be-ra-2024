@@ -14,7 +14,7 @@ public class CommentDTO {
     private String comment;
 
     @Past
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
     private String authorUsername;
 
     public CommentDTO() {

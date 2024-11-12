@@ -16,9 +16,9 @@ public class CommentService {
     @Autowired
     private CommentRepository commentRepository;
     public Comment save(Comment comment) {return commentRepository.save(comment);}
-    public Comment remove(Integer id) {
+    public Comment remove(Integer id, Integer authorId) {
         Optional<Comment> comment = commentRepository.findById(id);
-        if(comment.isPresent()) {
+        if(comment.isPresent() && comment.get().getAuthor().getId() == authorId) {
             commentRepository.deleteById(id);
             return comment.get();
         }

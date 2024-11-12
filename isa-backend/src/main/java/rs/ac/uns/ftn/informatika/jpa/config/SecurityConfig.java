@@ -52,10 +52,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/users/register", "/api/users/verify", "/api/users/login", "/register",
                         "/v3/api-docs", "/v3/api-docs/swagger-config", "/swagger-resources/**", "/swagger-ui.html",
                         "/webjars/**", "/swagger-ui/**", "/api/posts", "/api/users/profile/**",
-                        "/api/posts/allPaged", "/api/posts/{{userId}}", "/api/posts/all", "/api/posts/1",
-                        "/api/users/all", "/api/post/comment/1/1", "/api/posts/like/1/3", "/api/posts/unlike/1/3",
-                        "/api/post/comment/2", "/api/posts/upload-image", "/api/posts/upload/string",
-                        "/api/posts/images/1731356446387-zeka1.jpg")
+                        "/api/posts/allPaged", "/api/posts/all", "/api/posts/images")
                 .permitAll()
                 .antMatchers("/api/posts/like/**","/api/posts/unlike/**").authenticated()
                 .and()

@@ -4,6 +4,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import rs.ac.uns.ftn.informatika.jpa.dto.CommentDTO;
 import rs.ac.uns.ftn.informatika.jpa.model.Comment;
@@ -35,9 +37,13 @@ public class CommentController {
         this.modelMapper = modelMapper;
     }
 
-    @PostMapping(consumes = "application/json", value = "/{postId}/{userId}")
-    public ResponseEntity<CommentDTO> addComment(@RequestBody CommentDTO commentDTO, @PathVariable int postId,  @PathVariable int userId) {
-        Optional<User> author = userService.findOne(userId);
+
+    @PreAuthorize("hasAuthority('AUTHENTICATED')")
+    @PostMapping(consumes = "application/json", value = "/{postId}")
+    public ResponseEntity<CommentDTO> addComment(@RequestBody CommentDTO commentDTO, @PathVariable int postId) {
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+//        Optional<User> author = userService.findOne(userId);
+        Optional<User> author = userService.findByUsername(userName);
         Post post = postService.findOne(postId);
         if(!author.isPresent() || post == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -49,9 +55,16 @@ public class CommentController {
         commentDTO.setId(comment.getId());
         return new ResponseEntity<>(commentDTO, HttpStatus.CREATED);
     }
+
+    @PreAuthorize("hasAuthority('AUTHENTICATED')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<CommentDTO> deleteComment(@PathVariable int id) {
-        Comment comment = commentService.remove(id);
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+//        Optional<User> author = userService.findOne(userId);
+        Optional<User> author = userService.findByUsername(userName);
+        if(!author.isPresent())
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        Comment comment = commentService.remove(id, author.get().getId());
         if(comment == null)
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         CommentDTO commentDTO = modelMapper.map(comment, CommentDTO.class);
