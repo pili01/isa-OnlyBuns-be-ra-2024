@@ -1,6 +1,7 @@
 package rs.ac.uns.ftn.informatika.jpa.model;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.Arrays;
 import java.util.Collection;
@@ -60,6 +61,9 @@ public class User implements UserDetails {
 
     @Column(name = "number_of_posts")
     private int numberOfPosts;
+
+    @Column(name = "creation_time")
+    private LocalDateTime creationTime;
 
     @Column(name = "following_count")
     private int followingCount;
@@ -134,6 +138,14 @@ public class User implements UserDetails {
 
     public void setFollowingCount(int followingCount) {
         this.followingCount = followingCount;
+    }
+
+    public LocalDateTime getCreationTime() {
+        return creationTime;
+    }
+
+    public void setCreationTime(LocalDateTime creationTime) {
+        this.creationTime = creationTime;
     }
 
     @JsonIgnore

@@ -15,6 +15,7 @@ import rs.ac.uns.ftn.informatika.jpa.repository.UserRepository;
 import rs.ac.uns.ftn.informatika.jpa.repository.UserRepositoryCustom;
 
 import javax.mail.MessagingException;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -88,6 +89,7 @@ public class UserService {
         user.setLastName(userDTO.getLastName());
         user.setAddress((userDTO.getAddress()));
         user.setEnabled(false);
+        user.setCreationTime(LocalDateTime.now());
 
         Role defaultRole = roleRepository.findByName("NOT_AUTHENTICATED")
                 .orElseThrow(() -> new IllegalArgumentException("Role 'NOT_AUTHENTICATED' not found"));
@@ -114,6 +116,16 @@ public class UserService {
             return true;
         }
         return false;
+    }
+
+    @Transactional
+    public void cleanUpUsers() {
+        List<User> unverified = userRepository.findAllUnverified();
+        for (User user : unverified) {
+            if (!user.isEnabled() && user.getCreationTime().isBefore(LocalDateTime.now().minusDays(3))) {
+                userRepository.delete(user);
+            }
+        }
     }
 
 
