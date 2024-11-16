@@ -12,6 +12,7 @@ import rs.ac.uns.ftn.informatika.jpa.model.Role;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
 import rs.ac.uns.ftn.informatika.jpa.repository.RoleRepository;
 import rs.ac.uns.ftn.informatika.jpa.repository.UserRepository;
+import rs.ac.uns.ftn.informatika.jpa.repository.UserRepositoryCustom;
 
 import javax.mail.MessagingException;
 import java.util.Collections;
@@ -23,6 +24,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UserRepositoryCustom userRepositoryCustom;
 
     @Autowired
     private RoleRepository roleRepository;
@@ -134,5 +138,9 @@ public class UserService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
         return user.getRole().toString();
+    }
+
+    public Page<User> findAllWithFilters(Pageable pageable, String firstName, String lastName, String email, Integer minPosts, Integer maxPosts, String sort) {
+        return userRepositoryCustom.findAllWithFilters(pageable,firstName,lastName,email,minPosts,maxPosts,sort);
     }
 }

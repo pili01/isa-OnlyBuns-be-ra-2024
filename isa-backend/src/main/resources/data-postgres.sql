@@ -55,54 +55,54 @@ INSERT INTO role (id, name) VALUES (3, 'ADMIN');
 
 /*DIO ZA DODAVANJE USERA, POSTOVA I KOMENTARA U BAZU*/
 INSERT INTO public.users(address,email, enabled, first_name, deleted, last_name, password,
-                         username, role_id)
+                         username, role_id,following_count,number_of_posts)
 VALUES ('Petra Petrovica','user@gmail.com', true, 'Marko', false, 'Marković',
-        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'user', 2);
+        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'user', 2,0,0);
 
 INSERT INTO public.users(address,email, enabled, first_name, deleted, last_name, password,
-                         username, role_id)
+                         username, role_id,following_count,number_of_posts)
 VALUES ('Petra Petrovica','admin@gmail.com', true, 'Admin', false, 'Adminić',
-        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'admin', 3);
+        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'admin', 3,0,0);
 
 INSERT INTO public.users(address,email, enabled, first_name, deleted, last_name, password,
-                         username, role_id)
+                         username, role_id,following_count,number_of_posts)
 VALUES ('Petra Petrovica','papovic@gmail.com', true, 'Ognjen', false, 'Papović',
-        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'papovic', 2);
+        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'papovic', 2,0,2);
 
 INSERT INTO public.users(address,email, enabled, first_name, deleted, last_name, password,
-                         username, role_id)
+                         username, role_id,following_count,number_of_posts)
 VALUES ('Dusko Petrovica','pilipovic@gmail.com', true, 'Duško', false, 'Pilipović',
-        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'pilipovic', 2);
+        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'pilipovic', 2,0,3);
 
 INSERT INTO public.users(address,email, enabled, first_name, deleted, last_name, password,
-                         username, role_id)
+                         username, role_id,following_count,number_of_posts)
 VALUES ('Petra Petrovica','medic@gmail.com', true, 'Miloš', false, 'Medić',
-        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'medic', 2);
+        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'medic', 2,0,2);
 
 INSERT INTO public.users(address,email, enabled, first_name, deleted, last_name, password,
-                         username, role_id)
+                         username, role_id,following_count,number_of_posts)
 VALUES ('Petra Petrovica','user4@gmail.com', true, 'Petar', false, 'Petrović',
-        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'petrovic', 2);
+        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'petrovic', 2,0,0);
 
 INSERT INTO public.users(address,email, enabled, first_name, deleted, last_name, password,
-                         username, role_id)
+                         username, role_id,following_count,number_of_posts)
 VALUES ('Petra Petrovica','user5@gmail.com', true, 'Gavrilo', false, 'Gavrilović',
-        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'gavrilovic', 2);
+        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'gavrilovic', 2,0,0);
 
 INSERT INTO public.users(address,email, enabled, first_name, deleted, last_name, password,
-                         username, role_id)
+                         username, role_id,following_count,number_of_posts)
 VALUES ('Petra Petrovica','user6@gmail.com', true, 'Ana', false, 'Anić',
-        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'ana', 2);
+        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'ana', 2,0,0);
 
 INSERT INTO public.users(address,email, enabled, first_name, deleted, last_name, password,
-                         username, role_id)
+                         username, role_id,following_count,number_of_posts)
 VALUES ('P','d@gmail.com', true, 'D', false, 'D',
-        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'd', 2);
+        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'd', 2,0,0);
 
 INSERT INTO public.users(address,email, enabled, first_name, deleted, last_name, password,
-                         username, role_id)
+                         username, role_id,following_count,number_of_posts)
 VALUES ('Petra Petrovicaa','user8@gmail.com', true, 'User8', false, 'Useric',
-        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'user8', 2);
+        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'user8', 2,0,0);
 
 
 INSERT INTO public.locations(latitude, longitude,deleted)
