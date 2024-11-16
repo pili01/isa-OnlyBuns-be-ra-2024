@@ -46,10 +46,8 @@ public class User implements UserDetails {
     @Column(name = "last_name")
     private String lastName;
 
-
     @Column(name = "address")
     private String address;
-
 
     @Column(name = "email")
     private String email;
@@ -60,16 +58,19 @@ public class User implements UserDetails {
     @Column(name = "deleted", nullable = false)
     private boolean isDeleted;
 
+    @Column(name = "number_of_posts")
+    private int numberOfPosts;
 
-
+    @Column(name = "following_count")
+    private int followingCount;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", referencedColumnName = "id")
     private Role role;
 
-
     @OneToMany(mappedBy = "author", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Post> posts = new HashSet<Post>();
+
 
     public int getId() {
         return id;
@@ -119,7 +120,21 @@ public class User implements UserDetails {
 
     public void setRole(Role role){this.role = role;}
 
+    public int getNumberOfPosts() {
+        return numberOfPosts;
+    }
 
+    public void setNumberOfPosts(int numberOfPosts) {
+        this.numberOfPosts = numberOfPosts;
+    }
+
+    public int getFollowingCount() {
+        return followingCount;
+    }
+
+    public void setFollowingCount(int followingCount) {
+        this.followingCount = followingCount;
+    }
 
     @JsonIgnore
     @Override
@@ -185,12 +200,14 @@ public class User implements UserDetails {
 
     public Post addPost(Post post) {
         posts.add(post);
+        numberOfPosts++;
         post.setAuthor(this);
         return post;
     }
 
     public void removePost(Post post) {
         posts.remove(post);
+        numberOfPosts--;
         post.setDeleted(true);
     }
 

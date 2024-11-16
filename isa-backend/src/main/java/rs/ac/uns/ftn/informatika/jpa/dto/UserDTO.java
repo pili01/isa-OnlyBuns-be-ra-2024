@@ -1,6 +1,8 @@
 package rs.ac.uns.ftn.informatika.jpa.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import javax.persistence.Column;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -41,7 +43,7 @@ public class UserDTO {
 
     private int numberOfPosts;
 
-    private int numberOfFollowedAccounts;
+    private int followingCount;
 
     public UserDTO() {
     }
@@ -58,15 +60,15 @@ public class UserDTO {
         this.role = role;
         this.password = password;
         this.numberOfPosts = 0;
-        this.numberOfFollowedAccounts = 0;
+        this.followingCount = 0;
     }
 
-    public int getNumberOfFollowedAccounts() {
-        return numberOfFollowedAccounts;
+    public int getFollowingCount() {
+        return followingCount;
     }
 
-    public void setNumberOfFollowedAccounts(int numberOfFollowedAccounts) {
-        this.numberOfFollowedAccounts = numberOfFollowedAccounts;
+    public void setFollowingCount(int followingCount) {
+        this.followingCount = followingCount;
     }
 
     public int getNumberOfPosts() {
