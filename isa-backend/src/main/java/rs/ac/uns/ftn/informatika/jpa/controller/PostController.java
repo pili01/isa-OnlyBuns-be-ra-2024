@@ -71,9 +71,6 @@ public class PostController {
         if (post == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        for (CommentDTO comment : post.getComments()) {
-            comment.setEmail(userService.findByUsername(comment.getAuthorUsername()).get().getEmail());
-        }
         return new ResponseEntity<>(post, HttpStatus.OK);
     }
 

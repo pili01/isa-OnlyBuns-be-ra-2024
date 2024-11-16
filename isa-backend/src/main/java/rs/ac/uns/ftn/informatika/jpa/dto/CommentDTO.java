@@ -16,7 +16,7 @@ public class CommentDTO {
     @Past
     private LocalDateTime createdAt = LocalDateTime.now();
     private String authorUsername;
-    private String email;
+    private String authorEmail;
 
     public CommentDTO() {
     }
@@ -26,15 +26,15 @@ public class CommentDTO {
         this.comment = comment.getComment();
         this.createdAt = comment.getCreatedAt();
         this.authorUsername = comment.getAuthor().getUsername();
-        this.email = comment.getAuthor().getEmail();
+        this.authorEmail = comment.getAuthor().getEmail();
     }
 
-    public CommentDTO(Integer id, String comment, LocalDateTime createdAt, String authorUsername, String email) {
+    public CommentDTO(Integer id, String comment, LocalDateTime createdAt, String authorUsername, String authorEmail) {
         this.id = id;
         this.comment = comment;
         this.createdAt = createdAt;
         this.authorUsername = authorUsername;
-        this.email = email;
+        this.authorEmail = authorEmail;
     }
 
     public Integer getId() {
@@ -69,11 +69,11 @@ public class CommentDTO {
         this.authorUsername = authorUsername;
     }
 
-    public String getEmail() {
-        return email;
+    public String getAuthorEmail() {
+        return authorEmail;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setAuthorEmail(String authorEmail) {
+        this.authorEmail = authorEmail;
     }
 }
