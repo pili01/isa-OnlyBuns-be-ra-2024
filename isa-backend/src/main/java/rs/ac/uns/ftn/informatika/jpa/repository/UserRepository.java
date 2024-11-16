@@ -24,4 +24,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     Optional<User> findByUsername(String username);
 
+    @Query("select u from User u where u.enabled = false")
+    List<User> findAllUnverified();
 }
