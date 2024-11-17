@@ -26,4 +26,10 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     @Query("select u from User u where u.enabled = false")
     List<User> findAllUnverified();
+
+    @Query("SELECT COUNT(u) FROM User u WHERE EXISTS (SELECT p FROM Post p WHERE p.author = u)")
+    long countUsersWithPosts();
+
+    @Query("SELECT COUNT(u) FROM User u WHERE EXISTS (SELECT c FROM Comment c WHERE c.author = u) AND NOT EXISTS (SELECT p FROM Post p WHERE p.author = u)")
+    long countUsersWithCommentsOnly();
 }

@@ -32,4 +32,13 @@ public interface PostRepository extends JpaRepository<Post,Integer> {
 
     @Query("select count(p) from Post p where p.author.id = ?1")
     public int getPostByAuthorId(int id);
+
+    @Query("SELECT COUNT(p) FROM Post p WHERE p.createdAt >= CURRENT_DATE - 7")
+    long countPostsByWeek();
+
+    @Query("SELECT COUNT(p) FROM Post p WHERE p.createdAt >= CURRENT_DATE - 30")
+    long countPostsByMonth();
+
+    @Query("SELECT COUNT(p) FROM Post p WHERE p.createdAt >= CURRENT_DATE - 365")
+    long countPostsByYear();
 }
