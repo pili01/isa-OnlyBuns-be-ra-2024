@@ -7,6 +7,7 @@ import rs.ac.uns.ftn.informatika.jpa.repository.PostRepository;
 import rs.ac.uns.ftn.informatika.jpa.repository.UserRepository;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -21,14 +22,17 @@ public class AnalyticsService {
     @Autowired
     private UserRepository userRepository;
 
-    public Map<String, Object> getPostsAndCommentsAnalytics() {
+    public Map<String, Object> getPostsAndCommentsAnalytics(int year) {
         Map<String, Object> analytics = new HashMap<>();
-        analytics.put("weeklyPosts", postRepository.countPostsByWeek());
-        analytics.put("monthlyPosts", postRepository.countPostsByMonth());
-        analytics.put("yearlyPosts", postRepository.countPostsByYear());
-        analytics.put("weeklyComments", commentRepository.countCommentsByWeek());
-        analytics.put("monthlyComments", commentRepository.countCommentsByMonth());
-        analytics.put("yearlyComments", commentRepository.countCommentsByYear());
+        analytics.put("monthlyPosts", postRepository.countPostsByMonth(year));
+        analytics.put("monthlyComments", commentRepository.countCommentsByMonth(year));
+        return analytics;
+    }
+
+    public Map<String, Object> getPostsAndCommentsAnalytics(int year, int month) {
+        Map<String, Object> analytics = new HashMap<>();
+        analytics.put("weeklyPosts", postRepository.countPostsByWeek(year, month));
+        analytics.put("weeklyComments", commentRepository.countCommentsByWeek(year, month));
         return analytics;
     }
 

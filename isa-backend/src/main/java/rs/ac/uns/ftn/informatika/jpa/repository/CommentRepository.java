@@ -6,15 +6,18 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import rs.ac.uns.ftn.informatika.jpa.model.Comment;
 
+import java.util.List;
+import java.util.Map;
+
 public interface CommentRepository extends JpaRepository<Comment,Integer> {
     public Page<Comment> findAll(Pageable pageable);
 
-    @Query("SELECT COUNT(c) FROM Comment c WHERE c.createdAt >= CURRENT_DATE - 7")
-    long countCommentsByWeek();
+    @Query("SELECT new map(MONTH(c.createdAt) as month, COUNT(c) as count) " +
+            "FROM Comment c WHERE YEAR(c.createdAt) = :year GROUP BY MONTH(c.createdAt)")
+    List<Map<String, Object>> countCommentsByMonth(int year);
 
-    @Query("SELECT COUNT(c) FROM Comment c WHERE c.createdAt >= CURRENT_DATE - 30")
-    long countCommentsByMonth();
-
-    @Query("SELECT COUNT(c) FROM Comment c WHERE c.createdAt >= CURRENT_DATE - 365")
-    long countCommentsByYear();
+    @Query("SELECT EXTRACT(WEEK FROM c.createdAt) AS week, COUNT(c) AS count " +
+            "FROM Comment c WHERE EXTRACT(YEAR FROM c.createdAt) = :year AND EXTRACT(MONTH FROM c.createdAt) = :month " +
+            "GROUP BY EXTRACT(WEEK FROM c.createdAt) ORDER BY week")
+    List<Map<String, Object>> countCommentsByWeek(int year, int month);
 }
