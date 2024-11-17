@@ -129,45 +129,55 @@ INSERT INTO public.posts(created_at, description, image_path, deleted, user_id, 
 VALUES ('2023-05-06', 'OPis komentara broj 2', '1731398041004-logo1.png', false, 4, 2);
 
 INSERT INTO public.comments(comment, creation_time, deleted, user_id, post_id)
-VALUES ('Komentar vezan za sliku 2', '2024-05-05', false, 5, 2);
+VALUES ('Komentar vezan za sliku 2', '2024-10-05', false, 5, 2);
 
 INSERT INTO public.comments(comment, creation_time, deleted, user_id, post_id)
-VALUES ('Komentar vezan za sliku 2', '2024-05-05', false, 6, 2);
+VALUES ('Komentar vezan za sliku 2', '2023-01-05', false, 6, 2);
 
 INSERT INTO public.comments(comment, creation_time, deleted, user_id, post_id)
-VALUES ('Komentar vezan za sliku 2', '2024-05-05', false, 3, 2);
+VALUES ('Komentar vezan za sliku 2', '2024-05-30', false, 3, 2);
 
 
 INSERT INTO public.locations(latitude, longitude,deleted)
 VALUES (44, 21,false);
 
 INSERT INTO public.posts(created_at, description, image_path, deleted, user_id, location_id)
-VALUES ('2015-09-04', 'OPis posta broj 3', '1731399240263-europski-zec-1_3673.jpg', false, 5, 3);
+VALUES ('2024-11-04', 'OPis posta broj 3', '1731398041004-logo1.png', false, 5, 3);
 
 INSERT INTO public.comments(comment, creation_time, deleted, user_id, post_id)
-VALUES ('Komentar vezan za sliku 2', '2024-05-05', false, 4, 3);
+VALUES ('Komentar vezan za sliku 2', '2024-11-05', false, 4, 3);
 
 INSERT INTO public.comments(comment, creation_time, deleted, user_id, post_id)
-VALUES ('Komentar vezan za sliku 2', '2024-05-05', false, 3, 3);
+VALUES ('Komentar vezan za sliku 2', '2024-11-09', false, 3, 3);
 
+INSERT INTO public.locations(latitude, longitude,deleted)
+VALUES (44, 21,false);
+INSERT INTO public.posts(created_at, description, image_path, deleted, user_id, location_id)
+VALUES ('2024-11-03', 'OPis posta broj 31', '1731399263270-zenka-divljeg-zeca.jpg', false, 5, 4);
+
+INSERT INTO public.comments(comment, creation_time, deleted, user_id, post_id)
+VALUES ('Komentar vezan za sliku 2', '2024-11-15', false, 6, 4);
+
+INSERT INTO public.comments(comment, creation_time, deleted, user_id, post_id)
+VALUES ('Komentar vezan za sliku 2', '2024-11-07', false, 7, 4);
 
 INSERT INTO public.locations(latitude, longitude,deleted)
 VALUES (14, 56,false);
 
 INSERT INTO public.posts(created_at, description, image_path, deleted, user_id, location_id)
-VALUES ('2010-08-06', 'OPis posta broj 4', '1731399251410-zec-slika-profil.jpg', false, 5, 4);
+VALUES ('2010-08-06', 'OPis posta broj 4', '1731399251410-zec-slika-profil.jpg', false, 5, 5);
 
 INSERT INTO public.locations(latitude, longitude,deleted)
 VALUES (44, 21,false);
 
 INSERT INTO public.posts(created_at, description, image_path, deleted, user_id, location_id)
-VALUES ('2015-09-04', 'OPis posta broj 5', '1731399263270-zenka-divljeg-zeca.jpg', false, 3, 5);
+VALUES ('2015-09-04', 'OPis posta broj 5', '1731399263270-zenka-divljeg-zeca.jpg', false, 3, 6);
 
 INSERT INTO public.locations(latitude, longitude,deleted)
 VALUES (14, 56,false);
 
 INSERT INTO public.posts(created_at, description, image_path, deleted, user_id, location_id)
-VALUES ('2010-08-06', 'OPis posta broj 6', '1731399276728-Znakovi-da-je-vas-zec-bolestan.jpg', false, 4, 6);
+VALUES ('2017-08-06', 'OPis posta broj 6', '1731399276728-Znakovi-da-je-vas-zec-bolestan.jpg', false, 4, 7);
 
 INSERT INTO public.post_likers(
     post_id, user_id)
@@ -184,7 +194,7 @@ VALUES (1, 3);
 INSERT INTO public.locations(latitude, longitude,deleted)
 VALUES (14, 56,false);
 INSERT INTO public.posts(created_at, description, image_path, deleted, user_id, location_id)
-VALUES ('2022-08-06', 'OPis posta broj 7', '1731399381518-1000_F_581886343_5UMhXzWzBdeecZz28z3ok5kiaHiCwt5v.jpg', false, 4, 7);
+VALUES ('2021-08-06', 'OPis posta broj 7', '1731399381518-1000_F_581886343_5UMhXzWzBdeecZz28z3ok5kiaHiCwt5v.jpg', false, 4, 8);
 
 INSERT INTO public.post_likers(
     post_id, user_id)

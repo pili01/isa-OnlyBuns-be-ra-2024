@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import rs.ac.uns.ftn.informatika.jpa.model.Post;
 import rs.ac.uns.ftn.informatika.jpa.model.Student;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface PostRepository extends JpaRepository<Post,Integer> {
@@ -33,12 +35,17 @@ public interface PostRepository extends JpaRepository<Post,Integer> {
     @Query("select count(p) from Post p where p.author.id = ?1")
     public int getPostByAuthorId(int id);
 
-    @Query("SELECT COUNT(p) FROM Post p WHERE p.createdAt >= CURRENT_DATE - 7")
-    long countPostsByWeek();
+    @Query("SELECT new map(MONTH(p.createdAt) as month, COUNT(p) as count) " +
+            "FROM Post p WHERE YEAR(p.createdAt) = :year GROUP BY MONTH(p.createdAt)")
+    List<Map<String, Object>> countPostsByMonth(int year);
 
-    @Query("SELECT COUNT(p) FROM Post p WHERE p.createdAt >= CURRENT_DATE - 30")
-    long countPostsByMonth();
+    @Query("SELECT EXTRACT(WEEK FROM p.createdAt) AS week, COUNT(p) AS count " +
+            "FROM Post p WHERE EXTRACT(YEAR FROM p.createdAt) = :year AND EXTRACT(MONTH FROM p.createdAt) = :month " +
+            "GROUP BY EXTRACT(WEEK FROM p.createdAt) ORDER BY week")
+    List<Map<String, Object>> countPostsByWeek(int year, int month);
 
-    @Query("SELECT COUNT(p) FROM Post p WHERE p.createdAt >= CURRENT_DATE - 365")
-    long countPostsByYear();
+    @Query("SELECT EXTRACT(YEAR FROM p.createdAt) AS year, COUNT(p) AS count " +
+            "FROM Post p GROUP BY EXTRACT(YEAR FROM p.createdAt) ORDER BY year")
+    List<Map<String, Object>> countPostsByYear();
+
 }
