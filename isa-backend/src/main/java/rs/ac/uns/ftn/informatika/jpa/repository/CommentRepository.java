@@ -20,4 +20,8 @@ public interface CommentRepository extends JpaRepository<Comment,Integer> {
             "FROM Comment c WHERE EXTRACT(YEAR FROM c.createdAt) = :year AND EXTRACT(MONTH FROM c.createdAt) = :month " +
             "GROUP BY EXTRACT(WEEK FROM c.createdAt) ORDER BY week")
     List<Map<String, Object>> countCommentsByWeek(int year, int month);
+
+    @Query("SELECT EXTRACT(YEAR FROM c.createdAt) AS year, COUNT(c) AS count " +
+            "FROM Comment c GROUP BY EXTRACT(YEAR FROM c.createdAt) ORDER BY year")
+    List<Map<String, Object>> countCommentsByYear();
 }

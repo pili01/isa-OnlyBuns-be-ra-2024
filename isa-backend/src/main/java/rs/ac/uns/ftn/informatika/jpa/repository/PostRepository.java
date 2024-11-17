@@ -44,4 +44,8 @@ public interface PostRepository extends JpaRepository<Post,Integer> {
             "GROUP BY EXTRACT(WEEK FROM p.createdAt) ORDER BY week")
     List<Map<String, Object>> countPostsByWeek(int year, int month);
 
+    @Query("SELECT EXTRACT(YEAR FROM p.createdAt) AS year, COUNT(p) AS count " +
+            "FROM Post p GROUP BY EXTRACT(YEAR FROM p.createdAt) ORDER BY year")
+    List<Map<String, Object>> countPostsByYear();
+
 }

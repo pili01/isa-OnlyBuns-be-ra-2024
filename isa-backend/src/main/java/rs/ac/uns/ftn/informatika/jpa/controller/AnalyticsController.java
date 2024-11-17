@@ -33,4 +33,10 @@ public class AnalyticsController {
     public Map<String, Object> getUserActivityAnalytics() {
         return analyticsService.getUserActivityAnalytics();
     }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("/posts-comments-by-year")
+    public Map<String, Object> getPostsAndCommentsByYear() {
+        return analyticsService.getPostsAndCommentsByYear();
+    }
 }

@@ -48,4 +48,11 @@ public class AnalyticsService {
         analytics.put("inactiveUsers", (double) inactiveUsers / totalUsers * 100);
         return analytics;
     }
+
+    public Map<String, Object> getPostsAndCommentsByYear() {
+        Map<String, Object> analytics = new HashMap<>();
+        analytics.put("yearlyPosts", postRepository.countPostsByYear());
+        analytics.put("yearlyComments", commentRepository.countCommentsByYear());
+        return analytics;
+    }
 }
