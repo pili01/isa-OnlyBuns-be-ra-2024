@@ -3,6 +3,7 @@ package rs.ac.uns.ftn.informatika.jpa.service;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,8 +16,10 @@ import rs.ac.uns.ftn.informatika.jpa.model.User;
 import rs.ac.uns.ftn.informatika.jpa.repository.PostRepository;
 import rs.ac.uns.ftn.informatika.jpa.repository.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class PostService {
@@ -116,8 +119,54 @@ public class PostService {
         return posts;
     }
 
+
     public int getNumberOfUserPosts(int id) {
         return postRepository.getPostByAuthorId(id);
     }
+
+
+
+    public long getTotalPosts() {
+        return postRepository.count();
+    }
+
+    public long getPostsLastMonth() {
+        LocalDateTime oneMonthAgo = LocalDateTime.now().minusMonths(1);
+        return postRepository.countPostsLastMonth(oneMonthAgo);
+    }
+
+
+    @Transactional(readOnly = true)
+    public Post findMostLikedPost() {
+        return postRepository.findAll()
+                .stream()
+                .max((post1, post2) -> Integer.compare(post1.getLikers().size(), post2.getLikers().size()))
+                .orElseThrow(() -> new ResourceNotFoundException("No posts available"));
+    }
+
+    @Transactional
+    public List<PostDTO> getTop10MostLikedPosts() {
+        Pageable pageable = PageRequest.of(0, 10);
+        List<Post> posts = postRepository.findTop10MostLikedPosts(pageable);
+
+        // Mapiranje entiteta Post u DTO PostDTO
+        return posts.stream()
+                .map(PostDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public List<PostDTO> getTop5MostLikedPostsLastWeek(LocalDateTime startDate) {
+        Pageable pageable = PageRequest.of(0, 5);
+        List<Post> posts = postRepository.findTop5MostLikedPostsLastWeek(startDate, pageable);
+
+        return posts.stream()
+                .map(PostDTO::new)
+                .collect(Collectors.toList());
+    }
+
+
+
+
 }
 

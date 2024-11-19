@@ -61,4 +61,18 @@ public class PostDTOMapper {
 //        }
 //        return postDTOSet;
 //    }
+
+
+    public List<PostDTO> fromPostsToDTOs(List<Post> posts) {
+        List<PostDTO> postDTOs = new ArrayList<>();
+        for (Post post : posts) {
+            postDTOs.add(fromPosttoDTO(post));
+        }
+        return postDTOs;
+    }
+
+
+
+
+
 }
