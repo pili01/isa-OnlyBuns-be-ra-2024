@@ -18,6 +18,12 @@ import java.util.Optional;
 public interface PostRepository extends JpaRepository<Post,Integer> {
     public Page<Post> findAll(Pageable pageable);
 
+    @Query("select p from Post p " +
+            "where p.author.id in " +
+            "(select u.id from User u join u.followMe f where f.id = :userId) " +
+            "order by p.createdAt desc")
+    Page<Post> findAllForHome(Pageable pageable, @Param("userId") int userId);
+
     @Query("select p from Post p join fetch p.likers l where p.id =?1")
     public Post findOneWithLikers(Integer postId); //nije radilo
     

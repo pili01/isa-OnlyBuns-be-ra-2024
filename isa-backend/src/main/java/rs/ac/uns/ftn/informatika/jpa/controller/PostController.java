@@ -75,14 +75,21 @@ public class PostController {
     }
 
     // GET /api/posts?page=0&size=5&sort=firstName,DESC
-    @GetMapping(value = "/allPaged")
-    public ResponseEntity<List<PostDTO>> getPostsPage(Pageable page) {
+    @GetMapping(value = "/allPaged/{home}")
+    public ResponseEntity<List<PostDTO>> getPostsPage(Pageable page, @PathVariable boolean home) {
 
         // page object holds data about pagination and sorting
         // the object is created based on the url parameters "page", "size" and "sort"
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-
-        Page<Post> posts = postService.findAll(page);
+        Optional<User> user = userService.findByUsername(username);
+        Page<Post> posts = null;
+        if (!home) {
+            posts = postService.findAll(page);
+        } else {
+            if (user.isPresent()) {
+                posts = postService.findAllForHome(page, user.get().getId());
+            }
+        }
 
         // convert posts to DTOs
         List<PostDTO> postsDTO = new ArrayList<>();
@@ -96,16 +103,16 @@ public class PostController {
     }
 
     @GetMapping(value = "/allUserPostsPaged/{username}")
-    public ResponseEntity<List<PostDTO>> getUserPostsPage(Pageable page,@PathVariable String username) {
+    public ResponseEntity<List<PostDTO>> getUserPostsPage(Pageable page, @PathVariable String username) {
 
         // page object holds data about pagination and sorting
         // the object is created based on the url parameters "page", "size" and "sort"
         //String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Optional<User> user=userService.findByUsername(username);
+        Optional<User> user = userService.findByUsername(username);
         if (!user.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        Page<Post> posts = postService.findAllMy(page,user.get().getId());
+        Page<Post> posts = postService.findAllMy(page, user.get().getId());
 
         // convert posts to DTOs
         List<PostDTO> postsDTO = new ArrayList<>();
@@ -154,7 +161,7 @@ public class PostController {
         Post post = postDTOMapper.fromDTOtoPost(postCreationDTO);
 //        post = author.get().addPost(post);
 //        post.setAuthor(author.get());
-        post = postService.modifyPost(postId,post);
+        post = postService.modifyPost(postId, post);
 //        PostDTO postDTO = postDTOMapper.toDTO(post);
 //        postDTO.setId(post.getId());
         return new ResponseEntity<>(new PostDTO(), HttpStatus.CREATED);
@@ -204,7 +211,7 @@ public class PostController {
         if (!author.isPresent()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        Post post = postService.remove(postId,author.get().getId() );
+        Post post = postService.remove(postId, author.get().getId());
 
         if (post == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

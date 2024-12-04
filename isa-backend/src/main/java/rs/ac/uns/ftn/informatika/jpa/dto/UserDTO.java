@@ -46,6 +46,8 @@ public class UserDTO {
 
     private int followingCount;
 
+    private int followersCount;
+
     public UserDTO() {
     }
 
@@ -62,10 +64,19 @@ public class UserDTO {
         this.password = password;
         this.numberOfPosts = 0;
         this.followingCount = 0;
+        this.followersCount = 0;
     }
 
     public int getFollowingCount() {
         return followingCount;
+    }
+
+    public int getFollowersCount() {
+        return followersCount;
+    }
+
+    public void setFollowersCount(int followersCount) {
+        this.followersCount = followersCount;
     }
 
     public void setFollowingCount(int followingCount) {

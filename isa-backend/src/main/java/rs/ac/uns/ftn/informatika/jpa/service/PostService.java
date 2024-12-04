@@ -88,6 +88,13 @@ public class PostService {
         return posts;
     }
 
+    @Transactional(readOnly = true)
+    public Page<Post> findAllForHome(Pageable pageable,int userId) {
+        Page<Post> posts=postRepository.findAllForHome(pageable,userId);
+        posts.getContent().forEach(post -> Hibernate.initialize(post.getLikers()));
+        return posts;
+    }
+
     @Transactional
     public PostDTO findOneWithComments(Integer id) {
         Post post = postRepository.findOneWithComments(id)
