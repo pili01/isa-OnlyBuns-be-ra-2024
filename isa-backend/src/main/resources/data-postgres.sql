@@ -77,7 +77,7 @@ VALUES ('Dusko Petrovica','pilipovic@gmail.com', true, 'Duško', false, 'Pilipov
 INSERT INTO public.users(address,email, enabled, first_name, deleted, last_name, password,
                          username, role_id,following_count,number_of_posts,creation_time,followers_count)
 VALUES ('Petra Petrovica','medic@gmail.com', true, 'Miloš', false, 'Medić',
-        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'medic', 2,0,2,'2020-04-08',0);
+        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'medic', 2,0,3,'2020-04-08',0);
 
 INSERT INTO public.users(address,email, enabled, first_name, deleted, last_name, password,
                          username, role_id,following_count,number_of_posts,creation_time,followers_count)

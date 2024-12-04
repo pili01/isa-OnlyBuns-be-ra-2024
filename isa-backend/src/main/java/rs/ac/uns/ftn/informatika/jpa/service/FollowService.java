@@ -27,7 +27,7 @@ public class FollowService {
     }
 
     @Transactional
-    public void followUser(String followerUsername, int followedId) {
+    public boolean followUser(String followerUsername, int followedId) {
         logger.info("> following user:{} by :{}",followedId,followerUsername);
         User follower = userRepository.findByUsernameForUpdate(followerUsername).orElseThrow(() -> new IllegalArgumentException("User not found"));
         User followed = userRepository.findByIdForUpdate(followedId).orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -50,10 +50,11 @@ public class FollowService {
         userRepository.save(follower);
         userRepository.save(followed);
         logger.info(">finished following user:{} by:{}",followedId,followerUsername);
+        return true;
     }
 
     @Transactional
-    public void unfollowUser(String followerUsername, int followedId) {
+    public boolean unfollowUser(String followerUsername, int followedId) {
         logger.info("> unfollowing user:{} by :{}",followedId,followerUsername);
         User follower = userRepository.findByUsernameForUpdate(followerUsername).orElseThrow(() -> new IllegalArgumentException("User not found."));
         User followed = userRepository.findByIdForUpdate(followedId).orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -76,5 +77,6 @@ public class FollowService {
         userRepository.save(follower);
         userRepository.save(followed);
         logger.info(">finished unfollowing user:{} by:{}",followedId,followerUsername);
+        return true;
     }
 }

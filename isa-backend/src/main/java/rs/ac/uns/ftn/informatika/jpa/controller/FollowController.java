@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import rs.ac.uns.ftn.informatika.jpa.service.FollowService;
 
 @RestController
-@RequestMapping("/api/follow")
+@RequestMapping("/api/follower")
 public class FollowController {
 
     @Autowired
@@ -19,19 +19,21 @@ public class FollowController {
 
     @PreAuthorize("hasAuthority('AUTHENTICATED')")
     @PostMapping("/follow/{followedId}")
-    public ResponseEntity<?> follow(@PathVariable int followedId) {
+    public ResponseEntity<Boolean> follow(@PathVariable int followedId) {
         String followerUsername = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        followService.followUser(followerUsername, followedId);
-        return ResponseEntity.ok().build();
+        if (followService.followUser(followerUsername, followedId))
+            return ResponseEntity.ok().build();
+        return ResponseEntity.badRequest().build();
     }
 
     @PreAuthorize("hasAuthority('AUTHENTICATED')")
     @PostMapping("/unfollow/{followedId}")
-    public ResponseEntity<?> unfollow(@PathVariable int followedId) {
+    public ResponseEntity<Boolean> unfollow(@PathVariable int followedId) {
         String followerUsername = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        followService.unfollowUser(followerUsername, followedId);
-        return ResponseEntity.ok().build();
+        if (followService.unfollowUser(followerUsername, followedId))
+            return ResponseEntity.ok().build();
+        return ResponseEntity.badRequest().build();
     }
 }

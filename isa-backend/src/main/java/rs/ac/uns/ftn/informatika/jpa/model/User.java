@@ -242,6 +242,14 @@ public class User implements UserDetails {
         followingCount--;
     }
 
+    public void decrementPostNumber() {
+        numberOfPosts--;
+    }
+
+    public void incrementPostNumber() {
+        numberOfPosts++;
+    }
+
     public boolean isDeleted() {
         return isDeleted;
     }

@@ -1,6 +1,8 @@
 package rs.ac.uns.ftn.informatika.jpa.service;
 
 import org.hibernate.Hibernate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,11 +33,20 @@ public class PostService {
     @Autowired
     private UserRepository userRepository;
 
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Transactional
     public Post findOne(Integer id) {
         return postRepository.findById(id).orElseGet(null);
     }
+
+    @Transactional
     public Post save(Post post) {
+        logger.info("> post:{} creating by :{}",post.getId(),post.getAuthor().getId());
+        User author = userRepository.findByIdForUpdate(post.getAuthor().getId()).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        author.incrementPostNumber();
+        userRepository.save(author);
+        logger.info("> finished post:{} creating by :{}",post.getId(),post.getAuthor().getId());
         return postRepository.save(post);
     }
 
@@ -44,7 +55,12 @@ public class PostService {
         Post post = findOne(id);
         if (post != null) {
             if(post.getAuthor().getId()==authorId){
+                logger.info("> post:{} deleting by :{}",post.getId(),authorId);
                 postRepository.deleteById(post.getId());
+                User author = userRepository.findByIdForUpdate(authorId).orElseThrow(() -> new IllegalArgumentException("User not found"));
+                author.incrementPostNumber();
+                userRepository.save(author);
+                logger.info("> finished post:{} deleting by :{}",post.getId(),post.getAuthor().getId());
                 return post;
             }
         }
