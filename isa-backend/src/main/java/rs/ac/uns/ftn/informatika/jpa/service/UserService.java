@@ -166,4 +166,11 @@ public class UserService {
     public Page<User> findAllWithFilters(Pageable pageable, String firstName, String lastName, String email, Integer minPosts, Integer maxPosts, String sort) {
         return userRepositoryCustom.findAllWithFilters(pageable,firstName,lastName,email,minPosts,maxPosts,sort);
     }
+
+    public Page<User> findAllFollowersWithFilters(Pageable pageable, String firstName, String lastName, String email, Integer minPosts, Integer maxPosts, String sort,int userId) {
+        return userRepositoryCustom.findAllFollowersWithFilters(pageable,firstName,lastName,email,minPosts,maxPosts,sort,userId);
+    }
+    public Page<User> findAllFollowingsWithFilters(Pageable pageable, String firstName, String lastName, String email, Integer minPosts, Integer maxPosts, String sort,int userId) {
+        return userRepositoryCustom.findAllFollowingsWithFilters(pageable,firstName,lastName,email,minPosts,maxPosts,sort,userId);
+    }
 }

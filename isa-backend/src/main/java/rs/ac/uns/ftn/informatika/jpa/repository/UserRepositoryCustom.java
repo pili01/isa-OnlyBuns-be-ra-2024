@@ -18,5 +18,13 @@ import java.util.List;
 public interface UserRepositoryCustom {
     @Query("select u from User u left join fetch u.posts")
     Page<User> findAllWithFilters(Pageable pageable, String firstName, String lastName, String email, Integer minPosts, Integer maxPosts, String sort);
+
+
+    @Query("select u from User u left join fetch u.posts where u.id  in " +
+            "(select u.id from User u join u.followByMe f where f.id = :userId)")
+    Page<User> findAllFollowersWithFilters(Pageable pageable, String firstName, String lastName, String email, Integer minPosts, Integer maxPosts, String sort,int userId);
+
+    @Query("select u from User u left join fetch u.posts")
+    Page<User> findAllFollowingsWithFilters(Pageable pageable, String firstName, String lastName, String email, Integer minPosts, Integer maxPosts, String sort,int userId);
 }
 

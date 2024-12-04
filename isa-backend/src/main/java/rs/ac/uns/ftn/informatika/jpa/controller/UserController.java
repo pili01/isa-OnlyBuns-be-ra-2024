@@ -132,6 +132,50 @@ public class UserController {
                 .collect(Collectors.toList());
     }
 
+    @GetMapping("/allFollowersPaged")
+    public List<UserDTO> getAllUserFollowersPaged(
+            @RequestParam int page,
+            @RequestParam int size,
+            @RequestParam String username,
+            @RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String lastName,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) Integer minPosts,
+            @RequestParam(required = false) Integer maxPosts,
+            @RequestParam(required = false) String sort) {
+
+        Optional<User> user = userService.findByUsername(username);
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> usersPage = userService.findAllFollowersWithFilters(pageable, firstName, lastName, email, minPosts, maxPosts, sort,user.get().getId());
+
+        return usersPage.stream()
+                .map(userDTOMapper::fromUsertoDTO)
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("/allFollowingsPaged")
+    public List<UserDTO> getAllUserFollowingsPaged(
+            @RequestParam int page,
+            @RequestParam int size,
+            @RequestParam String username,
+            @RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String lastName,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) Integer minPosts,
+            @RequestParam(required = false) Integer maxPosts,
+            @RequestParam(required = false) String sort) {
+
+        Optional<User> user = userService.findByUsername(username);
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> usersPage = userService.findAllFollowingsWithFilters(pageable, firstName, lastName, email, minPosts, maxPosts, sort,user.get().getId());
+
+        return usersPage.stream()
+                .map(userDTOMapper::fromUsertoDTO)
+                .collect(Collectors.toList());
+    }
+
     // Get user by ID
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable int id) {
