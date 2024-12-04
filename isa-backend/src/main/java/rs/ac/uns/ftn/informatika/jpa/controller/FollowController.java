@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import rs.ac.uns.ftn.informatika.jpa.additionalSerices.FollowRateLimited;
 import rs.ac.uns.ftn.informatika.jpa.service.FollowService;
 
 @RestController
@@ -17,6 +18,7 @@ public class FollowController {
     @Autowired
     private FollowService followService;
 
+    @FollowRateLimited
     @PreAuthorize("hasAuthority('AUTHENTICATED')")
     @PostMapping("/follow/{followedId}")
     public ResponseEntity<Boolean> follow(@PathVariable int followedId) {
