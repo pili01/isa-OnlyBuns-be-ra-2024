@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import rs.ac.uns.ftn.informatika.jpa.dto.UserDTO;
 import rs.ac.uns.ftn.informatika.jpa.model.Role;
@@ -65,7 +66,7 @@ public class UserService {
         return userRepository.existsById(id);
     }
 
-
+    @Transactional
     public User save(User user) {
         return userRepository.save(user);
     }
@@ -75,35 +76,45 @@ public class UserService {
     }
 
 
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE) // SERIALIZABLE je najsigurniji nivo izolacije
     public User registerUser(UserDTO userDTO) throws MessagingException {
-        if (existsByEmail(userDTO.getEmail()) || existsByUsername(userDTO.getUsername())) {
-            throw new IllegalArgumentException("User with the given email or username already exists");
+        try {
+            // Simuliraj konkurentne zahteve - čeka 5 sekundi
+            Thread.sleep(5000);
+
+            // Proveri da li korisnik već postoji
+            if (existsByEmail(userDTO.getEmail()) || existsByUsername(userDTO.getUsername())) {
+                throw new IllegalArgumentException("User with the given email or username already exists");
+            }
+
+            // Kreiraj novog korisnika
+            User user = new User();
+            user.setUsername(userDTO.getUsername());
+            user.setEmail(userDTO.getEmail());
+            user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+            user.setFirstName(userDTO.getFirstName());
+            user.setLastName(userDTO.getLastName());
+            user.setAddress((userDTO.getAddress()));
+            user.setEnabled(false);
+            user.setCreationTime(LocalDateTime.now());
+
+            // Postavi default ulogu
+            Role defaultRole = roleRepository.findByName("NOT_AUTHENTICATED")
+                    .orElseThrow(() -> new IllegalArgumentException("Role 'NOT_AUTHENTICATED' not found"));
+            user.setRole(defaultRole);
+
+            // Sačuvaj korisnika
+            user = userRepository.save(user);
+
+            // Pošalji email za verifikaciju
+            String verificationLink = "http://localhost:8080/api/users/verify?email=" + user.getEmail();
+            emailService.sendVerificationEmail(userDTO, verificationLink);
+
+            return user;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("Thread interrupted during registration", e);
         }
-
-        User user = new User();
-        user.setUsername(userDTO.getUsername());
-        user.setEmail(userDTO.getEmail());
-        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-        user.setFirstName(userDTO.getFirstName());
-        user.setLastName(userDTO.getLastName());
-        user.setAddress((userDTO.getAddress()));
-        user.setEnabled(false);
-        user.setCreationTime(LocalDateTime.now());
-
-        Role defaultRole = roleRepository.findByName("NOT_AUTHENTICATED")
-                .orElseThrow(() -> new IllegalArgumentException("Role 'NOT_AUTHENTICATED' not found"));
-
-        user.setRole(defaultRole);
-
-        user = userRepository.save(user);
-
-
-        // Slanje verifikacionog email-a
-        String verificationLink = "http://localhost:8080/api/users/verify?email=" + user.getEmail();
-        emailService.sendVerificationEmail(userDTO, verificationLink);
-
-        return user;
     }
 
 

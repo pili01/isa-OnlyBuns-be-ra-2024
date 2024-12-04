@@ -38,6 +38,7 @@ public class UserDTO {
     @Size(min = 8, message = "Password should be at least 8 characters")
     private String password;
 
+    private Boolean isUserFollowedByMe = false;
 
     private String role;
 
@@ -140,7 +141,13 @@ public class UserDTO {
         this.enabled = enabled;
     }
 
+    public Boolean getUserFollowedByMe() {
+        return isUserFollowedByMe;
+    }
 
+    public void setUserFollowedByMe(Boolean userFollowedByMe) {
+        isUserFollowedByMe = userFollowedByMe;
+    }
 
     public String getRole() {
         return role;

@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import javax.persistence.*;
@@ -24,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
         + "WHERE id = ?")
 @Where(clause = "deleted = false")
 @Entity
-@Table(name="users")
+@Table(name = "users")
 public class User implements UserDetails {
 
     private static final long serialVersionUID = 1L;
@@ -66,7 +67,28 @@ public class User implements UserDetails {
     private LocalDateTime creationTime;
 
     @Column(name = "following_count")
-    private int followingCount;
+    private int followingCount = 0;
+
+    @Column(name = "followers_count")
+    private int followersCount = 0;
+
+    // Lista korisnika koji me prate
+    @ManyToMany
+    @JoinTable(
+            name = "followers",
+            joinColumns = @JoinColumn(name = "followed_id"),
+            inverseJoinColumns = @JoinColumn(name = "follower_id")
+    )
+    private Set<User> followMe = new HashSet<>();
+
+    // Lista korisnika koje ja pratim
+    @ManyToMany
+    @JoinTable(
+            name = "followings",
+            joinColumns = @JoinColumn(name = "follower_id"),
+            inverseJoinColumns = @JoinColumn(name = "followed_id")
+    )
+    private Set<User> followByMe = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", referencedColumnName = "id")
@@ -116,16 +138,48 @@ public class User implements UserDetails {
         this.lastName = lastName;
     }
 
-    public String getAddress() { return address;}
+    public String getAddress() {
+        return address;
+    }
 
-    public void setAddress(String address) {this.address = address;}
+    public void setAddress(String address) {
+        this.address = address;
+    }
 
-    public Role getRole(){return this.role;}
+    public Role getRole() {
+        return this.role;
+    }
 
-    public void setRole(Role role){this.role = role;}
+    public void setRole(Role role) {
+        this.role = role;
+    }
 
     public int getNumberOfPosts() {
         return numberOfPosts;
+    }
+
+    public int getFollowersCount() {
+        return followersCount;
+    }
+
+    public void setFollowersCount(int followersCount) {
+        this.followersCount = followersCount;
+    }
+
+    public Set<User> getFollowMe() {
+        return followMe;
+    }
+
+    public void setFollowMe(Set<User> followMe) {
+        this.followMe = followMe;
+    }
+
+    public Set<User> getFollowByMe() {
+        return followByMe;
+    }
+
+    public void setFollowByMe(Set<User> followByMe) {
+        this.followByMe = followByMe;
     }
 
     public void setNumberOfPosts(int numberOfPosts) {
@@ -155,7 +209,6 @@ public class User implements UserDetails {
     }
 
 
-
     public String getEmail() {
         return email;
     }
@@ -173,8 +226,29 @@ public class User implements UserDetails {
         this.enabled = enabled;
     }
 
+    public void incrementFollowersCount() {
+        followersCount++;
+    }
 
+    public void decrementFollowersCount() {
+        followersCount--;
+    }
 
+    public void incrementFollowingCount() {
+        followingCount++;
+    }
+
+    public void decrementFollowingCount() {
+        followingCount--;
+    }
+
+    public void decrementPostNumber() {
+        numberOfPosts--;
+    }
+
+    public void incrementPostNumber() {
+        numberOfPosts++;
+    }
 
     public boolean isDeleted() {
         return isDeleted;
@@ -248,4 +322,23 @@ public class User implements UserDetails {
                 Objects.equals(role, user.role);
     }
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", address='" + address + '\'' +
+                ", email='" + email + '\'' +
+                ", enabled=" + enabled +
+                ", isDeleted=" + isDeleted +
+                ", numberOfPosts=" + numberOfPosts +
+                ", creationTime=" + creationTime +
+                ", followingCount=" + followingCount +
+                ", followersCount=" + followersCount +
+                ", role=" + role +
+                '}';
+    }
 }

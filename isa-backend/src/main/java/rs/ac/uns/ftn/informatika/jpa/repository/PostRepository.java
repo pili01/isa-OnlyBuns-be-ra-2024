@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import rs.ac.uns.ftn.informatika.jpa.model.Post;
 import rs.ac.uns.ftn.informatika.jpa.model.Student;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -47,5 +48,24 @@ public interface PostRepository extends JpaRepository<Post,Integer> {
     @Query("SELECT EXTRACT(YEAR FROM p.createdAt) AS year, COUNT(p) AS count " +
             "FROM Post p GROUP BY EXTRACT(YEAR FROM p.createdAt) ORDER BY year")
     List<Map<String, Object>> countPostsByYear();
+
+    long count();
+
+    @Query("SELECT COUNT(p) FROM Post p WHERE p.createdAt >= :startDate")
+    long countPostsLastMonth(@Param("startDate") LocalDateTime startDate);
+
+
+    @Query(" SELECT p FROM Post p LEFT JOIN p.likers l GROUP BY p ORDER BY COUNT(l) DESC ")
+    List<Post> findTop10MostLikedPosts(Pageable pageable);
+
+
+
+    @Query("SELECT p FROM Post p LEFT JOIN p.likers l WHERE p.createdAt >= :startDate GROUP BY p ORDER BY COUNT(l) DESC ")
+    List<Post> findTop5MostLikedPostsLastWeek(@Param("startDate") LocalDateTime startDate, Pageable pageable);
+
+
+
+
+
 
 }

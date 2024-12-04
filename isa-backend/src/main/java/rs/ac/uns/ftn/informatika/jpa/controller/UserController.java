@@ -22,6 +22,7 @@ import rs.ac.uns.ftn.informatika.jpa.model.Role;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
 import rs.ac.uns.ftn.informatika.jpa.repository.RoleRepository;
 import rs.ac.uns.ftn.informatika.jpa.repository.UserRepository;
+import rs.ac.uns.ftn.informatika.jpa.service.FollowService;
 import rs.ac.uns.ftn.informatika.jpa.service.PostService;
 import rs.ac.uns.ftn.informatika.jpa.service.UserService;
 import rs.ac.uns.ftn.informatika.jpa.mapper.UserDTOMapper;
@@ -55,6 +56,8 @@ public class UserController {
     private Token jwtToken;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private FollowService followService;
 
 
     @CrossOrigin(origins = "http://localhost:4200")
@@ -192,9 +195,17 @@ public class UserController {
 
     @GetMapping("/getUserByName/{username}")
     public ResponseEntity<UserDTO> getUserByUsername(@PathVariable String username) {
-        return userService.findByUsername(username)
-                .map(userDTOMapper::fromUsertoDTO)
-                .map(ResponseEntity::ok)
+        String loggedInUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<User> loggedInUser = userService.findByUsername(loggedInUsername);
+
+        Optional<UserDTO> userDTO=userService.findByUsername(username)
+                .map(userDTOMapper::fromUsertoDTO);
+
+        boolean isFollowed = followService.getFollowers(userDTO.get().getId()).stream()
+                .anyMatch(follower -> follower.getUsername().equals(loggedInUsername));
+
+        userDTO.get().setUserFollowedByMe(isFollowed);
+        return userDTO.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
