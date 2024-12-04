@@ -66,7 +66,7 @@ public class UserService {
         return userRepository.existsById(id);
     }
 
-
+    @Transactional
     public User save(User user) {
         return userRepository.save(user);
     }
