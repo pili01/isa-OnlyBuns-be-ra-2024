@@ -1,4 +1,5 @@
 package rs.ac.uns.ftn.informatika.jpa.dto;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import rs.ac.uns.ftn.informatika.jpa.model.*;
 
 import javax.persistence.*;
@@ -11,9 +12,11 @@ public class ChatDTO {
     private int id;
     private ChatType type; // Korisnički ili grupni čet
     private String name;
-    private UserDTO admin;
+    private String authorUsername;
+    @JsonIgnore
     private Set<UserDTO> participants=new HashSet<>();
     private Set<MessageDTO> messages=new HashSet<>();
+    private LocalDateTime lastActivity;
 
     public ChatDTO() {
     }
@@ -49,12 +52,12 @@ public class ChatDTO {
         this.name = name;
     }
 
-    public UserDTO getAdmin() {
-        return admin;
+    public String getAuthorUsername() {
+        return authorUsername;
     }
 
-    public void setAdmin(UserDTO admin) {
-        this.admin = admin;
+    public void setAuthorUsername(String authorUsername) {
+        this.authorUsername = authorUsername;
     }
 
     public Set<UserDTO> getParticipants() {
@@ -71,5 +74,13 @@ public class ChatDTO {
 
     public void setMessages(Set<MessageDTO> messages) {
         this.messages = messages;
+    }
+
+    public LocalDateTime getLastActivity() {
+        return lastActivity;
+    }
+
+    public void setLastActivity(LocalDateTime lastActivity) {
+        this.lastActivity = lastActivity;
     }
 }

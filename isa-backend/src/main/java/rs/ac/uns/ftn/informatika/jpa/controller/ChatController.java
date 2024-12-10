@@ -43,17 +43,17 @@ public class ChatController {
     }
 
     @PreAuthorize("hasAuthority('AUTHENTICATED')")
-    @GetMapping(value = "/get/{userId}")
-    public ResponseEntity<ChatDTO> getChat(@PathVariable Integer userId) {
+    @GetMapping(value = "/get/{userId}/{chatId}")
+    public ResponseEntity<ChatDTO> getChat(@PathVariable Integer userId,@PathVariable Integer chatId) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        ChatDTO chat=chatDTOMapper.fromChatToDTO(chatService.getPrivateChat(username,userId));
+        ChatDTO chat=chatDTOMapper.fromChatToDTO(chatService.getPrivateChat(username,userId,chatId));
 
         return new ResponseEntity<>(chat, HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('AUTHENTICATED')")
     @MessageMapping("/chat.sendMessage/{chatId}")
-    @SendTo("/{chatId}")
+    @SendTo("/topic/{chatId}")
     public Message sendMessage(@DestinationVariable int chatId, Message message) {
         message.setTimestamp(LocalDateTime.now());
         messageRepository.save(message);

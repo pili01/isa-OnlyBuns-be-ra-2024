@@ -1,5 +1,6 @@
 package rs.ac.uns.ftn.informatika.jpa.service;
 
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -48,7 +49,9 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public Page<User> findAll(Pageable page) { return userRepository.findAll(page); }
+    public Page<User> findAll(Pageable page) {
+        return userRepository.findAll(page);
+    }
 
     public Optional<User> findByEmail(String email) {
         return Optional.ofNullable(userRepository.findByEmail(email));
@@ -164,13 +167,23 @@ public class UserService {
     }
 
     public Page<User> findAllWithFilters(Pageable pageable, String firstName, String lastName, String email, Integer minPosts, Integer maxPosts, String sort) {
-        return userRepositoryCustom.findAllWithFilters(pageable,firstName,lastName,email,minPosts,maxPosts,sort);
+        return userRepositoryCustom.findAllWithFilters(pageable, firstName, lastName, email, minPosts, maxPosts, sort);
     }
 
-    public Page<User> findAllFollowersWithFilters(Pageable pageable, String firstName, String lastName, String email, Integer minPosts, Integer maxPosts, String sort,int userId) {
-        return userRepositoryCustom.findAllFollowersWithFilters(pageable,firstName,lastName,email,minPosts,maxPosts,sort,userId);
+    public Page<User> findAllFollowersWithFilters(Pageable pageable, String firstName, String lastName, String email, Integer minPosts, Integer maxPosts, String sort, int userId) {
+        return userRepositoryCustom.findAllFollowersWithFilters(pageable, firstName, lastName, email, minPosts, maxPosts, sort, userId);
     }
-    public Page<User> findAllFollowingsWithFilters(Pageable pageable, String firstName, String lastName, String email, Integer minPosts, Integer maxPosts, String sort,int userId) {
-        return userRepositoryCustom.findAllFollowingsWithFilters(pageable,firstName,lastName,email,minPosts,maxPosts,sort,userId);
+
+    public Page<User> findAllFollowingsWithFilters(Pageable pageable, String firstName, String lastName, String email, Integer minPosts, Integer maxPosts, String sort, int userId) {
+        return userRepositoryCustom.findAllFollowingsWithFilters(pageable, firstName, lastName, email, minPosts, maxPosts, sort, userId);
+    }
+
+    @Transactional
+    public Optional<User> findChatsByUsername(String userName) {
+        Optional<User> user = userRepository.findByUsername(userName);
+        if (user.isPresent()) {
+            Hibernate.initialize(user.get().getChats());
+        }
+        return user;
     }
 }

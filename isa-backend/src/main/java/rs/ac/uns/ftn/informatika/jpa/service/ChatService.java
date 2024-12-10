@@ -12,6 +12,7 @@ import rs.ac.uns.ftn.informatika.jpa.repository.ChatRepository;
 import rs.ac.uns.ftn.informatika.jpa.repository.MessageRepository;
 import rs.ac.uns.ftn.informatika.jpa.repository.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -36,6 +37,7 @@ public class ChatService {
         chat.setCode(ids.get(0).toString() + "," + ids.get(1).toString());
         chat.setType(ChatType.PRIVATE);
         chat.setAdmin(sender);
+        chat.setLastActivity(LocalDateTime.now());
         chat.setName(sender.getEmail() + "-" + recipient.getEmail());
         Set<Message> messages = new HashSet<>();
         Set<User> participants = new HashSet<>();
@@ -45,16 +47,29 @@ public class ChatService {
         chat.setMessages(messages);
 
         chat = chatRepository.save(chat);
+
+        if (chat != null) {
+            sender.addChat(chat);
+            recipient.addChat(chat);
+            userRepository.save(sender);
+            userRepository.save(recipient);
+        }
+
         System.out.println("Chat saved successfully with ID: " + chat.getId());
         return chat;
     }
 
     @Transactional(readOnly = false)
-    public Chat getPrivateChat(String senderUsername, int recipientId) {
-        User sender = userRepository.findByUsername(senderUsername).orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        List<Integer> ids = new ArrayList<>(Arrays.asList(recipientId, sender.getId()));
-        Collections.sort(ids);
-        Optional<Chat> chat = chatRepository.findByCode(ids.get(0).toString() + "," + ids.get(1).toString());
+    public Chat getPrivateChat(String senderUsername, int recipientId, int chatId) {
+        Optional<Chat> chat;
+        if (chatId == -1) {
+            User sender = userRepository.findByUsername(senderUsername).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+            List<Integer> ids = new ArrayList<>(Arrays.asList(recipientId, sender.getId()));
+            Collections.sort(ids);
+            chat = chatRepository.findByCode(ids.get(0).toString() + "," + ids.get(1).toString());
+        } else {
+            chat = chatRepository.findById(chatId);
+        }
         if (chat.isPresent()) {
             Hibernate.initialize(chat.get().getMessages());
             Hibernate.initialize(chat.get().getParticipants());

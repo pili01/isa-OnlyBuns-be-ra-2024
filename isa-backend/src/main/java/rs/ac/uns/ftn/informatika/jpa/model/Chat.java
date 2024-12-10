@@ -4,6 +4,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -44,6 +45,9 @@ public class Chat {
 
     @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private Set<Message> messages=new HashSet<>();
+
+    @Column(name = "lastActivity")
+    private LocalDateTime lastActivity;
 
     public Integer getId() {
         return id;
@@ -107,6 +111,14 @@ public class Chat {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public LocalDateTime getLastActivity() {
+        return lastActivity;
+    }
+
+    public void setLastActivity(LocalDateTime lastActivity) {
+        this.lastActivity = lastActivity;
     }
 
     @Override

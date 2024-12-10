@@ -16,8 +16,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import rs.ac.uns.ftn.informatika.jpa.authentification.JwtResponse;
 import rs.ac.uns.ftn.informatika.jpa.authentification.TokenBasedAuthentication;
+import rs.ac.uns.ftn.informatika.jpa.dto.ChatDTO;
 import rs.ac.uns.ftn.informatika.jpa.dto.LoginRequest;
+import rs.ac.uns.ftn.informatika.jpa.dto.PostDTO;
 import rs.ac.uns.ftn.informatika.jpa.dto.UserDTO;
+import rs.ac.uns.ftn.informatika.jpa.model.Post;
 import rs.ac.uns.ftn.informatika.jpa.model.Role;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
 import rs.ac.uns.ftn.informatika.jpa.repository.RoleRepository;
@@ -130,6 +133,22 @@ public class UserController {
         return usersPage.stream()
                 .map(userDTOMapper::fromUsertoDTO)
                 .collect(Collectors.toList());
+    }
+
+    @PreAuthorize("hasAuthority('AUTHENTICATED')")
+    @GetMapping("/allChats")
+    public ResponseEntity<UserDTO> getUserChats() {
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<User> user = userService.findChatsByUsername(userName);
+
+        if (!user.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        UserDTO userDTO = userDTOMapper.fromUsertoDTO(user.get());
+        userDTO.setChats(userDTO.getChats().stream()
+                .sorted(Comparator.comparing(ChatDTO::getLastActivity).reversed()) // Sortira po `lastActivity` opadajuće
+                .collect(Collectors.toCollection(LinkedHashSet::new)));
+        return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 
     @GetMapping("/allFollowersPaged")

@@ -43,7 +43,6 @@ public class ChatDTOMapper {
 
     public ChatDTO fromChatToDTO(Chat chat) {
         ChatDTO dto = modelMapper.map(chat, ChatDTO.class);
-        dto.setAdmin(userDTOMapper.fromUsertoDTO(chat.getAdmin()));
         return dto;
     }
 }
