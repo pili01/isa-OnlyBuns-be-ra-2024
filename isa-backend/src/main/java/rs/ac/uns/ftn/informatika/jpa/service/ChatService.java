@@ -38,7 +38,7 @@ public class ChatService {
         chat.setType(ChatType.PRIVATE);
         chat.setAdmin(sender);
         chat.setLastActivity(LocalDateTime.now());
-        chat.setName(sender.getEmail() + "-" + recipient.getEmail());
+        chat.setName(sender.getUsername() + "-" + recipient.getUsername());
         Set<Message> messages = new HashSet<>();
         Set<User> participants = new HashSet<>();
         participants.add(sender);

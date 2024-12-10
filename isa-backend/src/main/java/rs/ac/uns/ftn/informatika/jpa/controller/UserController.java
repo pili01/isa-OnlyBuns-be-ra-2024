@@ -81,7 +81,7 @@ public class UserController {
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             // Generisanje JWT tokena
-            String jwt = jwtToken.generateToken(user.getEmail());
+            String jwt = jwtToken.generateToken(user.getEmail(),user.getUsername());
 
             // Preuzimanje korisničke uloge
             String role = user.getRole().getName();
@@ -129,6 +129,21 @@ public class UserController {
 
         Pageable pageable = PageRequest.of(page, size);
         Page<User> usersPage = userService.findAllWithFilters(pageable, firstName, lastName, email, minPosts, maxPosts, sort);
+
+        return usersPage.stream()
+                .map(userDTOMapper::fromUsertoDTO)
+                .collect(Collectors.toList());
+    }
+
+    @PreAuthorize("hasAuthority('AUTHENTICATED')")
+    @GetMapping("/searchForUsers")
+    public List<UserDTO> getAllUsersPaged(
+            @RequestParam int page,
+            @RequestParam int size,
+            @RequestParam String search) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> usersPage = userService.searchUsrsByUsername(pageable,search);
 
         return usersPage.stream()
                 .map(userDTOMapper::fromUsertoDTO)

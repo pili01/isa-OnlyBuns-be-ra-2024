@@ -186,4 +186,8 @@ public class UserService {
         }
         return user;
     }
+
+    public Page<User> searchUsrsByUsername(Pageable pageable, String search) {
+        return userRepository.findAllByUsernameContainingIgnoreCase(pageable,search);
+    }
 }

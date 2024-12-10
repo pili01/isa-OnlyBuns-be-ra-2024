@@ -16,10 +16,10 @@ public class Token {
     @Autowired
     private UserService userService;
 
-    public String generateToken(String email) {
+    public String generateToken(String email,String username) {
         return Jwts.builder()
                 .setSubject(email)
-
+                .claim("username", username)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis()+1000*60*60*3))
                 .signWith(SignatureAlgorithm.HS256,SECRET_KEY)
