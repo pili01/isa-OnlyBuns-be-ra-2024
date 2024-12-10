@@ -3,17 +3,22 @@ package rs.ac.uns.ftn.informatika.jpa.mapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import rs.ac.uns.ftn.informatika.jpa.dto.ChatDTO;
 import rs.ac.uns.ftn.informatika.jpa.dto.UserDTO;
+import rs.ac.uns.ftn.informatika.jpa.model.Chat;
 import rs.ac.uns.ftn.informatika.jpa.model.Role;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
 
 @Component
-public class UserDTOMapper {
+public class ChatDTOMapper {
 
     private final ModelMapper modelMapper;
 
     @Autowired
-    public UserDTOMapper(ModelMapper modelMapper) {
+    private UserDTOMapper userDTOMapper;
+
+    @Autowired
+    public ChatDTOMapper(ModelMapper modelMapper) {
         this.modelMapper = modelMapper;
 
         // Prilagođeno pravilo za ignorisanje neinicijalizovanih kolekcija
@@ -27,24 +32,18 @@ public class UserDTOMapper {
         });
     }
 
-    public User fromDTOtoUser(UserDTO dto) {
-        User user = modelMapper.map(dto, User.class);
-        System.out.println("First Name: " + dto.getFirstName());
-        System.out.println("Last Name: " + dto.getLastName());
+    public Chat fromDTOtoChat(ChatDTO dto) {
+        Chat chat = modelMapper.map(dto, Chat.class);
+        System.out.println("Name: " + dto.getName());
+        System.out.println("Id: " + dto.getId());
         Role role = new Role();
-        role.setName(dto.getRole());
-        user.setRole(role);
 
-        return user;
+        return chat;
     }
 
-    public UserDTO fromUsertoDTO(User user) {
-        UserDTO dto = modelMapper.map(user, UserDTO.class);
-
-        if (user.getRole() != null) {
-            dto.setRole(user.getRole().getName());
-        }
-
+    public ChatDTO fromChatToDTO(Chat chat) {
+        ChatDTO dto = modelMapper.map(chat, ChatDTO.class);
+        dto.setAdmin(userDTOMapper.fromUsertoDTO(chat.getAdmin()));
         return dto;
     }
 }

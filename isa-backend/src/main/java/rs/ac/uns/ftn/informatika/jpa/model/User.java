@@ -73,7 +73,7 @@ public class User implements UserDetails {
     private int followersCount = 0;
 
     // Lista korisnika koji me prate
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "followers",
             joinColumns = @JoinColumn(name = "followed_id"),
@@ -82,7 +82,7 @@ public class User implements UserDetails {
     private Set<User> followMe = new HashSet<>();
 
     // Lista korisnika koje ja pratim
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "followings",
             joinColumns = @JoinColumn(name = "follower_id"),
@@ -97,6 +97,8 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "author", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Post> posts = new HashSet<Post>();
 
+    @ManyToMany
+    private List<Chat> chats;
 
     public int getId() {
         return id;

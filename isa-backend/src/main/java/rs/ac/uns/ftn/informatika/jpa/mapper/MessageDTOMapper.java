@@ -3,17 +3,22 @@ package rs.ac.uns.ftn.informatika.jpa.mapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import rs.ac.uns.ftn.informatika.jpa.dto.UserDTO;
+import rs.ac.uns.ftn.informatika.jpa.dto.ChatDTO;
+import rs.ac.uns.ftn.informatika.jpa.dto.MessageDTO;
+import rs.ac.uns.ftn.informatika.jpa.model.Chat;
+import rs.ac.uns.ftn.informatika.jpa.model.Message;
 import rs.ac.uns.ftn.informatika.jpa.model.Role;
-import rs.ac.uns.ftn.informatika.jpa.model.User;
 
 @Component
-public class UserDTOMapper {
+public class MessageDTOMapper {
 
     private final ModelMapper modelMapper;
 
     @Autowired
-    public UserDTOMapper(ModelMapper modelMapper) {
+    private UserDTOMapper userDTOMapper;
+
+    @Autowired
+    public MessageDTOMapper(ModelMapper modelMapper) {
         this.modelMapper = modelMapper;
 
         // Prilagođeno pravilo za ignorisanje neinicijalizovanih kolekcija
@@ -27,24 +32,17 @@ public class UserDTOMapper {
         });
     }
 
-    public User fromDTOtoUser(UserDTO dto) {
-        User user = modelMapper.map(dto, User.class);
-        System.out.println("First Name: " + dto.getFirstName());
-        System.out.println("Last Name: " + dto.getLastName());
+    public Message fromDTOtoMessage(MessageDTO dto) {
+        Message message = modelMapper.map(dto, Message.class);
+        System.out.println("Name: " + dto.getContent());
+        System.out.println("Id: " + dto.getId());
         Role role = new Role();
-        role.setName(dto.getRole());
-        user.setRole(role);
 
-        return user;
+        return message;
     }
 
-    public UserDTO fromUsertoDTO(User user) {
-        UserDTO dto = modelMapper.map(user, UserDTO.class);
-
-        if (user.getRole() != null) {
-            dto.setRole(user.getRole().getName());
-        }
-
+    public MessageDTO fromMessageToDTO(Message message) {
+        MessageDTO dto = modelMapper.map(message, MessageDTO.class);
         return dto;
     }
 }
