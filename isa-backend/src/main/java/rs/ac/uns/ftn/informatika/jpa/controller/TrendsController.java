@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import rs.ac.uns.ftn.informatika.jpa.dto.PostDTO;
 import rs.ac.uns.ftn.informatika.jpa.dto.UserDTO;
+import rs.ac.uns.ftn.informatika.jpa.dto.UserLikeDTO;
 import rs.ac.uns.ftn.informatika.jpa.model.Post;
+import rs.ac.uns.ftn.informatika.jpa.model.User;
 import rs.ac.uns.ftn.informatika.jpa.repository.PostRepository;
 import rs.ac.uns.ftn.informatika.jpa.repository.UserRepository;
 import rs.ac.uns.ftn.informatika.jpa.service.PostService;
@@ -61,6 +63,12 @@ public class TrendsController {
         LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
         return postService.getTop5MostLikedPostsLastWeek(oneWeekAgo);
     }
+
+    @GetMapping("/top-likers")
+    public List<UserLikeDTO> getTopLikers() {
+        return postService.getTop10UsersWithMostLikesLastWeek();
+    }
+
 
 
 
