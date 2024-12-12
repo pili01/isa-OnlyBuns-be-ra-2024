@@ -18,16 +18,22 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import rs.ac.uns.ftn.informatika.jpa.dto.ChatDTO;
+import rs.ac.uns.ftn.informatika.jpa.dto.MessageDTO;
 import rs.ac.uns.ftn.informatika.jpa.dto.PostDTO;
 import rs.ac.uns.ftn.informatika.jpa.mapper.ChatDTOMapper;
+import rs.ac.uns.ftn.informatika.jpa.mapper.MessageDTOMapper;
+import rs.ac.uns.ftn.informatika.jpa.mapper.PostDTOMapper;
 import rs.ac.uns.ftn.informatika.jpa.model.Message;
+import rs.ac.uns.ftn.informatika.jpa.model.User;
 import rs.ac.uns.ftn.informatika.jpa.repository.ChatRepository;
 import rs.ac.uns.ftn.informatika.jpa.repository.MessageRepository;
 import rs.ac.uns.ftn.informatika.jpa.service.ChatService;
+import rs.ac.uns.ftn.informatika.jpa.service.UserService;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "api/chat")
@@ -37,11 +43,15 @@ public class ChatController {
     private final MessageRepository messageRepository;
     @Autowired
     private ChatService chatService;
+
     @Autowired
-    private ChatRepository chatRepository;
+    private UserService userService;
 
     @Autowired
     private ChatDTOMapper chatDTOMapper;
+
+    @Autowired
+    private MessageDTOMapper messageDTOMapper;
 
     public ChatController(MessageRepository messageRepository) {
         this.messageRepository = messageRepository;
@@ -56,15 +66,20 @@ public class ChatController {
         return new ResponseEntity<>(chat, HttpStatus.OK);
     }
 
-//    @PreAuthorize("hasAnyAuthority('AUTHENTICATED')")
+    //@PreAuthorize("isAuthenticated()")
     @MessageMapping("/chat.sendMessage/{chatId}")
     @SendTo("/topic/chat/{chatId}")
-    public Message sendMessage(@DestinationVariable int chatId, @Payload String content) {
+    public MessageDTO sendMessage(@DestinationVariable int chatId, @Payload String content,Principal principal) {
          // Dobavljanje korisničkog imena iz Principal objekta
+        //String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<User> user = userService.findByUsername("userName");
+
         Message message = new Message();
-        message.setContent(content);
-        message.setTimestamp(LocalDateTime.now());
-        //message.setSender(username); // Postavljanje korisničkog imena kao pošiljaoca
-        return message;
+        if(user.isPresent()) {
+            message.setSender(user.get());
+            message.setContent(content);
+            return messageDTOMapper.fromMessageToDTO(chatService.saveMessage(chatId,message));
+        }
+        return new MessageDTO();
     }
 }

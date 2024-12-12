@@ -105,4 +105,13 @@ public class ChatService {
         Chat chat = chatRepository.findById(chatId).orElseThrow(() -> new ResourceNotFoundException("Chat not found"));
         return messageRepository.findAll(pageable);
     }
+
+    @Transactional
+    public Message saveMessage(int chatId, Message message) {
+        Chat chat = chatRepository.findById(chatId).orElseThrow(() -> new ResourceNotFoundException("Chat not found"));
+        message.setChat(chat);
+        message.setTimestamp(LocalDateTime.now());
+        chatRepository.save(chat);
+        return messageRepository.save(message);
+    }
 }
