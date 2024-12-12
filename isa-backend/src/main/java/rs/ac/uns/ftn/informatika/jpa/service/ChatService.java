@@ -111,6 +111,7 @@ public class ChatService {
         Chat chat = chatRepository.findById(chatId).orElseThrow(() -> new ResourceNotFoundException("Chat not found"));
         message.setChat(chat);
         message.setTimestamp(LocalDateTime.now());
+        chat.setLastActivity(LocalDateTime.now());
         chatRepository.save(chat);
         return messageRepository.save(message);
     }

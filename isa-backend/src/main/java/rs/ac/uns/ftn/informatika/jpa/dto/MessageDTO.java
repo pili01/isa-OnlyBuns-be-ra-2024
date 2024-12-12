@@ -20,7 +20,6 @@ public class MessageDTO {
     private String content;
     private LocalDateTime timestamp;
 
-    @JsonIgnore
     private UserDTO sender;
 
     public MessageDTO() {

@@ -65,21 +65,4 @@ public class ChatController {
 
         return new ResponseEntity<>(chat, HttpStatus.OK);
     }
-
-    //@PreAuthorize("isAuthenticated()")
-    @MessageMapping("/chat.sendMessage/{chatId}")
-    @SendTo("/topic/chat/{chatId}")
-    public MessageDTO sendMessage(@DestinationVariable int chatId, @Payload String content,Principal principal) {
-         // Dobavljanje korisničkog imena iz Principal objekta
-        //String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        Optional<User> user = userService.findByUsername("userName");
-
-        Message message = new Message();
-        if(user.isPresent()) {
-            message.setSender(user.get());
-            message.setContent(content);
-            return messageDTOMapper.fromMessageToDTO(chatService.saveMessage(chatId,message));
-        }
-        return new MessageDTO();
-    }
 }
