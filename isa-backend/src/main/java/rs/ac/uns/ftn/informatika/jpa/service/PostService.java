@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import rs.ac.uns.ftn.informatika.jpa.dto.UserLikeDTO;
 import rs.ac.uns.ftn.informatika.jpa.model.Comment;
 import rs.ac.uns.ftn.informatika.jpa.ResourceNotFoundException;
 import rs.ac.uns.ftn.informatika.jpa.dto.PostDTO;
@@ -18,6 +19,9 @@ import rs.ac.uns.ftn.informatika.jpa.model.User;
 import rs.ac.uns.ftn.informatika.jpa.repository.PostRepository;
 import rs.ac.uns.ftn.informatika.jpa.repository.UserRepository;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -32,6 +36,11 @@ public class PostService {
     private PostDTOMapper postDTOMapper;
     @Autowired
     private UserRepository userRepository;
+
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -104,19 +113,45 @@ public class PostService {
     
     public Post findOneWithLikers(Integer id){return postRepository.findOneWithLikers(id);} //nije radilo
     
+
+
     @Transactional
     public Post addLike(Integer id, User user) {
         Post post = findOne(id);
-        if(post == null){
+        if (post == null) {
             return null;
         }
 
-        if(post.getLikers().stream().anyMatch(t->t.getUsername().equalsIgnoreCase(user.getUsername()))){
-            return null;
+        // Proveri da li korisnik već lajkuje post
+        if (post.getLikers().stream().anyMatch(t -> t.getUsername().equalsIgnoreCase(user.getUsername()))) {
+            return null; // Već lajkovano
         }
+
+        // Dodaj korisnika u set likera
         post.addLike(user);
-        return postRepository.save(post);
+        Post savedPost = postRepository.save(post);
+
+        // Ažuriraj liked_at u tabeli post_likers
+        entityManager.createNativeQuery(
+                        "INSERT INTO post_likers (post_id, user_id, liked_at) " +
+                                "VALUES (:postId, :userId, :likedAt) " +
+                                "ON CONFLICT (post_id, user_id) DO UPDATE SET liked_at = :likedAt")
+                .setParameter("postId", post.getId())
+                .setParameter("userId", user.getId())
+                .setParameter("likedAt", LocalDateTime.now())
+                .executeUpdate();
+
+
+        return savedPost;
     }
+
+
+
+
+
+
+
+
 
     @Transactional
     public Post removeLike(Integer id, User user) {
@@ -185,6 +220,20 @@ public class PostService {
 
         return posts.stream()
                 .map(PostDTO::new)
+                .collect(Collectors.toList());
+    }
+
+
+    @Transactional
+    public List<UserLikeDTO> getTop10UsersWithMostLikesLastWeek() {
+        List<Object[]> results = postRepository.findTop10UsersWithMostLikesLastWeek();
+        return results.stream()
+                .map(result -> new UserLikeDTO(
+                        (Integer) result[0],  // id
+                        (String) result[1],   // username
+                        (String) result[2],   // email
+                        (BigInteger) result[3]      // likeCount
+                ))
                 .collect(Collectors.toList());
     }
 

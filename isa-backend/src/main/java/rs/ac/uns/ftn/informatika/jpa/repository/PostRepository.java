@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 import rs.ac.uns.ftn.informatika.jpa.model.Post;
 import rs.ac.uns.ftn.informatika.jpa.model.Student;
+import rs.ac.uns.ftn.informatika.jpa.model.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -68,6 +69,21 @@ public interface PostRepository extends JpaRepository<Post,Integer> {
 
     @Query("SELECT p FROM Post p LEFT JOIN p.likers l WHERE p.createdAt >= :startDate GROUP BY p ORDER BY COUNT(l) DESC ")
     List<Post> findTop5MostLikedPostsLastWeek(@Param("startDate") LocalDateTime startDate, Pageable pageable);
+
+
+
+    @Query(value =
+            "SELECT u.id, u.username, u.email, COUNT(pl.user_id) AS likeCount " +
+                    "FROM post_likers pl " +
+                    "JOIN users u ON pl.user_id = u.id " +
+                    "WHERE pl.liked_at >= CURRENT_TIMESTAMP - INTERVAL '7 DAYS' " +
+                    "GROUP BY u.id, u.username, u.email " +
+                    "ORDER BY likeCount DESC " +
+                    "LIMIT 10",
+            nativeQuery = true)
+    List<Object[]> findTop10UsersWithMostLikesLastWeek();
+
+
 
 
 

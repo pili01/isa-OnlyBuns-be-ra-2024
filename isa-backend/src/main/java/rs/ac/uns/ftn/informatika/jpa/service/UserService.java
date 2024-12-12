@@ -3,6 +3,7 @@ package rs.ac.uns.ftn.informatika.jpa.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -173,4 +174,38 @@ public class UserService {
     public Page<User> findAllFollowingsWithFilters(Pageable pageable, String firstName, String lastName, String email, Integer minPosts, Integer maxPosts, String sort,int userId) {
         return userRepositoryCustom.findAllFollowingsWithFilters(pageable,firstName,lastName,email,minPosts,maxPosts,sort,userId);
     }
+
+    public void changePassword(String username, String oldPassword, String newPassword) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new BadCredentialsException("Old password is incorrect");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
+
+
+
+    public void updateUserProfile(String username, String firstname, String lastname, String address) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        // Ažuriranje samo prosleđenih podataka
+        if (firstname != null) {
+            user.setFirstName(firstname);
+        }
+        if (lastname != null) {
+            user.setLastName(lastname);
+        }
+        if (address != null) {
+            user.setAddress(address);
+        }
+
+        userRepository.save(user);
+    }
+
+
 }

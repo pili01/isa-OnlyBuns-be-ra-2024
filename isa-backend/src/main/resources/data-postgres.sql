@@ -215,3 +215,7 @@ VALUES (7, 8);
 INSERT INTO public.followers(
     followed_id, follower_id)
 VALUES (7, 9);
+
+
+ALTER TABLE post_likers
+    ADD COLUMN liked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;

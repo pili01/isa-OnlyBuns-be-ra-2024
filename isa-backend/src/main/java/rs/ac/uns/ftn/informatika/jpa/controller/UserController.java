@@ -311,4 +311,43 @@ public class UserController {
             return ResponseEntity.badRequest().body("Verification failed or user already verified");
         }
     }
+
+
+    @PreAuthorize("hasAuthority('AUTHENTICATED')")
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(
+            @RequestBody Map<String, String> payload,
+            Authentication authentication) {
+        // Dobijanje trenutnog korisničkog imena iz konteksta autentifikacije
+        String currentUsername = authentication.getName();
+
+        // Ekstrakcija parametara iz payload-a
+        String oldPassword = payload.get("oldPassword");
+        String newPassword = payload.get("newPassword");
+
+        // Pozivanje metode servisa za promenu lozinke
+        userService.changePassword(currentUsername, oldPassword, newPassword);
+
+        // Vraćanje uspešnog odgovora
+        return ResponseEntity.ok("Password changed successfully!");
+    }
+
+    @PreAuthorize("hasAuthority('AUTHENTICATED')")
+    @PutMapping("/update-profile")
+    public ResponseEntity<?> updateProfile(@RequestBody Map<String, String> updatedData, Authentication authentication) {
+        String currentUsername = authentication.getName();
+
+        // Ažuriranje samo onih podataka koji su prosleđeni
+        userService.updateUserProfile(currentUsername,
+                updatedData.getOrDefault("firstname", null),
+                updatedData.getOrDefault("lastname", null),
+                updatedData.getOrDefault("address", null)
+        );
+
+        return ResponseEntity.ok("Profile updated successfully!");
+    }
+
+
+
+
 }
