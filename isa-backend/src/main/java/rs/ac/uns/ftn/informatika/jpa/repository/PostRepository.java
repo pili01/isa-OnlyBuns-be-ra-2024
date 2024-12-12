@@ -73,11 +73,11 @@ public interface PostRepository extends JpaRepository<Post,Integer> {
 
 
     @Query(value =
-            "SELECT u.id, u.username, u.email, COUNT(pl.user_id) AS likeCount " +
+            "SELECT u.id, u.username, u.email, u.first_name, u.last_name, COUNT(pl.user_id) AS likeCount " +
                     "FROM post_likers pl " +
                     "JOIN users u ON pl.user_id = u.id " +
                     "WHERE pl.liked_at >= CURRENT_TIMESTAMP - INTERVAL '7 DAYS' " +
-                    "GROUP BY u.id, u.username, u.email " +
+                    "GROUP BY u.id, u.username, u.email, u.first_name, u.last_name " +
                     "ORDER BY likeCount DESC " +
                     "LIMIT 10",
             nativeQuery = true)

@@ -6,12 +6,16 @@ public class UserLikeDTO {
     private Integer id;
     private String username;
     private String email;
+    private String firstName;
+    private String lastName;
     private BigInteger likeCount;
 
-    public UserLikeDTO(Integer id, String username, String email, BigInteger likeCount) {
+    public UserLikeDTO(Integer id, String username, String email, String firstName, String lastName, BigInteger likeCount) {
         this.id = id;
         this.username = username;
         this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.likeCount = likeCount;
     }
 
@@ -40,6 +44,22 @@ public class UserLikeDTO {
         this.email = email;
     }
 
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
     public BigInteger getLikeCount() {
         return likeCount;
     }
@@ -48,4 +68,3 @@ public class UserLikeDTO {
         this.likeCount = likeCount;
     }
 }
-

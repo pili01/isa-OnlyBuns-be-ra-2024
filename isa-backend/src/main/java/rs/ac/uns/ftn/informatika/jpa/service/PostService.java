@@ -227,15 +227,19 @@ public class PostService {
     @Transactional
     public List<UserLikeDTO> getTop10UsersWithMostLikesLastWeek() {
         List<Object[]> results = postRepository.findTop10UsersWithMostLikesLastWeek();
+
         return results.stream()
                 .map(result -> new UserLikeDTO(
                         (Integer) result[0],  // id
                         (String) result[1],   // username
                         (String) result[2],   // email
-                        (BigInteger) result[3]      // likeCount
+                        (String) result[3],   // firstName
+                        (String) result[4],   // lastName
+                        (BigInteger) result[5] // likeCount
                 ))
                 .collect(Collectors.toList());
     }
+
 
 
 
