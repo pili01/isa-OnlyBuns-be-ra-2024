@@ -82,11 +82,9 @@ public class WebSocketController {
                     messageToSave.setSender(user.get());
                     messageToSave.setContent(content);
                     int chatId = Integer.parseInt(messageConverted.get("chatId").toString());
-                    messageDTO = messageDTOMapper.fromMessageToDTO(chatService.saveMessage(chatId, messageToSave));
+                    messageDTO = (chatService.saveMessage(chatId, messageToSave));
                     this.simpMessagingTemplate.convertAndSend("/socket-publisher/" + (messageConverted.get("chatId")).toString(),
                             messageConverted);
-//				this.simpMessagingTemplate.convertAndSend("/socket-publisher/" + messageConverted.get("fromId"),
-//						messageConverted);
                 }
             } else {
                 this.simpMessagingTemplate.convertAndSend("/socket-publisher", messageConverted);

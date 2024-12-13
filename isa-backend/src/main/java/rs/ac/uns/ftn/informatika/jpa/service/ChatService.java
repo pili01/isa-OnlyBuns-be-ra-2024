@@ -7,6 +7,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rs.ac.uns.ftn.informatika.jpa.ResourceNotFoundException;
+import rs.ac.uns.ftn.informatika.jpa.dto.ChatDTO;
+import rs.ac.uns.ftn.informatika.jpa.dto.MessageDTO;
+import rs.ac.uns.ftn.informatika.jpa.dto.UserDTO;
+import rs.ac.uns.ftn.informatika.jpa.mapper.ChatDTOMapper;
+import rs.ac.uns.ftn.informatika.jpa.mapper.MessageDTOMapper;
+import rs.ac.uns.ftn.informatika.jpa.mapper.UserDTOMapper;
 import rs.ac.uns.ftn.informatika.jpa.model.*;
 import rs.ac.uns.ftn.informatika.jpa.repository.ChatRepository;
 import rs.ac.uns.ftn.informatika.jpa.repository.MessageRepository;
@@ -26,8 +32,15 @@ public class ChatService {
     @Autowired
     private MessageRepository messageRepository;
 
+    @Autowired
+    private ChatDTOMapper chatDTOMapper;
+    @Autowired
+    private UserDTOMapper userDTOMapper;
+    @Autowired
+    private MessageDTOMapper messageDTOMapper;
+
     @Transactional(readOnly = false)
-    public Chat createPrivateChat(String senderUsername, int recipientId) {
+    public ChatDTO createPrivateChat(String senderUsername, int recipientId) {
         User sender = userRepository.findByUsername(senderUsername).orElseThrow(() -> new ResourceNotFoundException("User not found"));
         User recipient = userRepository.findById(recipientId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
@@ -56,11 +69,11 @@ public class ChatService {
         }
 
         System.out.println("Chat saved successfully with ID: " + chat.getId());
-        return chat;
+        return chatDTOMapper.fromChatToDTO(chat);
     }
 
     @Transactional(readOnly = false)
-    public Chat getPrivateChat(String senderUsername, int recipientId, int chatId) {
+    public ChatDTO getPrivateChat(String senderUsername, int recipientId, int chatId) {
         Optional<Chat> chat;
         if (chatId == -1) {
             User sender = userRepository.findByUsername(senderUsername).orElseThrow(() -> new ResourceNotFoundException("User not found"));
@@ -73,13 +86,13 @@ public class ChatService {
         if (chat.isPresent()) {
             Hibernate.initialize(chat.get().getMessages());
             Hibernate.initialize(chat.get().getParticipants());
-            return chat.get();
+            return chatDTOMapper.fromChatToDTO(chat.get());
         }
         return createPrivateChat(senderUsername, recipientId);
     }
 
     @Transactional(readOnly = false)
-    public Chat createGroupChat(String adminUsername, String chatName) {
+    public ChatDTO createGroupChat(String adminUsername, String chatName) {
         User admin = userRepository.findByUsername(adminUsername).orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         Chat chat = new Chat();
@@ -102,11 +115,11 @@ public class ChatService {
 
         System.out.println("Group chat saved successfully with ID: " + chat.getId());
 
-        return chat;
+        return chatDTOMapper.fromChatToDTO(chat);
     }
 
     @Transactional(readOnly = false)
-    public User addUserToGroup(int chatId, String username, int userId) {
+    public UserDTO addUserToGroup(int chatId, String username, int userId) {
         Chat chat = chatRepository.findById(chatId).orElseThrow(() -> new ResourceNotFoundException("Chat not found"));
         if (chat != null) {
             Hibernate.initialize(chat.getParticipants());
@@ -115,7 +128,7 @@ public class ChatService {
                 if (chat.addParticipant(user)) {
                     chatRepository.save(chat);
                     user.addChat(chat);
-                    return userRepository.save(user);
+                    return userDTOMapper.fromUsertoDTO(userRepository.save(user));
                 }
             }
         }
@@ -129,13 +142,13 @@ public class ChatService {
     }
 
     @Transactional
-    public Message saveMessage(int chatId, Message message) {
+    public MessageDTO saveMessage(int chatId, Message message) {
         Chat chat = chatRepository.findById(chatId).orElseThrow(() -> new ResourceNotFoundException("Chat not found"));
         message.setChat(chat);
         message.setTimestamp(LocalDateTime.now());
         chat.setLastActivity(LocalDateTime.now());
         chatRepository.save(chat);
-        return messageRepository.save(message);
+        return messageDTOMapper.fromMessageToDTO(messageRepository.save(message));
     }
 
     @Transactional
@@ -149,7 +162,7 @@ public class ChatService {
     }
 
     @Transactional(readOnly = false)
-    public User removeUserFromGroup(int chatId, String username, int userId) {
+    public UserDTO removeUserFromGroup(int chatId, String username, int userId) {
         Chat chat = chatRepository.findById(chatId).orElseThrow(() -> new ResourceNotFoundException("Chat not found"));
         if (chat != null) {
             Hibernate.initialize(chat.getParticipants());
@@ -158,7 +171,7 @@ public class ChatService {
                 if (chat.removeParticipant(user)) {
                     chatRepository.save(chat);
                     user.removeChat(chat);
-                    return userRepository.save(user);
+                    return userDTOMapper.fromUsertoDTO(userRepository.save(user));
                 }
             }
         }

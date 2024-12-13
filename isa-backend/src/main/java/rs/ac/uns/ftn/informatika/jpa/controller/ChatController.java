@@ -64,7 +64,7 @@ public class ChatController {
     @GetMapping(value = "/get/{userId}/{chatId}")
     public ResponseEntity<ChatDTO> getChat(@PathVariable Integer userId, @PathVariable Integer chatId) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        ChatDTO chat = chatDTOMapper.fromChatToDTO(chatService.getPrivateChat(username, userId, chatId));
+        ChatDTO chat = chatService.getPrivateChat(username, userId, chatId);
 
         return new ResponseEntity<>(chat, HttpStatus.OK);
     }
@@ -85,29 +85,29 @@ public class ChatController {
     @PostMapping(value = "/addUserToChat/{chatId}/{userId}")
     public ResponseEntity<UserDTO> addParticipantToChat(@PathVariable Integer chatId, @PathVariable Integer userId) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = chatService.addUserToGroup(chatId, username, userId);
-        if (user == null) {
+        UserDTO userDTO = chatService.addUserToGroup(chatId, username, userId);
+        if (userDTO == null) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(userDTOMapper.fromUsertoDTO(user), HttpStatus.OK);
+        return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('AUTHENTICATED')")
     @PostMapping(value = "/removeUserFromChat/{chatId}/{userId}")
     public ResponseEntity<UserDTO> removeParticipantFromChat(@PathVariable Integer chatId, @PathVariable Integer userId) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = chatService.removeUserFromGroup(chatId, username, userId);
-        if (user == null) {
+        UserDTO userDTO = chatService.removeUserFromGroup(chatId, username, userId);
+        if (userDTO == null) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(userDTOMapper.fromUsertoDTO(user), HttpStatus.OK);
+        return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('AUTHENTICATED')")
     @PostMapping(value = "/{chatName}")
     public ResponseEntity<ChatDTO> createGroupChat(@PathVariable String chatName) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        ChatDTO chat = chatDTOMapper.fromChatToDTO(chatService.createGroupChat(username, chatName));
+        ChatDTO chat = chatService.createGroupChat(username, chatName);
 
         return new ResponseEntity<>(chat, HttpStatus.OK);
     }
