@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import rs.ac.uns.ftn.informatika.jpa.dto.UserDTO;
+import rs.ac.uns.ftn.informatika.jpa.mapper.UserDTOMapper;
 import rs.ac.uns.ftn.informatika.jpa.model.Role;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
 import rs.ac.uns.ftn.informatika.jpa.repository.RoleRepository;
@@ -38,6 +39,8 @@ public class UserService {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private UserDTOMapper userDTOMapper;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -179,13 +182,13 @@ public class UserService {
         return userRepositoryCustom.findAllFollowingsWithFilters(pageable, firstName, lastName, email, minPosts, maxPosts, sort, userId);
     }
 
-    @Transactional
-    public Optional<User> findChatsByUsername(String userName) {
+    @Transactional(readOnly = true)
+    public UserDTO findChatsByUsername(String userName) {
         Optional<User> user = userRepository.findByUsername(userName);
         if (user.isPresent()) {
             Hibernate.initialize(user.get().getChats());
         }
-        return user;
+        return userDTOMapper.fromUsertoDTO(user.get());
     }
 
     public Page<User> searchUsrsByUsername(Pageable pageable, String search) {

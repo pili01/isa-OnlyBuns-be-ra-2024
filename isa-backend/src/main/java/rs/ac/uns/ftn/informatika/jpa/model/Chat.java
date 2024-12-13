@@ -41,10 +41,10 @@ public class Chat {
     private User admin;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    private Set<User> participants=new HashSet<>();
+    private Set<User> participants = new HashSet<>();
 
-    @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private Set<Message> messages=new HashSet<>();
+    @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Message> messages = new HashSet<>();
 
     @Column(name = "lastActivity")
     private LocalDateTime lastActivity;
@@ -119,6 +119,17 @@ public class Chat {
 
     public void setLastActivity(LocalDateTime lastActivity) {
         this.lastActivity = lastActivity;
+    }
+
+    public boolean addParticipant(User user) {
+        if (participants.contains(user)) {
+            return false;
+        }
+        return participants.add(user);
+    }
+
+    public boolean removeParticipant(User user) {
+        return participants.remove(user);
     }
 
     @Override

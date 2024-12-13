@@ -75,10 +75,32 @@ public class ChatController {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Set<User> users = chatService.getChatParticipants(username, chatId);
 
-        List<UserDTO> usersDTO=users.stream()
+        List<UserDTO> usersDTO = users.stream()
                 .map(userDTOMapper::fromUsertoDTO)
                 .collect(Collectors.toList());
         return new ResponseEntity<>(usersDTO, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasAuthority('AUTHENTICATED')")
+    @PostMapping(value = "/addUserToChat/{chatId}/{userId}")
+    public ResponseEntity<UserDTO> addParticipantToChat(@PathVariable Integer chatId, @PathVariable Integer userId) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = chatService.addUserToGroup(chatId, username, userId);
+        if (user == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(userDTOMapper.fromUsertoDTO(user), HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasAuthority('AUTHENTICATED')")
+    @PostMapping(value = "/removeUserFromChat/{chatId}/{userId}")
+    public ResponseEntity<UserDTO> removeParticipantFromChat(@PathVariable Integer chatId, @PathVariable Integer userId) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = chatService.removeUserFromGroup(chatId, username, userId);
+        if (user == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(userDTOMapper.fromUsertoDTO(user), HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('AUTHENTICATED')")

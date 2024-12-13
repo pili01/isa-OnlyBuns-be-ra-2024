@@ -154,12 +154,11 @@ public class UserController {
     @GetMapping("/allChats")
     public ResponseEntity<UserDTO> getUserChats() {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        Optional<User> user = userService.findChatsByUsername(userName);
+        UserDTO userDTO = userService.findChatsByUsername(userName);
 
-        if (!user.isPresent()) {
+        if (userDTO==null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        UserDTO userDTO = userDTOMapper.fromUsertoDTO(user.get());
         userDTO.setChats(userDTO.getChats().stream()
                 .sorted(Comparator.comparing(ChatDTO::getLastActivity).reversed()) // Sortira po `lastActivity` opadajuće
                 .collect(Collectors.toCollection(LinkedHashSet::new)));

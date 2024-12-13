@@ -105,12 +105,21 @@ public class ChatService {
         return chat;
     }
 
-    public void addUserToGroup(int chatId, String username) {
+    @Transactional(readOnly = false)
+    public User addUserToGroup(int chatId, String username, int userId) {
         Chat chat = chatRepository.findById(chatId).orElseThrow(() -> new ResourceNotFoundException("Chat not found"));
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException("User not found"));
-
-        chat.getParticipants().add(user);
-        chatRepository.save(chat);
+        if (chat != null) {
+            Hibernate.initialize(chat.getParticipants());
+            if (Objects.equals(chat.getAdmin().getUsername(), username) && chat.getType() == ChatType.GROUP) {
+                User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+                if (chat.addParticipant(user)) {
+                    chatRepository.save(chat);
+                    user.addChat(chat);
+                    return userRepository.save(user);
+                }
+            }
+        }
+        return null;
     }
 
     @Transactional(readOnly = true)
@@ -137,5 +146,22 @@ public class ChatService {
             return chat.getParticipants();
         }
         return new HashSet<>();
+    }
+
+    @Transactional(readOnly = false)
+    public User removeUserFromGroup(int chatId, String username, int userId) {
+        Chat chat = chatRepository.findById(chatId).orElseThrow(() -> new ResourceNotFoundException("Chat not found"));
+        if (chat != null) {
+            Hibernate.initialize(chat.getParticipants());
+            if (Objects.equals(chat.getAdmin().getUsername(), username) && chat.getType() == ChatType.GROUP) {
+                User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+                if (chat.removeParticipant(user)) {
+                    chatRepository.save(chat);
+                    user.removeChat(chat);
+                    return userRepository.save(user);
+                }
+            }
+        }
+        return null;
     }
 }
