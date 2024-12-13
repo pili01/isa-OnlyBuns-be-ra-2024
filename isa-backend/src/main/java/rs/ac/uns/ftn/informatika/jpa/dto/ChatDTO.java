@@ -12,7 +12,7 @@ public class ChatDTO {
     private int id;
     private ChatType type; // Korisnički ili grupni čet
     private String name;
-    private String authorUsername;
+    private String adminUsername;
     @JsonIgnore
     private Set<UserDTO> participants=new HashSet<>();
     private Set<MessageDTO> messages=new HashSet<>();
@@ -26,6 +26,7 @@ public class ChatDTO {
         this.id = chat.getId();
         this.type = chat.getType();
         this.name = chat.getName();
+        this.adminUsername=chat.getAdmin().getUsername();
     }
 
     public int getId() {
@@ -52,12 +53,12 @@ public class ChatDTO {
         this.name = name;
     }
 
-    public String getAuthorUsername() {
-        return authorUsername;
+    public String getAdminUsername() {
+        return adminUsername;
     }
 
-    public void setAuthorUsername(String authorUsername) {
-        this.authorUsername = authorUsername;
+    public void setAdminUsername(String adminUsername) {
+        this.adminUsername = adminUsername;
     }
 
     public Set<UserDTO> getParticipants() {

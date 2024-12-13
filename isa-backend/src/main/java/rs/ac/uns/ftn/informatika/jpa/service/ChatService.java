@@ -78,17 +78,30 @@ public class ChatService {
         return createPrivateChat(senderUsername, recipientId);
     }
 
+    @Transactional(readOnly = false)
     public Chat createGroupChat(String adminUsername, String chatName) {
         User admin = userRepository.findByUsername(adminUsername).orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         Chat chat = new Chat();
         chat.setName(chatName);
         chat.setAdmin(admin);
+        chat.setType(ChatType.GROUP);
         Set<User> participants = new HashSet<>();
         participants.add(admin);
         chat.setParticipants(participants);
+        chat.setLastActivity(LocalDateTime.now());
+        Set<Message> messages = new HashSet<>();
+        chat.setMessages(messages);
 
-        chatRepository.save(chat);
+        chat = chatRepository.save(chat);
+
+        if (chat != null) {
+            admin.addChat(chat);
+            userRepository.save(admin);
+        }
+
+        System.out.println("Group chat saved successfully with ID: " + chat.getId());
+
         return chat;
     }
 
@@ -114,5 +127,15 @@ public class ChatService {
         chat.setLastActivity(LocalDateTime.now());
         chatRepository.save(chat);
         return messageRepository.save(message);
+    }
+
+    @Transactional
+    public Set<User> getChatParticipants(String username, Integer chatId) {
+        Chat chat = chatRepository.findById(chatId).orElseThrow(() -> new ResourceNotFoundException("Chat not found"));
+        if (chat.getType() == ChatType.GROUP) {
+            Hibernate.initialize(chat.getParticipants());
+            return chat.getParticipants();
+        }
+        return new HashSet<>();
     }
 }
