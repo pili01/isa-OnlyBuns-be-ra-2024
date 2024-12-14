@@ -3,7 +3,9 @@ package rs.ac.uns.ftn.informatika.jpa.service;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rs.ac.uns.ftn.informatika.jpa.ResourceNotFoundException;
@@ -14,6 +16,7 @@ import rs.ac.uns.ftn.informatika.jpa.mapper.ChatDTOMapper;
 import rs.ac.uns.ftn.informatika.jpa.mapper.MessageDTOMapper;
 import rs.ac.uns.ftn.informatika.jpa.mapper.UserDTOMapper;
 import rs.ac.uns.ftn.informatika.jpa.model.*;
+import rs.ac.uns.ftn.informatika.jpa.repository.ChatMemberRepository;
 import rs.ac.uns.ftn.informatika.jpa.repository.ChatRepository;
 import rs.ac.uns.ftn.informatika.jpa.repository.MessageRepository;
 import rs.ac.uns.ftn.informatika.jpa.repository.UserRepository;
@@ -31,6 +34,9 @@ public class ChatService {
 
     @Autowired
     private MessageRepository messageRepository;
+
+    @Autowired
+    private ChatMemberRepository chatMemberRepository;
 
     @Autowired
     private ChatDTOMapper chatDTOMapper;
@@ -75,8 +81,8 @@ public class ChatService {
     @Transactional(readOnly = false)
     public ChatDTO getPrivateChat(String senderUsername, int recipientId, int chatId) {
         Optional<Chat> chat;
+        User sender = userRepository.findByUsername(senderUsername).orElseThrow(() -> new ResourceNotFoundException("User not found"));
         if (chatId == -1) {
-            User sender = userRepository.findByUsername(senderUsername).orElseThrow(() -> new ResourceNotFoundException("User not found"));
             List<Integer> ids = new ArrayList<>(Arrays.asList(recipientId, sender.getId()));
             Collections.sort(ids);
             chat = chatRepository.findByCode(ids.get(0).toString() + "," + ids.get(1).toString());
@@ -84,7 +90,19 @@ public class ChatService {
             chat = chatRepository.findById(chatId);
         }
         if (chat.isPresent()) {
-            Hibernate.initialize(chat.get().getMessages());
+            if (chat.get().getType() == ChatType.PRIVATE) {
+                Hibernate.initialize(chat.get().getMessages());
+            } else {
+                ChatMember member = chatMemberRepository.findByChatIdAndUserId(chatId, sender.getId())
+                        .orElseThrow(() -> new RuntimeException("User not in chat"));
+                LocalDateTime joinedAt = member.getJoinedAt();
+
+                Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "timestamp"));
+                Set<Message> messagesBeforeJoining = new HashSet<>(messageRepository.findLastMessagesBeforeJoin(chatId, joinedAt, pageable).getContent());
+                Set<Message> messagesAfterJoining = new HashSet<>(messageRepository.findMessagesAfterJoin(chatId, joinedAt));
+                messagesAfterJoining.addAll(messagesBeforeJoining);
+                chat.get().setMessages(messagesAfterJoining);
+            }
             Hibernate.initialize(chat.get().getParticipants());
             return chatDTOMapper.fromChatToDTO(chat.get());
         }
@@ -111,6 +129,15 @@ public class ChatService {
         if (chat != null) {
             admin.addChat(chat);
             userRepository.save(admin);
+
+            Optional<ChatMember> existingMember = chatMemberRepository.findByChatIdAndUserId(chat.getId(), admin.getId());
+            if (!existingMember.isPresent()) {
+                ChatMember member = new ChatMember();
+                member.setUser(admin);
+                member.setChat(chat);
+                member.setJoinedAt(LocalDateTime.now());
+                chatMemberRepository.save(member);
+            }
         }
 
         System.out.println("Group chat saved successfully with ID: " + chat.getId());
@@ -128,6 +155,15 @@ public class ChatService {
                 if (chat.addParticipant(user)) {
                     chatRepository.save(chat);
                     user.addChat(chat);
+
+                    Optional<ChatMember> existingMember = chatMemberRepository.findByChatIdAndUserId(chatId, user.getId());
+                    if (!existingMember.isPresent()) {
+                        ChatMember member = new ChatMember();
+                        member.setUser(user);
+                        member.setChat(chat);
+                        member.setJoinedAt(LocalDateTime.now());
+                        chatMemberRepository.save(member);
+                    }
                     return userDTOMapper.fromUsertoDTO(userRepository.save(user));
                 }
             }
@@ -171,6 +207,12 @@ public class ChatService {
                 if (chat.removeParticipant(user)) {
                     chatRepository.save(chat);
                     user.removeChat(chat);
+
+                    ChatMember member = chatMemberRepository.findByChatIdAndUserId(chatId, user.getId())
+                            .orElseThrow(() -> new RuntimeException("User not in chat"));
+                    member.setDeleted(true);
+                    chatMemberRepository.save(member);
+
                     return userDTOMapper.fromUsertoDTO(userRepository.save(user));
                 }
             }
