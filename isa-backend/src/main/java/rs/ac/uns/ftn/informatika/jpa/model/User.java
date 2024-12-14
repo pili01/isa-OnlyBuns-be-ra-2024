@@ -98,7 +98,7 @@ public class User implements UserDetails {
     private Set<Post> posts = new HashSet<Post>();
 
     @ManyToMany
-    private List<Chat> chats;
+    private Set<Chat> chats=new HashSet<Chat>();
 
     public int getId() {
         return id;
@@ -293,6 +293,16 @@ public class User implements UserDetails {
         return post;
     }
 
+    public Chat addChat(Chat chat) {
+        chats.add(chat);
+        return chat;
+    }
+
+    public Chat removeChat(Chat chat) {
+        chats.remove(chat);
+        return chat;
+    }
+
     public void removePost(Post post) {
         posts.remove(post);
         numberOfPosts--;
@@ -305,6 +315,17 @@ public class User implements UserDetails {
         for (Post post : posts) {
             post.setDeleted(true);
         }
+        for (Chat chat : chats) {
+            chat.setDeleted(true);
+        }
+    }
+
+    public Set<Chat> getChats() {
+        return chats;
+    }
+
+    public void setChats(Set<Chat> chats) {
+        this.chats = chats;
     }
 
     @Override

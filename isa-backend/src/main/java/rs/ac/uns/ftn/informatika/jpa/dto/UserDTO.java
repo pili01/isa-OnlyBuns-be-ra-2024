@@ -7,6 +7,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.sql.Timestamp;
+import java.util.HashSet;
+import java.util.Set;
 
 public class UserDTO {
 
@@ -47,6 +49,8 @@ public class UserDTO {
     private int followingCount;
 
     private int followersCount;
+
+    private Set<ChatDTO> chats = new HashSet<>();
 
     public UserDTO() {
     }
@@ -166,6 +170,14 @@ public class UserDTO {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public Set<ChatDTO> getChats() {
+        return chats;
+    }
+
+    public void setChats(Set<ChatDTO> chats) {
+        this.chats = chats;
     }
 
     @Override

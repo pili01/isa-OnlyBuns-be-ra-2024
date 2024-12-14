@@ -1,14 +1,17 @@
 package rs.ac.uns.ftn.informatika.jpa.service;
 
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import rs.ac.uns.ftn.informatika.jpa.dto.UserDTO;
+import rs.ac.uns.ftn.informatika.jpa.mapper.UserDTOMapper;
 import rs.ac.uns.ftn.informatika.jpa.model.Role;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
 import rs.ac.uns.ftn.informatika.jpa.repository.RoleRepository;
@@ -36,6 +39,8 @@ public class UserService {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private UserDTOMapper userDTOMapper;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -48,7 +53,9 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public Page<User> findAll(Pageable page) { return userRepository.findAll(page); }
+    public Page<User> findAll(Pageable page) {
+        return userRepository.findAll(page);
+    }
 
     public Optional<User> findByEmail(String email) {
         return Optional.ofNullable(userRepository.findByEmail(email));
@@ -164,13 +171,61 @@ public class UserService {
     }
 
     public Page<User> findAllWithFilters(Pageable pageable, String firstName, String lastName, String email, Integer minPosts, Integer maxPosts, String sort) {
-        return userRepositoryCustom.findAllWithFilters(pageable,firstName,lastName,email,minPosts,maxPosts,sort);
+        return userRepositoryCustom.findAllWithFilters(pageable, firstName, lastName, email, minPosts, maxPosts, sort);
     }
 
-    public Page<User> findAllFollowersWithFilters(Pageable pageable, String firstName, String lastName, String email, Integer minPosts, Integer maxPosts, String sort,int userId) {
-        return userRepositoryCustom.findAllFollowersWithFilters(pageable,firstName,lastName,email,minPosts,maxPosts,sort,userId);
+    public Page<User> findAllFollowersWithFilters(Pageable pageable, String firstName, String lastName, String email, Integer minPosts, Integer maxPosts, String sort, int userId) {
+        return userRepositoryCustom.findAllFollowersWithFilters(pageable, firstName, lastName, email, minPosts, maxPosts, sort, userId);
     }
-    public Page<User> findAllFollowingsWithFilters(Pageable pageable, String firstName, String lastName, String email, Integer minPosts, Integer maxPosts, String sort,int userId) {
-        return userRepositoryCustom.findAllFollowingsWithFilters(pageable,firstName,lastName,email,minPosts,maxPosts,sort,userId);
+
+    public Page<User> findAllFollowingsWithFilters(Pageable pageable, String firstName, String lastName, String email, Integer minPosts, Integer maxPosts, String sort, int userId) {
+        return userRepositoryCustom.findAllFollowingsWithFilters(pageable, firstName, lastName, email, minPosts, maxPosts, sort, userId);
     }
+
+    @Transactional(readOnly = true)
+    public UserDTO findChatsByUsername(String userName) {
+        Optional<User> user = userRepository.findByUsername(userName);
+        if (user.isPresent()) {
+            Hibernate.initialize(user.get().getChats());
+        }
+        return userDTOMapper.fromUsertoDTO(user.get());
+    }
+
+    public Page<User> searchUsrsByUsername(Pageable pageable, String search) {
+        return userRepository.findAllByUsernameContainingIgnoreCase(pageable,search);
+    }
+
+    public void changePassword(String username, String oldPassword, String newPassword) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new BadCredentialsException("Old password is incorrect");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
+
+
+
+    public void updateUserProfile(String username, String firstname, String lastname, String address) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        // Ažuriranje samo prosleđenih podataka
+        if (firstname != null) {
+            user.setFirstName(firstname);
+        }
+        if (lastname != null) {
+            user.setLastName(lastname);
+        }
+        if (address != null) {
+            user.setAddress(address);
+        }
+
+        userRepository.save(user);
+    }
+
+
 }

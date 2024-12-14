@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import rs.ac.uns.ftn.informatika.jpa.model.Role;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
 
 import javax.persistence.LockModeType;
@@ -45,4 +46,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     @Query("SELECT u FROM User u JOIN u.followByMe f WHERE f.id = :userId")
     List<User> findFollowersByUserId(@Param("userId") Integer userId);
+
+    @Query("SELECT u FROM User u WHERE LOWER(u.username) LIKE LOWER(CONCAT('%', :search, '%')) and u.role.id=2")
+    Page<User> findAllByUsernameContainingIgnoreCase(Pageable pageable, @Param("search") String search);
+
 }

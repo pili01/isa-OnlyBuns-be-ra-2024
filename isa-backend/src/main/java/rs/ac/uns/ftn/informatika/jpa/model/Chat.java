@@ -4,6 +4,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -40,10 +41,13 @@ public class Chat {
     private User admin;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    private Set<User> participants=new HashSet<>();
+    private Set<User> participants = new HashSet<>();
 
-    @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private Set<Message> messages=new HashSet<>();
+    @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Message> messages = new HashSet<>();
+
+    @Column(name = "lastActivity")
+    private LocalDateTime lastActivity;
 
     public Integer getId() {
         return id;
@@ -107,6 +111,25 @@ public class Chat {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public LocalDateTime getLastActivity() {
+        return lastActivity;
+    }
+
+    public void setLastActivity(LocalDateTime lastActivity) {
+        this.lastActivity = lastActivity;
+    }
+
+    public boolean addParticipant(User user) {
+        if (participants.contains(user)) {
+            return false;
+        }
+        return participants.add(user);
+    }
+
+    public boolean removeParticipant(User user) {
+        return participants.remove(user);
     }
 
     @Override

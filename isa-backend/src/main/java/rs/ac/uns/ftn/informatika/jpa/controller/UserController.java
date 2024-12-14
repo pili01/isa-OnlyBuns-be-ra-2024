@@ -16,8 +16,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import rs.ac.uns.ftn.informatika.jpa.authentification.JwtResponse;
 import rs.ac.uns.ftn.informatika.jpa.authentification.TokenBasedAuthentication;
+import rs.ac.uns.ftn.informatika.jpa.dto.ChatDTO;
 import rs.ac.uns.ftn.informatika.jpa.dto.LoginRequest;
+import rs.ac.uns.ftn.informatika.jpa.dto.PostDTO;
 import rs.ac.uns.ftn.informatika.jpa.dto.UserDTO;
+import rs.ac.uns.ftn.informatika.jpa.model.Post;
 import rs.ac.uns.ftn.informatika.jpa.model.Role;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
 import rs.ac.uns.ftn.informatika.jpa.repository.RoleRepository;
@@ -78,7 +81,7 @@ public class UserController {
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             // Generisanje JWT tokena
-            String jwt = jwtToken.generateToken(user.getEmail());
+            String jwt = jwtToken.generateToken(user.getEmail(),user.getUsername());
 
             // Preuzimanje korisničke uloge
             String role = user.getRole().getName();
@@ -130,6 +133,36 @@ public class UserController {
         return usersPage.stream()
                 .map(userDTOMapper::fromUsertoDTO)
                 .collect(Collectors.toList());
+    }
+
+    @PreAuthorize("hasAuthority('AUTHENTICATED')")
+    @GetMapping("/searchForUsers")
+    public List<UserDTO> getAllUsersPaged(
+            @RequestParam int page,
+            @RequestParam int size,
+            @RequestParam String search) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> usersPage = userService.searchUsrsByUsername(pageable,search);
+
+        return usersPage.stream()
+                .map(userDTOMapper::fromUsertoDTO)
+                .collect(Collectors.toList());
+    }
+
+    @PreAuthorize("hasAuthority('AUTHENTICATED')")
+    @GetMapping("/allChats")
+    public ResponseEntity<UserDTO> getUserChats() {
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserDTO userDTO = userService.findChatsByUsername(userName);
+
+        if (userDTO==null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        userDTO.setChats(userDTO.getChats().stream()
+                .sorted(Comparator.comparing(ChatDTO::getLastActivity).reversed()) // Sortira po `lastActivity` opadajuće
+                .collect(Collectors.toCollection(LinkedHashSet::new)));
+        return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 
     @GetMapping("/allFollowersPaged")
@@ -311,4 +344,43 @@ public class UserController {
             return ResponseEntity.badRequest().body("Verification failed or user already verified");
         }
     }
+
+
+    @PreAuthorize("hasAuthority('AUTHENTICATED')")
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(
+            @RequestBody Map<String, String> payload,
+            Authentication authentication) {
+        // Dobijanje trenutnog korisničkog imena iz konteksta autentifikacije
+        String currentUsername = authentication.getName();
+
+        // Ekstrakcija parametara iz payload-a
+        String oldPassword = payload.get("oldPassword");
+        String newPassword = payload.get("newPassword");
+
+        // Pozivanje metode servisa za promenu lozinke
+        userService.changePassword(currentUsername, oldPassword, newPassword);
+
+        // Vraćanje uspešnog odgovora
+        return ResponseEntity.ok("Password changed successfully!");
+    }
+
+    @PreAuthorize("hasAuthority('AUTHENTICATED')")
+    @PutMapping("/update-profile")
+    public ResponseEntity<?> updateProfile(@RequestBody Map<String, String> updatedData, Authentication authentication) {
+        String currentUsername = authentication.getName();
+
+        // Ažuriranje samo onih podataka koji su prosleđeni
+        userService.updateUserProfile(currentUsername,
+                updatedData.getOrDefault("firstname", null),
+                updatedData.getOrDefault("lastname", null),
+                updatedData.getOrDefault("address", null)
+        );
+
+        return ResponseEntity.ok("Profile updated successfully!");
+    }
+
+
+
+
 }

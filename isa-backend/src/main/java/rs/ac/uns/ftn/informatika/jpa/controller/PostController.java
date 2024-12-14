@@ -93,6 +93,9 @@ public class PostController {
 
         // convert posts to DTOs
         List<PostDTO> postsDTO = new ArrayList<>();
+        if(posts ==null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
         for (Post p : posts) {
             PostDTO postDTO = new PostDTO(p);
             postDTO.setLikedByMe(p.getLikers().stream().anyMatch(t -> t.getUsername().equalsIgnoreCase(username)));
@@ -278,4 +281,14 @@ public class PostController {
             return ResponseEntity.status(500).build();
         }
     }
+
+
+
+
+
+
+
+
+
+
 }

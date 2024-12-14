@@ -1,5 +1,6 @@
 package rs.ac.uns.ftn.informatika.jpa.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import rs.ac.uns.ftn.informatika.jpa.model.Chat;
 import rs.ac.uns.ftn.informatika.jpa.model.ChatType;
 import rs.ac.uns.ftn.informatika.jpa.model.Message;
@@ -18,6 +19,7 @@ public class MessageDTO {
     private int id;
     private String content;
     private LocalDateTime timestamp;
+
     private UserDTO sender;
 
     public MessageDTO() {
