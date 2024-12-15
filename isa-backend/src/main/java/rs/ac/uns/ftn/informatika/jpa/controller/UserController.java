@@ -16,13 +16,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import rs.ac.uns.ftn.informatika.jpa.authentification.JwtResponse;
 import rs.ac.uns.ftn.informatika.jpa.authentification.TokenBasedAuthentication;
-import rs.ac.uns.ftn.informatika.jpa.dto.ChatDTO;
-import rs.ac.uns.ftn.informatika.jpa.dto.LoginRequest;
-import rs.ac.uns.ftn.informatika.jpa.dto.PostDTO;
-import rs.ac.uns.ftn.informatika.jpa.dto.UserDTO;
+import rs.ac.uns.ftn.informatika.jpa.dto.*;
+import rs.ac.uns.ftn.informatika.jpa.model.Location;
 import rs.ac.uns.ftn.informatika.jpa.model.Post;
 import rs.ac.uns.ftn.informatika.jpa.model.Role;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
+import rs.ac.uns.ftn.informatika.jpa.repository.LocationRepository;
 import rs.ac.uns.ftn.informatika.jpa.repository.RoleRepository;
 import rs.ac.uns.ftn.informatika.jpa.repository.UserRepository;
 import rs.ac.uns.ftn.informatika.jpa.service.FollowService;
@@ -61,6 +60,8 @@ public class UserController {
     private UserRepository userRepository;
     @Autowired
     private FollowService followService;
+    @Autowired
+    private LocationRepository locationRepository;
 
 
     @CrossOrigin(origins = "http://localhost:4200")
@@ -379,6 +380,52 @@ public class UserController {
 
         return ResponseEntity.ok("Profile updated successfully!");
     }
+
+
+    @PutMapping("/{username}/location")
+    @PreAuthorize("hasAuthority('AUTHENTICATED')")
+    public ResponseEntity<String> updateUserLocation(
+            @PathVariable String username,
+            @RequestBody LocationDTO locationDTO
+    ) {
+        Optional<User> userOptional = userService.findByUsername(username);
+
+        if (!userOptional.isPresent()) {
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        }
+
+        User user = userOptional.get();
+        Location location = new Location();
+        location.setLatitude(locationDTO.getLatitude());
+        location.setLongitude(locationDTO.getLongitude());
+        location = locationRepository.save(location);
+
+        user.setLocation(location);
+        userService.save(user);
+
+        return new ResponseEntity<>("Location updated successfully", HttpStatus.OK);
+    }
+
+
+    @GetMapping("/{username}/currentlocation")
+    @PreAuthorize("hasAuthority('AUTHENTICATED')")
+    public ResponseEntity<LocationDTO> getUserLocation(@PathVariable String username) {
+        Optional<User> user = userService.findByEmail(username);
+
+        if (user.isPresent()) {
+            Location location = user.get().getLocation();
+
+            if (location == null ) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+
+            // Vratite DTO sa podacima o lokaciji
+            return ResponseEntity.ok(new LocationDTO(location.getId(),location.getLatitude(), location.getLongitude()));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
 
 
 

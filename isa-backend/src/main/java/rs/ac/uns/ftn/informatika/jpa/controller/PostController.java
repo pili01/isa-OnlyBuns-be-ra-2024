@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "api/posts")
@@ -282,6 +283,21 @@ public class PostController {
         }
     }
 
+
+
+
+
+    @GetMapping("/locations")
+    public List<LocationDTO> getAllPostLocations() {
+
+       List<LocationDTO>lista= postService.findAll().stream()
+                .map(post -> new LocationDTO(post.getLocation().getId(),post.getLocation().getLatitude(), post.getLocation().getLongitude()))
+                .collect(Collectors.toList());
+
+        return postService.findAll().stream()
+                .map(post -> new LocationDTO(post.getLocation().getId(),post.getLocation().getLatitude(), post.getLocation().getLongitude()))
+                .collect(Collectors.toList());
+    }
 
 
 

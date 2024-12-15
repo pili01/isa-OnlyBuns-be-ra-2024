@@ -60,6 +60,20 @@ public class User implements UserDetails {
     @Column(name = "deleted", nullable = false)
     private boolean isDeleted;
 
+
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "location_id", referencedColumnName = "id")
+    private Location location;
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+
     @Column(name = "number_of_posts")
     private int numberOfPosts;
 
