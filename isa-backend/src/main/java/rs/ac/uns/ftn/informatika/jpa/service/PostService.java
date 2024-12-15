@@ -67,7 +67,7 @@ public class PostService {
                 logger.info("> post:{} deleting by :{}",post.getId(),authorId);
                 postRepository.deleteById(post.getId());
                 User author = userRepository.findByIdForUpdate(authorId).orElseThrow(() -> new IllegalArgumentException("User not found"));
-                author.incrementPostNumber();
+                author.decrementPostNumber();
                 userRepository.save(author);
                 logger.info("> finished post:{} deleting by :{}",post.getId(),post.getAuthor().getId());
                 return post;
