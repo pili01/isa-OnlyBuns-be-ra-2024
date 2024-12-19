@@ -64,7 +64,7 @@ public class UserController {
     private LocationRepository locationRepository;
 
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    @CrossOrigin(origins = {"http://localhost:58700", "http://localhost:4200"})
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         try {
@@ -388,7 +388,7 @@ public class UserController {
             @PathVariable String username,
             @RequestBody LocationDTO locationDTO
     ) {
-        Optional<User> userOptional = userService.findByUsername(username);
+        Optional<User> userOptional = userService.findByEmail(username);
 
         if (!userOptional.isPresent()) {
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
