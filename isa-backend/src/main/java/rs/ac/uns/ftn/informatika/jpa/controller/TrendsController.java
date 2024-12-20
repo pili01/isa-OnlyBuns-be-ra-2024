@@ -49,6 +49,7 @@ public class TrendsController {
         return ResponseEntity.ok(stats);
     }
 
+
     @GetMapping("/most-liked")
     public List<PostDTO> getPopularPostsAllTime() {
         List<PostDTO> postDTOs = postService.getTop10MostLikedPosts();
