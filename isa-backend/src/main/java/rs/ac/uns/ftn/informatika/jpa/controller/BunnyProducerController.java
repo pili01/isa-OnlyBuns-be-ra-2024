@@ -15,10 +15,10 @@ public class BunnyProducerController {
 
     @PostMapping("/send")
     public ResponseEntity<String> sendMessage(
-            @RequestParam String id,
+
             @RequestParam String name,
             @RequestParam String location) {
-        producerService.sendMessage("care", id, name, location);
-        return ResponseEntity.ok("Message sent: id=" + id + ", name=" + name + ", location=" + location);
+        producerService.sendMessage("care", name, location);
+        return ResponseEntity.ok("Message sent: name=" + name + ", location=" + location);
     }
 }

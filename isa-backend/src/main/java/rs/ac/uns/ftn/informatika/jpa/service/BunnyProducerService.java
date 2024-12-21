@@ -12,7 +12,7 @@ public class BunnyProducerService {
         this.exchange = exchange;
     }
 
-    public void sendMessage(String routingKey, String id, String name, String location) {
-        exchange.publish(routingKey, new Message(id, name, location));
+    public void sendMessage(String routingKey, String name, String location) {
+        exchange.publish(routingKey, new Message(name, location));
     }
 }

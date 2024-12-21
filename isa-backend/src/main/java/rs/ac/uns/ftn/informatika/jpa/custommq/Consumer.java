@@ -24,7 +24,7 @@ public class Consumer implements Runnable {
 
         // Kreiraj i sačuvaj RabbitCareLocation u bazi
         RabbitCareLocation location = new RabbitCareLocation();
-        location.setId(message.getId());
+
         location.setName(message.getName());
         location.setLocation(message.getLocation());
 

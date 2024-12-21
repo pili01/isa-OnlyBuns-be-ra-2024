@@ -8,7 +8,7 @@ public class Producer {
     }
 
     public void sendMessage(String routingKey, String id, String name, String location) {
-        Message message = new Message(id, name, location);
+        Message message = new Message( name, location);
         exchange.publish(routingKey, message);
     }
 }
