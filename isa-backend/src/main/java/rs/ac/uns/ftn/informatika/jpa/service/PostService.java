@@ -4,6 +4,8 @@ import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -50,6 +52,7 @@ public class PostService {
     }
 
     @Transactional
+    @CacheEvict(value = "trendsCache", allEntries = true)
     public Post save(Post post) {
         logger.info("> post:{} creating by :{}",post.getId(),post.getAuthor().getId());
         User author = userRepository.findByIdForUpdate(post.getAuthor().getId()).orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -60,6 +63,7 @@ public class PostService {
     }
 
     @Transactional
+    @CacheEvict(value = "trendsCache", allEntries = true)
     public Post remove(Integer id,int authorId) {
         Post post = findOne(id);
         if (post != null) {
@@ -77,6 +81,7 @@ public class PostService {
     }
 
     @Transactional
+    @CacheEvict(value = "trendsCache", allEntries = true)
     public Post modifyPost(int postId, Post modifiedPost) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found with id " + postId));
@@ -183,17 +188,21 @@ public class PostService {
     }
 
 
-
+    @Cacheable(value = "trendsCache", key = "'totalPosts'")
     public long getTotalPosts() {
+        System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL");
+
         return postRepository.count();
     }
 
+    @Cacheable(value = "trendsCache", key = "'postsLastMonth'")
     public long getPostsLastMonth() {
         LocalDateTime oneMonthAgo = LocalDateTime.now().minusMonths(1);
         return postRepository.countPostsLastMonth(oneMonthAgo);
     }
 
 
+    @Cacheable(value = "trendsCache", key = "'mostLikedPost'")
     @Transactional(readOnly = true)
     public Post findMostLikedPost() {
         return postRepository.findAll()
@@ -202,6 +211,7 @@ public class PostService {
                 .orElseThrow(() -> new ResourceNotFoundException("No posts available"));
     }
 
+    @Cacheable(value = "trendsCache", key = "'top10MostLikedPosts'")
     @Transactional
     public List<PostDTO> getTop10MostLikedPosts() {
         Pageable pageable = PageRequest.of(0, 10);
@@ -213,10 +223,13 @@ public class PostService {
                 .collect(Collectors.toList());
     }
 
+
+    @Cacheable(value = "trendsCache", key = "'top5MostLikedPostsLastWeek'")
     @Transactional
     public List<PostDTO> getTop5MostLikedPostsLastWeek(LocalDateTime startDate) {
         Pageable pageable = PageRequest.of(0, 5);
         List<Post> posts = postRepository.findTop5MostLikedPostsLastWeek(startDate, pageable);
+
 
         return posts.stream()
                 .map(PostDTO::new)
@@ -224,6 +237,7 @@ public class PostService {
     }
 
 
+    @Cacheable(value = "trendsCache", key = "'top10UsersWithMostLikesLastWeek'")
     @Transactional
     public List<UserLikeDTO> getTop10UsersWithMostLikesLastWeek() {
         List<Object[]> results = postRepository.findTop10UsersWithMostLikesLastWeek();

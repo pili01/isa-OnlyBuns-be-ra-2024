@@ -50,4 +50,10 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("SELECT u FROM User u WHERE LOWER(u.username) LIKE LOWER(CONCAT('%', :search, '%')) and u.role.id=2")
     Page<User> findAllByUsernameContainingIgnoreCase(Pageable pageable, @Param("search") String search);
 
+
+
+    @Query("SELECT COUNT(*) FROM User ")
+    long countAllUsers();
+
+
 }

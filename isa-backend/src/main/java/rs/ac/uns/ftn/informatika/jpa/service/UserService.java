@@ -23,9 +23,22 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import com.google.common.hash.BloomFilter;
+import com.google.common.hash.Funnels;
+
+
+
+
+import java.nio.charset.StandardCharsets;
 
 @Service
 public class UserService {
+
+
+    private BloomFilter<String> usernameBloomFilter;
+
+
+
 
     @Autowired
     private UserRepository userRepository;
@@ -83,14 +96,48 @@ public class UserService {
     }
 
 
+
+
+
+    public boolean checkUsernameInBloomFilter(String username) {
+        // Proverava da li korisničko ime možda postoji
+        return usernameBloomFilter.mightContain(username);
+    }
+
+    public void addUsernameToBloomFilter(String username) {
+        // Dodaje novo korisničko ime u Bloom Filter
+        usernameBloomFilter.put(username);
+    }
+
+
     @Transactional(isolation = Isolation.SERIALIZABLE) // SERIALIZABLE je najsigurniji nivo izolacije
     public User registerUser(UserDTO userDTO) throws MessagingException {
         try {
             // Simuliraj konkurentne zahteve - čeka 5 sekundi
             Thread.sleep(5000);
 
+            long estimatedUserCount = userRepository.countAllUsers();
+            this.usernameBloomFilter = BloomFilter.create(
+                    Funnels.stringFunnel(StandardCharsets.UTF_8),
+                    estimatedUserCount, // procenjeni broj korisnika
+                    0.01 // dozvoljeni procenat greške (1%)
+            );
+
+            // Popunjava Bloom Filter postojećim korisnicima
+            userRepository.findAll()
+                    .forEach(user -> usernameBloomFilter.put(user.getUsername()));
+
+
+            if (checkUsernameInBloomFilter(userDTO.getUsername())) {
+                // Ako Bloom Filter kaže da korisničko ime možda postoji, proveri u bazi
+                if (existsByUsername(userDTO.getUsername())) {
+                    throw new IllegalArgumentException("Username already exists");
+                }
+            }
+
+
             // Proveri da li korisnik već postoji
-            if (existsByEmail(userDTO.getEmail()) || existsByUsername(userDTO.getUsername())) {
+            if (existsByEmail(userDTO.getEmail())) {
                 throw new IllegalArgumentException("User with the given email or username already exists");
             }
 
