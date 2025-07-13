@@ -407,10 +407,12 @@ public class UserController {
     }
 
 
-    @GetMapping("/{username}/currentlocation")
+
+
+    @GetMapping("/currentlocation")
     @PreAuthorize("hasAuthority('AUTHENTICATED')")
-    public ResponseEntity<LocationDTO> getUserLocation(@PathVariable String username) {
-        Optional<User> user = userService.findByEmail(username);
+    public ResponseEntity<LocationDTO> getUserLocation(@RequestParam String email) {
+        Optional<User> user = userService.findByEmail(email);
 
         if (user.isPresent()) {
             Location location = user.get().getLocation();

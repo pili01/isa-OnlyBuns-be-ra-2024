@@ -18,6 +18,7 @@ import rs.ac.uns.ftn.informatika.jpa.repository.RoleRepository;
 import rs.ac.uns.ftn.informatika.jpa.repository.UserRepository;
 import rs.ac.uns.ftn.informatika.jpa.repository.UserRepositoryCustom;
 
+import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -57,6 +58,17 @@ public class UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @PostConstruct
+    public void initBloomFilter() {
+        long estimatedUserCount = userRepository.count();
+        usernameBloomFilter = BloomFilter.create(
+            Funnels.stringFunnel(StandardCharsets.UTF_8),
+            estimatedUserCount == 0 ? 1000 : estimatedUserCount,
+            0.01 // 1% greške
+        );
+        userRepository.findAll().forEach(user -> usernameBloomFilter.put(user.getUsername()));
+    }
 
     public Optional<User> findOne(int id) {
         return Optional.ofNullable(userRepository.findById(id).orElse(null));
@@ -116,25 +128,12 @@ public class UserService {
             // Simuliraj konkurentne zahteve - čeka 5 sekundi
             Thread.sleep(5000);
 
-            long estimatedUserCount = userRepository.countAllUsers();
-            this.usernameBloomFilter = BloomFilter.create(
-                    Funnels.stringFunnel(StandardCharsets.UTF_8),
-                    estimatedUserCount, // procenjeni broj korisnika
-                    0.01 // dozvoljeni procenat greške (1%)
-            );
-
-            // Popunjava Bloom Filter postojećim korisnicima
-            userRepository.findAll()
-                    .forEach(user -> usernameBloomFilter.put(user.getUsername()));
-
-
             if (checkUsernameInBloomFilter(userDTO.getUsername())) {
                 // Ako Bloom Filter kaže da korisničko ime možda postoji, proveri u bazi
                 if (existsByUsername(userDTO.getUsername())) {
                     throw new IllegalArgumentException("Username already exists");
                 }
             }
-
 
             // Proveri da li korisnik već postoji
             if (existsByEmail(userDTO.getEmail())) {
@@ -159,6 +158,9 @@ public class UserService {
 
             // Sačuvaj korisnika
             user = userRepository.save(user);
+
+            // Dodaj korisničko ime u Bloom filter
+            addUsernameToBloomFilter(user.getUsername());
 
             // Pošalji email za verifikaciju
             String verificationLink = "http://localhost:8080/api/users/verify?email=" + user.getEmail();
