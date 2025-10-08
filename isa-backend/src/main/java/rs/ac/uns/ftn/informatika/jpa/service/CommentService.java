@@ -26,4 +26,9 @@ public class CommentService {
     }
     public List<Comment> findAll() {return commentRepository.findAll();}
     public Page<Comment> findAll(Pageable pageable) {return commentRepository.findAll(pageable);}
+
+    public boolean canUserAddComment(Integer authorId) {
+        System.out.println("Broj komentara u proteklih 60 minuta: " + commentRepository.countCommentFromOneHourAgo(authorId));
+        return commentRepository.countCommentFromOneHourAgo(authorId) < 3; //3.10 60 komentara*
+    }
 }

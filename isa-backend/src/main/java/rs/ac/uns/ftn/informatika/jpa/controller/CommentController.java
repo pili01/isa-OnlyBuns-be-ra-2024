@@ -48,6 +48,11 @@ public class CommentController {
         if(!author.isPresent() || post == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+
+        if(!commentService.canUserAddComment(author.get().getId())) {
+            return new ResponseEntity<>(commentDTO, HttpStatus.TOO_MANY_REQUESTS);
+        }
+
         Comment comment = modelMapper.map(commentDTO, Comment.class);
         comment.setAuthor(author.get());
         comment.setPost(post);
@@ -58,7 +63,7 @@ public class CommentController {
         commentDTO.setId(comment.getId());
         return new ResponseEntity<>(commentDTO, HttpStatus.CREATED);
     }
-  
+
     @PreAuthorize("hasAuthority('AUTHENTICATED')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<CommentDTO> deleteComment(@PathVariable int id) {
