@@ -86,6 +86,9 @@ public class User implements UserDetails {
     @Column(name = "followers_count")
     private int followersCount = 0;
 
+    @Column(name = "last_logged_time")
+    private LocalDateTime lastLoggedTime;
+
     // Lista korisnika koji me prate
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -216,6 +219,14 @@ public class User implements UserDetails {
 
     public void setCreationTime(LocalDateTime creationTime) {
         this.creationTime = creationTime;
+    }
+
+    public LocalDateTime getLastLoggedTime() {
+        return lastLoggedTime;
+    }
+
+    public void setLastLoggedTime(LocalDateTime lastLoggedTime) {
+        this.lastLoggedTime = lastLoggedTime;
     }
 
     @JsonIgnore
@@ -373,6 +384,7 @@ public class User implements UserDetails {
                 ", isDeleted=" + isDeleted +
                 ", numberOfPosts=" + numberOfPosts +
                 ", creationTime=" + creationTime +
+                ", lastLoggedTime=" + lastLoggedTime +
                 ", followingCount=" + followingCount +
                 ", followersCount=" + followersCount +
                 ", role=" + role +

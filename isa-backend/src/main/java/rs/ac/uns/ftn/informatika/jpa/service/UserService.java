@@ -150,6 +150,7 @@ public class UserService {
             user.setAddress((userDTO.getAddress()));
             user.setEnabled(false);
             user.setCreationTime(LocalDateTime.now());
+            user.setLastLoggedTime(LocalDateTime.MIN);
 
             // Postavi default ulogu
             Role defaultRole = roleRepository.findByName("NOT_AUTHENTICATED")
@@ -255,8 +256,6 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }
-
-
 
     public void updateUserProfile(String username, String firstname, String lastname, String address) {
         User user = userRepository.findByUsername(username)
