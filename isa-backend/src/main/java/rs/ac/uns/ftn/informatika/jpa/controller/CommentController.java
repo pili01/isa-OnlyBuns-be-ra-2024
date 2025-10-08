@@ -51,11 +51,14 @@ public class CommentController {
         Comment comment = modelMapper.map(commentDTO, Comment.class);
         comment.setAuthor(author.get());
         comment.setPost(post);
-        comment = commentRepository.save(comment);
+        comment = commentService.save(comment);
+        if(comment == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         commentDTO.setId(comment.getId());
         return new ResponseEntity<>(commentDTO, HttpStatus.CREATED);
     }
-
+  
     @PreAuthorize("hasAuthority('AUTHENTICATED')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<CommentDTO> deleteComment(@PathVariable int id) {
