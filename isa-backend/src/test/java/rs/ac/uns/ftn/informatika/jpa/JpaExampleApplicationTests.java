@@ -12,6 +12,7 @@ import rs.ac.uns.ftn.informatika.jpa.service.UserService;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
 
 import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -80,4 +81,61 @@ public class JpaExampleApplicationTests {
 		Optional<User> updatedFollowed = userService.findOne(followed.get().getId());
 		assertEquals(0, updatedFollowed.get().getFollowersCount());
 	}
+
+	@Test
+	public void testConcurrentLike() throws InterruptedException {
+		//post
+//		Post post = postService.findOne(2);
+//		int likesOnStart = post.getLikers().size();
+
+		// Priprema podataka
+		User liker1 = userService.findOne(2).orElseThrow(() -> new RuntimeException("User not found"));
+		User liker2 = userService.findOne(5).orElseThrow(() -> new RuntimeException("User not found"));
+		User liker3 = userService.findOne(4).orElseThrow(() -> new RuntimeException("User not found"));
+
+		// Paralelno izvršavanje
+		Runnable task1 = () -> postService.addLike(2, liker1);
+		Runnable task2 = () -> postService.addLike(2, liker2);
+		Runnable task3 = () -> postService.addLike(2, liker3);
+
+		ExecutorService executor = Executors.newFixedThreadPool(3);
+		executor.submit(task1);
+		executor.submit(task2);
+		executor.submit(task3);
+		executor.shutdown();
+		executor.awaitTermination(10, TimeUnit.SECONDS);
+
+		// Provera rezultata
+		Post samePost = postService.findOneWithLikers(2);
+		assertEquals(5, samePost.getLikers().size());
+	}
+
+	@Test
+	public void testConcurrentUnLike() throws InterruptedException {
+		//post
+//		Post post = postService.findOne(1);
+//		int likesOnStart = post.getLikers().size();
+
+		// Priprema podataka
+		User liker1 = userService.findOne(1).orElseThrow(() -> new RuntimeException("User not found"));
+		User liker2 = userService.findOne(3).orElseThrow(() -> new RuntimeException("User not found"));
+		User liker3 = userService.findOne(4).orElseThrow(() -> new RuntimeException("User not found"));
+
+		// Paralelno izvršavanje
+		Runnable task1 = () -> postService.removeLike(1, liker1);
+		Runnable task2 = () -> postService.removeLike(1, liker2);
+		Runnable task3 = () -> postService.removeLike(1, liker3);
+
+		ExecutorService executor = Executors.newFixedThreadPool(3);
+		executor.submit(task1);
+		executor.submit(task2);
+		executor.submit(task3);
+		executor.shutdown();
+		executor.awaitTermination(10, TimeUnit.SECONDS);
+
+		// Provera rezultata
+		Post samePost = postService.findOneWithLikers(1);
+		assertEquals(1, samePost.getLikers().size());
+	}
 }
+

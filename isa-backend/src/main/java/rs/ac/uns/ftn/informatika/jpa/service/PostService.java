@@ -54,6 +54,13 @@ public class PostService {
         return postRepository.findById(id).orElseGet(null);
     }
 
+    @Transactional(readOnly = true)
+    public Post findOneWithLikers(Integer id) {
+        return postRepository.findByIdWithLikers(id)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+    }
+
+
     @Transactional
     @Caching(evict = {
             @CacheEvict(value = "trendsCache", allEntries = true),
@@ -128,13 +135,10 @@ public class PostService {
         return postDTOMapper.fromPosttoDTO(post); // mapiranje na DTO
     }
 
-    public Post findOneWithLikers(Integer id){return postRepository.findOneWithLikers(id);} //nije radilo
-
-
 
     @Transactional
     public Post addLike(Integer id, User user) {
-        Post post = findOne(id);
+        Post post = postRepository.findByIdForLike(id);
         if (post == null) {
             return null;
         }
@@ -162,17 +166,9 @@ public class PostService {
         return savedPost;
     }
 
-
-
-
-
-
-
-
-
     @Transactional
     public Post removeLike(Integer id, User user) {
-        Post post = findOne(id);
+        Post post = postRepository.findByIdForLike(id);
         if(post == null){
             return null;
         }
