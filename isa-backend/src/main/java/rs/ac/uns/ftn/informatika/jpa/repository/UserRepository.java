@@ -11,6 +11,7 @@ import rs.ac.uns.ftn.informatika.jpa.model.Role;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
 
 import javax.persistence.LockModeType;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,10 +51,17 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("SELECT u FROM User u WHERE LOWER(u.username) LIKE LOWER(CONCAT('%', :search, '%')) and u.role.id=2")
     Page<User> findAllByUsernameContainingIgnoreCase(Pageable pageable, @Param("search") String search);
 
-
+    @Query(value = "SELECT id, address, creation_time, email, enabled, first_name, followers_count, following_count, deleted, last_logged_time, last_name, number_of_posts, password, username, location_id, role_id " +
+            "FROM public.users u WHERE u.last_logged_time <= NOW() - INTERVAL '7 days' " +
+            "AND u.last_logged_time >= NOW() - INTERVAL '8 days'", nativeQuery = true)
+    List<User> findAllWhoDidntLogForSevenDays();
 
     @Query("SELECT COUNT(*) FROM User ")
     long countAllUsers();
 
+    @Query("SELECT u FROM User u JOIN u.followMe f WHERE f.id = :userId")
+    List<User> findFollowedByUserId(@Param("userId") Integer userId);
 
+    @Query(value = "SELECT COUNT(*) FROM public.followers f WHERE f.followed_id = :userId AND f.followed_at >= :followedAt", nativeQuery = true)
+    long countNewFollowers(Integer userId, LocalDateTime followedAt);
 }

@@ -49,4 +49,22 @@ public class EmailService {
         }
     }
 
+    public void sendNotificationEmail(String userEmail, String htmlMsg){
+        try{
+            MimeMessage mail = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mail, true);
+
+            helper.setTo(userEmail);
+            helper.setFrom(env.getProperty("spring.mail.username"));
+            helper.setSubject("User statistic from past 7 days");
+            helper.setText(htmlMsg, true);
+
+            System.out.println("Mail sa statistikom poslat na: " + userEmail);
+
+            javaMailSender.send(mail);
+        } catch (MessagingException e){
+            Thread.currentThread().interrupt();
+        }
+    }
+
 }

@@ -86,6 +86,9 @@ public class User implements UserDetails {
     @Column(name = "followers_count")
     private int followersCount = 0;
 
+    @Column(name = "last_logged_time")
+    private LocalDateTime lastLoggedTime;
+
     // Lista korisnika koji me prate
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -216,6 +219,14 @@ public class User implements UserDetails {
 
     public void setCreationTime(LocalDateTime creationTime) {
         this.creationTime = creationTime;
+    }
+
+    public LocalDateTime getLastLoggedTime() {
+        return lastLoggedTime;
+    }
+
+    public void setLastLoggedTime(LocalDateTime lastLoggedTime) {
+        this.lastLoggedTime = lastLoggedTime;
     }
 
     @JsonIgnore
@@ -361,21 +372,22 @@ public class User implements UserDetails {
 
     @Override
     public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", address='" + address + '\'' +
-                ", email='" + email + '\'' +
-                ", enabled=" + enabled +
-                ", isDeleted=" + isDeleted +
-                ", numberOfPosts=" + numberOfPosts +
-                ", creationTime=" + creationTime +
-                ", followingCount=" + followingCount +
-                ", followersCount=" + followersCount +
-                ", role=" + role +
-                '}';
+        return "\nUser{" +  "\n\t" +
+                "id=" + id + "\n\t" +
+                ", username='" + username + '\'' + "\n\t" +
+                ", password='" + password + '\'' + "\n\t" +
+                ", firstName='" + firstName + '\'' + "\n\t" +
+                ", lastName='" + lastName + '\'' + "\n\t" +
+                ", address='" + address + '\'' + "\n\t" +
+                ", email='" + email + '\'' + "\n\t" +
+                ", enabled=" + enabled + "\n\t" +
+                ", isDeleted=" + isDeleted + "\n\t" +
+                ", numberOfPosts=" + numberOfPosts + "\n\t" +
+                ", creationTime=" + creationTime + "\n\t" +
+                ", lastLoggedTime=" + lastLoggedTime + "\n\t" +
+                ", followingCount=" + followingCount + "\n\t" +
+                ", followersCount=" + followersCount + "\n\t" +
+                ", role=" + role + "\n" +
+                '}' + "\n";
     }
 }

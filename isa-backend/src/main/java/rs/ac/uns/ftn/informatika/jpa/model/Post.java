@@ -164,14 +164,14 @@ public class Post {
 
     @Override
     public String toString() {
-        return "Post{" +
-                "id=" + id +
-                ", description='" + description + '\'' +
-                ", path='" + imagePath + '\'' +
-                ", createdAt=" + createdAt +
-                ", isDeleted=" + isDeleted +
-                ", location=" + location +
-                ", author=" + author +
-                '}';
+        return "\nPost{" + "\n\t" +
+                "id=" + id + "\n\t"+
+                ", description='" + description + '\'' + "\n\t" +
+                ", path='" + imagePath + '\'' + "\n\t" +
+                ", createdAt=" + createdAt + "\n\t" +
+                ", isDeleted=" + isDeleted + "\n\t" +
+                ", location=" + location + "\n\t" +
+                ", author=" + author + "\n" +
+                '}' + "\n";
     }
 }

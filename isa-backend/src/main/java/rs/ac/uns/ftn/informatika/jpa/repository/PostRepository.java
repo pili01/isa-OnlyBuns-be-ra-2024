@@ -40,6 +40,9 @@ public interface PostRepository extends JpaRepository<Post,Integer> {
     @Query("select p from Post p where p.author.id = ?1")
     Page<Post> findAllMy(Pageable pageable, int userId);
 
+    @Query("select p from Post p where p.author.id = ?1")
+    List<Post> findAllMyPosts(int userId);
+
     @Query("select count(p) from Post p where p.author.id = ?1")
     public int getPostByAuthorId(int id);
 
@@ -83,11 +86,20 @@ public interface PostRepository extends JpaRepository<Post,Integer> {
             nativeQuery = true)
     List<Object[]> findTop10UsersWithMostLikesLastWeek();
 
+    @Query(value = "SELECT COUNT(*) FROM public.post_likers " +
+            "WHERE post_id IN (:postIds) " +
+            "AND liked_at >= :lastLoggedTime ",
+            nativeQuery = true)
+    long countLikesFromSevenDaysAgoForPosts(List<Integer> postIds, LocalDateTime lastLoggedTime);
 
+    @Query(value = "SELECT COUNT(*) FROM public.post_likers " +
+            "WHERE post_id IN (:postIds) ",
+            nativeQuery = true)
+    long countLikesForPosts(List<Integer> postIds);
 
+    @Query("SELECT COUNT(p) FROM Post p WHERE p.id IN (:postIds) AND p.createdAt >= :lastLoggedTime")
+    long countPostsByUserAndDate(List<Integer> postIds, LocalDateTime lastLoggedTime);
 
-
-
-
-
+    @Query("SELECT COUNT(p) FROM Post p WHERE p.id IN (:postIds)")
+    long countPostsByUser(List<Integer> postIds);
 }

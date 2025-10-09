@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import rs.ac.uns.ftn.informatika.jpa.additionalSerices.ImageCompressor;
+import rs.ac.uns.ftn.informatika.jpa.additionalSerices.StatisticsToEmail;
 import rs.ac.uns.ftn.informatika.jpa.service.UserService;
 
 import java.time.LocalDate;
@@ -16,11 +17,14 @@ public class ScheduleTask {
     private final ImageCompressor imageCompressor;
     @Autowired
     private final UserService userService;
+    @Autowired
+    private final StatisticsToEmail statisticsToEmail;
 
     // Constructor injection of ImageCompressor
-    public ScheduleTask(ImageCompressor imageCompressor, UserService userService) {
+    public ScheduleTask(ImageCompressor imageCompressor, UserService userService, StatisticsToEmail statisticsToEmail) {
         this.imageCompressor = imageCompressor;
         this.userService = userService;
+        this.statisticsToEmail = statisticsToEmail;
     }
 
     @Scheduled(cron = "23 23 23 * * *")
@@ -40,5 +44,10 @@ public class ScheduleTask {
     @Scheduled(cron = "0 0 0 * * *")
     public void compressImages() {
         imageCompressor.compressImagesInStorage();
+    }
+
+    @Scheduled(cron = " 0 0 0 * * *")
+    public void sendStatisticsToUserEmail(){
+        statisticsToEmail.sendUserStatisticToEmail();
     }
 }

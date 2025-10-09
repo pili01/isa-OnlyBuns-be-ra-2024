@@ -7,11 +7,15 @@ import org.springframework.transaction.annotation.Transactional;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
 import rs.ac.uns.ftn.informatika.jpa.repository.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 @Service
 public class FollowService {
@@ -20,6 +24,10 @@ public class FollowService {
     private UserRepository userRepository;
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Transactional(readOnly = true)
     public List<User> getFollowers(int userId) {
@@ -49,6 +57,20 @@ public class FollowService {
 
         userRepository.save(follower);
         userRepository.save(followed);
+
+        // Ažuriraj followed_at u tabeli followers i following
+        entityManager.createNativeQuery(
+                        "INSERT INTO followers (followed_id, follower_id, followed_at) " +
+                                "VALUES (:followedId, :followerId, :followedAt) " +
+                                "ON CONFLICT (followed_id, follower_id) DO UPDATE SET followed_at = :followedAt" +
+                           "INSERT INTO following (follower_id, followed_id, followed_at) " +
+                                "VALUES (:followerId, :followedId, :followedAt) " +
+                                "ON CONFLICT (follower_id, followed_id) DO UPDATE SET followed_at = :followedAt")
+                .setParameter("followedId", followed.getId())
+                .setParameter("followerId", follower.getId())
+                .setParameter("followedAt", LocalDateTime.now())
+                .executeUpdate();
+
         logger.info(">finished following user:{} by:{}",followedId,followerUsername);
         return true;
     }

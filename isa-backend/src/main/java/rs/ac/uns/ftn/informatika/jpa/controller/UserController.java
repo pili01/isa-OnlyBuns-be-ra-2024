@@ -32,6 +32,7 @@ import rs.ac.uns.ftn.informatika.jpa.token.Token;
 
 import javax.mail.MessagingException;
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -92,6 +93,8 @@ public class UserController {
                 userService.updateUser(user);
             }
 
+            user.setLastLoggedTime(LocalDateTime.now());
+            userService.updateUser(user);
 
             // Vraćamo JSON objekat sa `access_token` i `role` poljem
             Map<String, String> response = new HashMap<>();
