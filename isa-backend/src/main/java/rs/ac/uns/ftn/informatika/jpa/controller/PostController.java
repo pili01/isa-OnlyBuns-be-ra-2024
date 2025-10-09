@@ -290,13 +290,16 @@ public class PostController {
     @GetMapping("/locations")
     public List<LocationDTO> getAllPostLocations() {
 
-       List<LocationDTO>lista= postService.findAll().stream()
-                .map(post -> new LocationDTO(post.getLocation().getId(),post.getLocation().getLatitude(), post.getLocation().getLongitude()))
-                .collect(Collectors.toList());
+        System.out.println("\n\nEVO GAAAAAAA\n\n");
+//       List<LocationDTO>lista= postService.findAll().stream()
+//                .map(post -> new LocationDTO(post.getLocation().getId(),post.getLocation().getLatitude(), post.getLocation().getLongitude()))
+//                .collect(Collectors.toList());
+//
+//        return postService.findAll().stream()
+//                .map(post -> new LocationDTO(post.getLocation().getId(),post.getLocation().getLatitude(), post.getLocation().getLongitude()))
+//                .collect(Collectors.toList());
 
-        return postService.findAll().stream()
-                .map(post -> new LocationDTO(post.getLocation().getId(),post.getLocation().getLatitude(), post.getLocation().getLongitude()))
-                .collect(Collectors.toList());
+        return postService.getAllPostLocations();
     }
 
 

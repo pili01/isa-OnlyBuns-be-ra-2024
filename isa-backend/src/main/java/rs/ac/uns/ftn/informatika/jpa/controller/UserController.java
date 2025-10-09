@@ -391,48 +391,27 @@ public class UserController {
             @PathVariable String username,
             @RequestBody LocationDTO locationDTO
     ) {
-        Optional<User> userOptional = userService.findByEmail(username);
+        User user = userService.saveLocation(username, locationDTO);
 
-        if (!userOptional.isPresent()) {
+        if (user == null) {
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
         }
-
-        User user = userOptional.get();
-        Location location = new Location();
-        location.setLatitude(locationDTO.getLatitude());
-        location.setLongitude(locationDTO.getLongitude());
-        location = locationRepository.save(location);
-
-        user.setLocation(location);
-        userService.save(user);
 
         return new ResponseEntity<>("Location updated successfully", HttpStatus.OK);
     }
 
-
-
-
     @GetMapping("/currentlocation")
     @PreAuthorize("hasAuthority('AUTHENTICATED')")
     public ResponseEntity<LocationDTO> getUserLocation(@RequestParam String email) {
-        Optional<User> user = userService.findByEmail(email);
 
-        if (user.isPresent()) {
-            Location location = user.get().getLocation();
+        System.out.println("\n\nIDEMO GETUJEMOOOOOO LOKACIJE\n\n");
+        Location location = userService.getLocationByEmail(email);
 
-            if (location == null ) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            }
-
-            // Vratite DTO sa podacima o lokaciji
-            return ResponseEntity.ok(new LocationDTO(location.getId(),location.getLatitude(), location.getLongitude()));
-        } else {
+        if (location == null || location.getId() == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+            // Vratite DTO sa podacima o lokaciji
+         return ResponseEntity.ok(new LocationDTO(location.getId(),location.getLatitude(), location.getLongitude()));
     }
-
-
-
-
 
 }

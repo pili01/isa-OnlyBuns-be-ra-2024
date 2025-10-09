@@ -67,17 +67,17 @@ VALUES ('Petra Petrovica','admin@gmail.com', true, 'Admin', false, 'Adminić',
 INSERT INTO public.users(address,email, enabled, first_name, deleted, last_name, password,
                          username, role_id,following_count,number_of_posts,creation_time,followers_count, last_logged_time)
 VALUES ('Petra Petrovica','papovic@gmail.com', true, 'Ognjen', false, 'Papović',
-        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'papovic', 2,0,2,'2021-04-09',0, '2025-09-08');
+        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'papovic', 2,0,0,'2021-04-09',0, '2025-09-08');
 
 INSERT INTO public.users(address,email, enabled, first_name, deleted, last_name, password,
                          username, role_id,following_count,number_of_posts,creation_time,followers_count, last_logged_time)
 VALUES ('Dusko Petrovica','pilipovic@gmail.com', true, 'Duško', false, 'Pilipović',
-        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'pilipovic', 2,0,3,'2021-04-07',0, '2025-09-08');
+        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'pilipovic', 2,0,2,'2021-04-07',0, '2025-09-08');
 
 INSERT INTO public.users(address,email, enabled, first_name, deleted, last_name, password,
                          username, role_id,following_count,number_of_posts,creation_time,followers_count, last_logged_time)
 VALUES ('Petra Petrovica','medic@gmail.com', true, 'Miloš', false, 'Medić',
-        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'medic', 2,0,3,'2020-04-08',0, '2025-09-08');
+        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'medic', 2,0,0,'2020-04-08',0, '2025-09-08');
 
 INSERT INTO public.users(address,email, enabled, first_name, deleted, last_name, password,
                          username, role_id,following_count,number_of_posts,creation_time,followers_count, last_logged_time)
@@ -87,12 +87,12 @@ VALUES ('Petra Petrovica','user4@gmail.com', true, 'Petar', false, 'Petrović',
 INSERT INTO public.users(address,email, enabled, first_name, deleted, last_name, password,
                          username, role_id,following_count,number_of_posts,creation_time,followers_count, last_logged_time)
 VALUES ('Petra Petrovica','user5@gmail.com', true, 'Gavrilo', false, 'Gavrilović',
-        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'gavrilovic', 2,0,0,'2024-04-19',2, '2025-10-02');
+        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'gavrilovic', 2,0,2,'2024-04-19',2, '2025-10-02');
 
 INSERT INTO public.users(address,email, enabled, first_name, deleted, last_name, password,
                          username, role_id,following_count,number_of_posts,creation_time,followers_count, last_logged_time)
 VALUES ('Petra Petrovica','user6@gmail.com', true, 'Ana', false, 'Anić',
-        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'ana', 2,1,0,'2022-04-25',0, '2025-10-02');
+        '$2a$10$6TWEkn.KiuKNYOgd4UGYFO4ECeYHbszRSdjVXTw1cFpn9RV60s6Py', 'ana', 2,1,4,'2022-04-25',0, '2025-10-02');
 
 INSERT INTO public.users(address,email, enabled, first_name, deleted, last_name, password,
                          username, role_id,following_count,number_of_posts,creation_time,followers_count, last_logged_time)

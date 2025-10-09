@@ -10,4 +10,21 @@
         </expiry>
         <heap unit="entries">100</heap>
     </cache>
+
+    <cache alias="postLocationsCache">
+        <key-type>java.lang.String</key-type>
+        <expiry>
+            <ttl unit="minutes">60</ttl>
+        </expiry>
+        <heap unit="entries">100</heap>
+    </cache>
+
+    <cache alias="userLocationCache">
+        <key-type>java.lang.String</key-type>
+        <expiry>
+            <ttl unit="minutes">180</ttl>
+        </expiry>
+        <heap unit="entries">10</heap>
+    </cache>
+
 </config>

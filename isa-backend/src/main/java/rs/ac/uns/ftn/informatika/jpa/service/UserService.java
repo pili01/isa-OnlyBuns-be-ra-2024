@@ -2,18 +2,28 @@ package rs.ac.uns.ftn.informatika.jpa.service;
 
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import rs.ac.uns.ftn.informatika.jpa.dto.LocationDTO;
 import rs.ac.uns.ftn.informatika.jpa.dto.UserDTO;
 import rs.ac.uns.ftn.informatika.jpa.mapper.UserDTOMapper;
+import rs.ac.uns.ftn.informatika.jpa.model.Location;
+import rs.ac.uns.ftn.informatika.jpa.model.Post;
 import rs.ac.uns.ftn.informatika.jpa.model.Role;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
+import rs.ac.uns.ftn.informatika.jpa.repository.LocationRepository;
 import rs.ac.uns.ftn.informatika.jpa.repository.RoleRepository;
 import rs.ac.uns.ftn.informatika.jpa.repository.UserRepository;
 import rs.ac.uns.ftn.informatika.jpa.repository.UserRepositoryCustom;
@@ -35,11 +45,7 @@ import java.nio.charset.StandardCharsets;
 @Service
 public class UserService {
 
-
     private BloomFilter<String> usernameBloomFilter;
-
-
-
 
     @Autowired
     private UserRepository userRepository;
@@ -58,6 +64,9 @@ public class UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private LocationRepository locationRepository;
 
     @PostConstruct
     public void initBloomFilter() {
@@ -106,9 +115,6 @@ public class UserService {
     public void remove(int id) {
         userRepository.deleteById(id);
     }
-
-
-
 
 
     public boolean checkUsernameInBloomFilter(String username) {
@@ -275,5 +281,38 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional
+    @CacheEvict(value = "userLocationCache", allEntries = true)
+    public User saveLocation(String email, LocationDTO locationDTO) {
 
+        System.out.println("\n\n1111111111111111 SAVE SAVE SAVE SAVE 11111111111111111111\n\n");
+        Optional<User> userOptional = findByEmail(email);
+
+        if (!userOptional.isPresent()) {
+            return null;
+        }
+
+        User user = userOptional.get();
+        Location location = new Location();
+        location.setLatitude(locationDTO.getLatitude());
+        location.setLongitude(locationDTO.getLongitude());
+        location = locationRepository.save(location);
+
+        user.setLocation(location);
+        return userRepository.save(user);
+    }
+
+    @Transactional
+    @Cacheable(value = "userLocationCache", key = "#email")
+    public Location getLocationByEmail(String email) {
+        System.out.println("\n\n2222222222222222222222 get get GET GET GET 2222222222222222222222222222\n\n");
+        Optional<User> userOptional = findByEmail(email);
+        if (!userOptional.isPresent()) {
+            return null;
+        }
+
+        User user = userOptional.get();
+
+        return locationRepository.findUserLocation(user.getLocation().getId());
+    }
 }

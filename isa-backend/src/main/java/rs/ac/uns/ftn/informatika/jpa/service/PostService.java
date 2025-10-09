@@ -6,16 +6,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import rs.ac.uns.ftn.informatika.jpa.dto.LocationDTO;
 import rs.ac.uns.ftn.informatika.jpa.dto.UserLikeDTO;
 import rs.ac.uns.ftn.informatika.jpa.model.Comment;
 import rs.ac.uns.ftn.informatika.jpa.ResourceNotFoundException;
 import rs.ac.uns.ftn.informatika.jpa.dto.PostDTO;
 import rs.ac.uns.ftn.informatika.jpa.mapper.PostDTOMapper;
+import rs.ac.uns.ftn.informatika.jpa.model.Location;
 import rs.ac.uns.ftn.informatika.jpa.model.Post;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
 import rs.ac.uns.ftn.informatika.jpa.repository.PostRepository;
@@ -52,7 +55,10 @@ public class PostService {
     }
 
     @Transactional
-    @CacheEvict(value = "trendsCache", allEntries = true)
+    @Caching(evict = {
+            @CacheEvict(value = "trendsCache", allEntries = true),
+            @CacheEvict(value = "postLocationsCache", allEntries = true)
+    })
     public Post save(Post post) {
         logger.info("> post:{} creating by :{}",post.getId(),post.getAuthor().getId());
         User author = userRepository.findByIdForUpdate(post.getAuthor().getId()).orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -63,7 +69,10 @@ public class PostService {
     }
 
     @Transactional
-    @CacheEvict(value = "trendsCache", allEntries = true)
+    @Caching(evict = {
+            @CacheEvict(value = "trendsCache", allEntries = true),
+            @CacheEvict(value = "postLocationsCache", allEntries = true)
+    })
     public Post remove(Integer id,int authorId) {
         Post post = findOne(id);
         if (post != null) {
@@ -81,7 +90,10 @@ public class PostService {
     }
 
     @Transactional
-    @CacheEvict(value = "trendsCache", allEntries = true)
+    @Caching(evict = {
+            @CacheEvict(value = "trendsCache", allEntries = true),
+            @CacheEvict(value = "postLocationsCache", allEntries = true)
+    })
     public Post modifyPost(int postId, Post modifiedPost) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found with id " + postId));
@@ -115,9 +127,9 @@ public class PostService {
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
         return postDTOMapper.fromPosttoDTO(post); // mapiranje na DTO
     }
-    
+
     public Post findOneWithLikers(Integer id){return postRepository.findOneWithLikers(id);} //nije radilo
-    
+
 
 
     @Transactional
@@ -254,9 +266,19 @@ public class PostService {
                 .collect(Collectors.toList());
     }
 
+    @Cacheable(value = "postLocationsCache", key = "'allPostLocations'")
+    @Transactional(readOnly = true)
+    public List<LocationDTO> getAllPostLocations(){
+        System.out.println("\n\nOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO\n\n");
+        List<Post> posts = postRepository.findAll();
 
+        List<Location> locations = posts.stream()
+                .map(Post::getLocation)
+                .collect(Collectors.toList());
 
-
+        return locations.stream()
+                .map(LocationDTO::new)
+                .collect(Collectors.toList());
+    }
 
 }
-
