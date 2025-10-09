@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import rs.ac.uns.ftn.informatika.jpa.model.Comment;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -28,4 +29,11 @@ public interface CommentRepository extends JpaRepository<Comment,Integer> {
     @Query(value = "SELECT COUNT(*) FROM public.comments c WHERE c.creation_time >= NOW() - INTERVAL '2 minutes'" + //3.10 60 minuta
             "AND c.user_id = :authorId", nativeQuery = true)
     Long countCommentFromOneHourAgo(Integer authorId);
+
+    @Query(value = "SELECT COUNT(*) FROM public.comments c WHERE c.creation_time >= :lastLoggedTime " + //3.10 60 minuta
+            "AND c.post_id IN (:postIds)", nativeQuery = true)
+    long countCommentFromSevenDayAgo(List<Integer> postIds, LocalDateTime lastLoggedTime);
+
+    @Query(value = "SELECT COUNT(*) FROM public.comments c WHERE c.post_id IN (:postIds)", nativeQuery = true)
+    long countCommentFromPost(List<Integer> postIds);
 }
