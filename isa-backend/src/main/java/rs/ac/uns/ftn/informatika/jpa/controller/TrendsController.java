@@ -49,15 +49,11 @@ public class TrendsController {
         return ResponseEntity.ok(stats);
     }
 
-
     @GetMapping("/most-liked")
     public List<PostDTO> getPopularPostsAllTime() {
         List<PostDTO> postDTOs = postService.getTop10MostLikedPosts();
         return postDTOs;
     }
-
-
-
 
     @GetMapping("/most-liked/weekly")
     public List<PostDTO> getTop5MostLikedPostsLastWeek() {
@@ -69,9 +65,6 @@ public class TrendsController {
     public List<UserLikeDTO> getTopLikers() {
         return postService.getTop10UsersWithMostLikesLastWeek();
     }
-
-
-
 
 }
 
