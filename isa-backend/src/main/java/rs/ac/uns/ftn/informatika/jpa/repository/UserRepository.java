@@ -64,4 +64,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     @Query(value = "SELECT COUNT(*) FROM public.followers f WHERE f.followed_id = :userId AND f.followed_at >= :followedAt", nativeQuery = true)
     long countNewFollowers(Integer userId, LocalDateTime followedAt);
+
+    // broj korisnika koji su poslednji put loginovali nakon prosleđenog vremena
+    @Query("SELECT COUNT(*) FROM User u Where u.lastLoggedTime >= :time")
+    long countByLastLoggedTimeAfter(LocalDateTime time);
 }

@@ -258,6 +258,17 @@
 			<version>RELEASE</version>
 			<scope>test</scope>
 		</dependency>
+		<!-- Actuator (izlaže /actuator/* endpoint-e) -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+
+		<!-- Prometheus registry za Micrometer -->
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
+		</dependency>
 
 	</dependencies>
 
