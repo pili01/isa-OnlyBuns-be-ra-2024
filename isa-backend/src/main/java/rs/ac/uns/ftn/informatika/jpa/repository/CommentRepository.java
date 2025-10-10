@@ -26,11 +26,11 @@ public interface CommentRepository extends JpaRepository<Comment,Integer> {
             "FROM Comment c GROUP BY EXTRACT(YEAR FROM c.createdAt) ORDER BY year")
     List<Map<String, Object>> countCommentsByYear();
 
-    @Query(value = "SELECT COUNT(*) FROM public.comments c WHERE c.creation_time >= NOW() - INTERVAL '2 minutes'" + //3.10 60 minuta
+    @Query(value = "SELECT COUNT(*) FROM public.comments c WHERE c.creation_time >= NOW() - INTERVAL '60 minutes'" + //3.10 60 minuta
             "AND c.user_id = :authorId", nativeQuery = true)
     Long countCommentFromOneHourAgo(Integer authorId);
 
-    @Query(value = "SELECT COUNT(*) FROM public.comments c WHERE c.creation_time >= :lastLoggedTime " + //3.10 60 minuta
+    @Query(value = "SELECT COUNT(*) FROM public.comments c WHERE c.creation_time >= :lastLoggedTime " +
             "AND c.post_id IN (:postIds)", nativeQuery = true)
     long countCommentFromSevenDayAgo(List<Integer> postIds, LocalDateTime lastLoggedTime);
 

@@ -27,24 +27,67 @@ public class RateLimiterService {
         return Bucket4j.builder().addLimit(limit).build();
     }
 
-    public synchronized boolean tryConsume(String username) {
-        Bucket bucket = resolveBucket(username);
-        Queue<Instant> timestamps = requestTimestamps.computeIfAbsent(username, k -> new LinkedList<>());
+    // 👥 Limit za FOLLOW zahteve: 50 u 1 minuti
+    public synchronized boolean tryConsumeFollower(String username) {
+        String key = username + "_follow";
+
+        Bucket bucket = buckets.computeIfAbsent(key, k -> {
+            Bandwidth limit = Bandwidth.simple(50, Duration.ofMinutes(1));
+            return Bucket4j.builder().addLimit(limit).build();
+        });
+
+        Queue<Instant> timestamps = requestTimestamps.computeIfAbsent(key, k -> new LinkedList<>());
 
         Instant now = Instant.now();
         Instant windowStart = now.minus(Duration.ofMinutes(1));
 
-        // Uklonite sve zahteve koji su izvan trenutnog 60-sekundnog prozora
+        // Očistimo stare unose
         while (!timestamps.isEmpty() && timestamps.peek().isBefore(windowStart)) {
             timestamps.poll();
         }
-        bucket.addTokens(50- timestamps.size());
+
+        // Dodamo tokene ako treba (manje od 50)
+        bucket.addTokens(50 - timestamps.size());
 
         if (timestamps.size() < 50) {
             timestamps.add(now);
-            System.out.println("Uzet 1 ostalo u kanti: "+(50- timestamps.size()));
+            System.out.println("✅ Follow dozvoljen. Trenutno: " + timestamps.size() + "/50");
             return true;
         } else {
+            System.out.println("❌ Prekoračen follow limit za korisnika: " + username);
+            return false;
+        }
+    }
+
+
+    //add comment
+    // 💬 Limit za KOMENTARE: 5 u 1 minuti
+    public synchronized boolean tryConsumeComment(String username) {
+        String key = username + "_comment";
+
+        Bucket bucket = buckets.computeIfAbsent(key, k -> {
+            Bandwidth limit = Bandwidth.simple(5, Duration.ofMinutes(1));
+            return Bucket4j.builder().addLimit(limit).build();
+        });
+
+        Queue<Instant> timestamps = requestTimestamps.computeIfAbsent(key, k -> new LinkedList<>());
+
+        Instant now = Instant.now();
+        Instant windowStart = now.minus(Duration.ofMinutes(1));
+
+        while (!timestamps.isEmpty() && timestamps.peek().isBefore(windowStart)) {
+            timestamps.poll();
+        }
+
+        System.out.println("ALOOOO EVO TIMESTAMPS.SIZE() = " + timestamps.size());
+        bucket.addTokens(5 - timestamps.size());
+
+        if (timestamps.size() < 5) {
+            timestamps.add(now);
+            System.out.println("✅ Komentar dozvoljen. Trenutno: " + timestamps.size() + "/5");
+            return true;
+        } else {
+            System.out.println("❌ Prekoračen komentar limit za korisnika: " + username);
             return false;
         }
     }
