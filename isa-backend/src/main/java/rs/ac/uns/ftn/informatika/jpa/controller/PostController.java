@@ -1,5 +1,7 @@
 package rs.ac.uns.ftn.informatika.jpa.controller;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -49,6 +51,10 @@ public class PostController {
     private PostDTOMapper postDTOMapper;
     @Autowired
     private UserDTOMapper userDTOMapper;
+
+    // Micrometer registry (autowired) - koristimo ga za Timer
+    @Autowired
+    private MeterRegistry meterRegistry;
 
     @GetMapping(value = "/all")
     public ResponseEntity<List<PostDTO>> getAllPosts() {
@@ -132,22 +138,29 @@ public class PostController {
     @PreAuthorize("hasAuthority('AUTHENTICATED')")
     @PostMapping(consumes = "application/json", value = "/add")
     public ResponseEntity<PostDTO> addPost(@RequestBody PostCreationDTO postCreationDTO) {
-        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        Timer.Sample sample = Timer.start(meterRegistry);
+        try {
+            String userName = SecurityContextHolder.getContext().getAuthentication().getName();
 //        Optional<User> author = userService.findOne(userId);
-        Optional<User> author = userService.findByUsername(userName);
+            Optional<User> author = userService.findByUsername(userName);
 
-        if (!author.isPresent()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        UserDTO authorDTO = userDTOMapper.fromUsertoDTO(author.get());
-        postCreationDTO.setAuthor(authorDTO);
-        Post post = postDTOMapper.fromDTOtoPost(postCreationDTO);
+            if (!author.isPresent()) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+            UserDTO authorDTO = userDTOMapper.fromUsertoDTO(author.get());
+            postCreationDTO.setAuthor(authorDTO);
+            Post post = postDTOMapper.fromDTOtoPost(postCreationDTO);
 //        post = author.get().addPost(post);
 //        post.setAuthor(author.get());
-        post = postService.save(post);
-        PostDTO postDTO = postDTOMapper.toDTO(post);
+            post = postService.save(post);
+            PostDTO postDTO = postDTOMapper.toDTO(post);
 //        postDTO.setId(post.getId());
-        return new ResponseEntity<>(postDTO, HttpStatus.CREATED);
+            return new ResponseEntity<>(postDTO, HttpStatus.CREATED);
+        } finally{
+            sample.stop(Timer.builder("post_add_request_duration_seconds")
+                    .description("Trajanje HTTP zahteva za kreiranje nove objave (seconds)")
+                    .register(meterRegistry));
+        }
     }
 
     @PreAuthorize("hasAuthority('AUTHENTICATED')")
