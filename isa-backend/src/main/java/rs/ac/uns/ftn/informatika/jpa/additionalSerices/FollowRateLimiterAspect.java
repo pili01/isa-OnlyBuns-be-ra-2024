@@ -17,7 +17,7 @@ public class FollowRateLimiterAspect {
     @Around("@annotation(FollowRateLimited)")
     public Object rateLimit(ProceedingJoinPoint pjp) throws Throwable {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        if (rateLimiterService.tryConsume(username)) {
+        if (rateLimiterService.tryConsumeFollower(username)) {
             return pjp.proceed();
         } else {
             throw new Exception("Rate limit exceeded");

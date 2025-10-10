@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import rs.ac.uns.ftn.informatika.jpa.additionalSerices.CommentRateLimited;
 import rs.ac.uns.ftn.informatika.jpa.dto.CommentDTO;
 import rs.ac.uns.ftn.informatika.jpa.model.Comment;
 import rs.ac.uns.ftn.informatika.jpa.model.Post;
@@ -37,10 +38,11 @@ public class CommentController {
         this.modelMapper = modelMapper;
     }
 
-
+    @CommentRateLimited
     @PreAuthorize("hasAuthority('AUTHENTICATED')")
     @PostMapping(consumes = "application/json", value = "/{postId}")
     public ResponseEntity<CommentDTO> addComment(@RequestBody CommentDTO commentDTO, @PathVariable int postId) {
+        System.out.println("ALO PA STA JE OVO!!\n");
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
 //        Optional<User> author = userService.findOne(userId);
         Optional<User> author = userService.findByUsername(userName);
@@ -63,6 +65,7 @@ public class CommentController {
         commentDTO.setId(comment.getId());
         return new ResponseEntity<>(commentDTO, HttpStatus.CREATED);
     }
+
 
     @PreAuthorize("hasAuthority('AUTHENTICATED')")
     @DeleteMapping(value = "/{id}")
