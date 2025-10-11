@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import rs.ac.uns.ftn.informatika.jpa.custommq.AdvertisingProducer;
 import rs.ac.uns.ftn.informatika.jpa.dto.*;
 import rs.ac.uns.ftn.informatika.jpa.mapper.PostDTOMapper;
 import rs.ac.uns.ftn.informatika.jpa.mapper.UserDTOMapper;
@@ -25,10 +26,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -55,6 +53,9 @@ public class PostController {
     // Micrometer registry (autowired) - koristimo ga za Timer
     @Autowired
     private MeterRegistry meterRegistry;
+
+    @Autowired
+    private AdvertisingProducer advertisingProducer;
 
     @GetMapping(value = "/all")
     public ResponseEntity<List<PostDTO>> getAllPosts() {
@@ -297,9 +298,6 @@ public class PostController {
     }
 
 
-
-
-
     @GetMapping("/locations")
     public List<LocationDTO> getAllPostLocations() {
 
@@ -315,12 +313,24 @@ public class PostController {
         return postService.getAllPostLocations();
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PostMapping("/markForAdvertising/{postId}")
+    public ResponseEntity<Void> markPostForAdvertising(@PathVariable Integer postId) {
+        Post post = postService.findOne(postId);
+        if (post == null) {
+            return ResponseEntity.notFound().build();
+        }
 
+        // Pretvaranje Post u DTO koji šaljemo
+        PostDTO postDTO = postDTOMapper.toDTO(post);
 
+        // Slanje poruke svim agencijama
+        String message = "\nUSERNAME: " + postDTO.getAuthorUsername() + "\nDESCRIPTION: " + postDTO.getDescription() + "\nPOSTED AT: " + postDTO.getCreatedAt().toString() + "\n\n";
 
+        // Slanje poruke svim agencijama
+        advertisingProducer.sendPostToAdvertising(message);
 
-
-
-
+        return ResponseEntity.ok().build();
+    }
 
 }
