@@ -80,9 +80,9 @@ public class RateLimiterService {
         }
 
         System.out.println("ALOOOO EVO TIMESTAMPS.SIZE() = " + timestamps.size());
-        bucket.addTokens(5 - timestamps.size());
 
         if (timestamps.size() < 5) {
+            bucket.addTokens(5 - timestamps.size());
             timestamps.add(now);
             System.out.println("✅ Komentar dozvoljen. Trenutno: " + timestamps.size() + "/5");
             return true;
