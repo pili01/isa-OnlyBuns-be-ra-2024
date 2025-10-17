@@ -52,7 +52,7 @@ public class JpaExampleApplicationTests {
 		executor.submit(task1);
 		executor.submit(task2);
 		executor.shutdown();
-		executor.awaitTermination(10, TimeUnit.SECONDS);
+		executor.awaitTermination(1, TimeUnit.SECONDS);
 
 		// Provera rezultata
 		Optional<User> updatedFollowed = userService.findOne(followed.get().getId());
@@ -75,7 +75,7 @@ public class JpaExampleApplicationTests {
 		executor.submit(task1);
 		executor.submit(task2);
 		executor.shutdown();
-		executor.awaitTermination(10, TimeUnit.SECONDS);
+		executor.awaitTermination(1, TimeUnit.SECONDS);
 
 		// Provera rezultata
 		Optional<User> updatedFollowed = userService.findOne(followed.get().getId());
@@ -89,25 +89,31 @@ public class JpaExampleApplicationTests {
 //		int likesOnStart = post.getLikers().size();
 
 		// Priprema podataka
-		User liker1 = userService.findOne(2).orElseThrow(() -> new RuntimeException("User not found"));
-		User liker2 = userService.findOne(5).orElseThrow(() -> new RuntimeException("User not found"));
-		User liker3 = userService.findOne(4).orElseThrow(() -> new RuntimeException("User not found"));
+		User liker6 = userService.findOne(6).orElseThrow(() -> new RuntimeException("User not found"));
+		User liker2 = userService.findOne(2).orElseThrow(() -> new RuntimeException("User not found"));
+		User liker7 = userService.findOne(7).orElseThrow(() -> new RuntimeException("User not found"));
+		User liker4 = userService.findOne(4).orElseThrow(() -> new RuntimeException("User not found"));
+		User liker5 = userService.findOne(5).orElseThrow(() -> new RuntimeException("User not found"));
 
 		// Paralelno izvršavanje
-		Runnable task1 = () -> postService.addLike(2, liker1);
-		Runnable task2 = () -> postService.addLike(2, liker2);
-		Runnable task3 = () -> postService.addLike(2, liker3);
+		Runnable task1 = () -> postService.addLike(2, liker2);
+		Runnable task2 = () -> postService.addLike(2, liker6);
+		Runnable task3 = () -> postService.addLike(2, liker4);
+		Runnable task4 = () -> postService.addLike(2, liker7);
+		Runnable task5 = () -> postService.addLike(2, liker5);
 
-		ExecutorService executor = Executors.newFixedThreadPool(3);
+		ExecutorService executor = Executors.newFixedThreadPool(5);
 		executor.submit(task1);
+		executor.submit(task4);
 		executor.submit(task2);
+		executor.submit(task5);
 		executor.submit(task3);
 		executor.shutdown();
-		executor.awaitTermination(10, TimeUnit.SECONDS);
+		executor.awaitTermination(1, TimeUnit.SECONDS);
 
 		// Provera rezultata
 		Post samePost = postService.findOneWithLikers(2);
-		assertEquals(5, samePost.getLikers().size());
+		assertEquals(7, samePost.getLikes());
 	}
 
 	@Test
@@ -118,24 +124,31 @@ public class JpaExampleApplicationTests {
 
 		// Priprema podataka
 		User liker1 = userService.findOne(1).orElseThrow(() -> new RuntimeException("User not found"));
-		User liker2 = userService.findOne(3).orElseThrow(() -> new RuntimeException("User not found"));
-		User liker3 = userService.findOne(4).orElseThrow(() -> new RuntimeException("User not found"));
+//		User liker2 = userService.findOne(2).orElseThrow(() -> new RuntimeException("User not found"));
+		User liker3 = userService.findOne(3).orElseThrow(() -> new RuntimeException("User not found"));
+		User liker4 = userService.findOne(4).orElseThrow(() -> new RuntimeException("User not found"));
+//		User liker6 = userService.findOne(6).orElseThrow(() -> new RuntimeException("User not found"));
 
 		// Paralelno izvršavanje
 		Runnable task1 = () -> postService.removeLike(1, liker1);
-		Runnable task2 = () -> postService.removeLike(1, liker2);
+//		Runnable task2 = () -> postService.addLike(1, liker2);
 		Runnable task3 = () -> postService.removeLike(1, liker3);
+//		Runnable task4 = () -> postService.addLike(1, liker6);
+		Runnable task5 = () -> postService.removeLike(1, liker4);
 
 		ExecutorService executor = Executors.newFixedThreadPool(3);
 		executor.submit(task1);
-		executor.submit(task2);
+//		executor.submit(task2);
 		executor.submit(task3);
+//		executor.submit(task4);
+		executor.submit(task5);
 		executor.shutdown();
-		executor.awaitTermination(10, TimeUnit.SECONDS);
+		executor.awaitTermination(1, TimeUnit.SECONDS);
 
 		// Provera rezultata
 		Post samePost = postService.findOneWithLikers(1);
-		assertEquals(1, samePost.getLikers().size());
+		assertEquals(1, samePost.getLikes());
 	}
+
 }
 

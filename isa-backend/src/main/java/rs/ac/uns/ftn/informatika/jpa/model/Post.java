@@ -32,6 +32,9 @@ public class Post {
     @Column(name = "createdAt", nullable = false)
     private LocalDateTime createdAt;
 
+    @Column(name= "likes", nullable = false)
+    private int likes;
+
     @Column(name = "deleted", nullable = false)
     private boolean isDeleted;
 
@@ -97,6 +100,19 @@ public class Post {
         isDeleted = deleted;
     }
 
+    public int getLikes() {
+        return likes;
+    }
+
+    public void setLikes(int likes) {
+        this.likes = likes;
+    }
+    public void incrementLikes(){
+        this.likes++;
+    }
+    public void decrementLikes(){
+        this.likes--;
+    }
     public Location getLocation() {
         return location;
     }
@@ -152,6 +168,7 @@ public class Post {
                 Objects.equals(imagePath, post.imagePath) &&
                 Objects.equals(createdAt, post.createdAt) &&
                 Objects.equals(location, post.location) &&
+                Objects.equals(likes, post.likes) &&
                 Objects.equals(comments, post.comments) &&
                 Objects.equals(author, post.author) &&
                 Objects.equals(likers, post.likers);
@@ -168,6 +185,7 @@ public class Post {
                 "id=" + id + "\n\t"+
                 ", description='" + description + '\'' + "\n\t" +
                 ", path='" + imagePath + '\'' + "\n\t" +
+                ", likes='" + likes + '\'' + "\n\t" +
                 ", createdAt=" + createdAt + "\n\t" +
                 ", isDeleted=" + isDeleted + "\n\t" +
                 ", location=" + location + "\n\t" +

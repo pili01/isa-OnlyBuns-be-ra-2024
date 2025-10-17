@@ -29,7 +29,12 @@ public class StatisticsToEmail {
 
     public void sendUserStatisticToEmail(){
         List<User> userList = userRepository.findAllWhoDidntLogForSevenDays();
-//        System.out.println(userList);
+        if(userList.isEmpty()){
+            return;
+        }
+
+        System.out.println("ALOOO SLANJE NOTIFIKACIJE MEJLOM!");
+        System.out.println(userList);
 
         for(User user : userList){
             long newLikesCount = 0;
@@ -44,20 +49,23 @@ public class StatisticsToEmail {
             List<User> followingUsers = userRepository.findFollowedByUserId(user.getId());
 //            System.out.println("User ID: " + user.getId() + "\nKOGA PRATIM: " + followingUsers);
             List<Post> postList = postRepository.findAllMyPosts(user.getId());
+
 //            System.out.println(postList);
             List<Integer> postIds = postList.stream()
                     .map(Post::getId)
                     .collect(Collectors.toList());
 
 //            System.out.println("OVO JE BROJ POSTOVA: " + postIds);
-
-            newLikesCount = postRepository.countLikesFromSevenDaysAgoForPosts(postIds, user.getLastLoggedTime());
-            likesCount = postRepository.countLikesForPosts(postIds);
+            if(!postList.isEmpty()){
+                newLikesCount = postRepository.countLikesFromSevenDaysAgoForPosts(postIds, user.getLastLoggedTime());
+                likesCount = postRepository.countLikesForPosts(postIds);
+            }
 
 //            System.out.println("User ID: " + user.getId() + "\nNOVIH LAJKOVA: " + newLikesCount + "\nUKUPNO LAJKOVA: " + likesCount);
-
-            newCommentsCount = commentRepository.countCommentFromSevenDayAgo(postIds, user.getLastLoggedTime());
-            commentsCount = commentRepository.countCommentFromPost(postIds);
+            if(!postList.isEmpty()){
+                newCommentsCount = commentRepository.countCommentFromSevenDayAgo(postIds, user.getLastLoggedTime());
+                commentsCount = commentRepository.countCommentFromPost(postIds);
+            }
 
 //            System.out.println("User ID: " + user.getId() + "\nNOVIH KOMENTARA: " + newCommentsCount + "\nUKUPNO KOMENTARA: " + commentsCount);
 
@@ -67,6 +75,9 @@ public class StatisticsToEmail {
 
             for(User f : followingUsers){
                 List<Post> followersPostList = postRepository.findAllMyPosts(f.getId());
+                if(!followersPostList.isEmpty()){
+                    continue;
+                }
                 List<Integer> followersPostsIds = followersPostList.stream()
                         .map(Post::getId)
                         .collect(Collectors.toList());

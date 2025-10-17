@@ -301,7 +301,7 @@ public class PostController {
     @GetMapping("/locations")
     public List<LocationDTO> getAllPostLocations() {
 
-        System.out.println("\n\nEVO GAAAAAAA\n\n");
+        System.out.println("\n\nEVO GAAAAAAA GETUJEMO LOKACIJEEE\n\n");
 //       List<LocationDTO>lista= postService.findAll().stream()
 //                .map(post -> new LocationDTO(post.getLocation().getId(),post.getLocation().getLatitude(), post.getLocation().getLongitude()))
 //                .collect(Collectors.toList());

@@ -391,6 +391,8 @@ public class UserController {
             @PathVariable String username,
             @RequestBody LocationDTO locationDTO
     ) {
+        System.out.println("\n\nIDEMO CUVAMOOOOO LOKACIJE\n\n");
+
         User user = userService.saveLocation(username, locationDTO);
 
         if (user == null) {
@@ -404,7 +406,7 @@ public class UserController {
     @PreAuthorize("hasAuthority('AUTHENTICATED')")
     public ResponseEntity<LocationDTO> getUserLocation(@RequestParam String email) {
 
-        System.out.println("\n\nIDEMO GETUJEMOOOOOO LOKACIJE\n\n");
+        System.out.println("\n\nIDEMO GETUJEMOOOOOO LOKACIJU\n\n");
         Location location = userService.getLocationByEmail(email);
 
         if (location == null || location.getId() == null) {

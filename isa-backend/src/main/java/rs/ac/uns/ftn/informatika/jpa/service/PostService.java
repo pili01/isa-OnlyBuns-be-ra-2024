@@ -149,6 +149,7 @@ public class PostService {
         }
 
         // Dodaj korisnika u set likera
+        post.incrementLikes();
         post.addLike(user);
         Post savedPost = postRepository.save(post);
 
@@ -179,6 +180,7 @@ public class PostService {
         if(!author.equals(user)){
             return null;
         }
+        post.decrementLikes();
         post.removeLike(author);
         return postRepository.save(post);
     }
